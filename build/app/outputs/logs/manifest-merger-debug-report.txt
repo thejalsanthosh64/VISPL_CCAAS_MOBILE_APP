@@ -1,0 +1,416 @@
+-- Merging decision tree log ---
+application
+INJECTED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:35:5-91:19
+INJECTED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/debug/AndroidManifest.xml
+MERGED from [:url_launcher_android] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/url_launcher_android/intermediates/merged_manifest/debug/AndroidManifest.xml:7:5-12:19
+MERGED from [:url_launcher_android] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/url_launcher_android/intermediates/merged_manifest/debug/AndroidManifest.xml:7:5-12:19
+MERGED from [androidx.window:window:1.2.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/bd4e1a3855d7d01fba9265c80d825b7e/transformed/jetified-window-1.2.0/AndroidManifest.xml:22:5-29:19
+MERGED from [androidx.window:window:1.2.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/bd4e1a3855d7d01fba9265c80d825b7e/transformed/jetified-window-1.2.0/AndroidManifest.xml:22:5-29:19
+MERGED from [androidx.core:core:1.13.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/89a296e8ff77af406da1444be762a330/transformed/core-1.13.1/AndroidManifest.xml:28:5-89
+MERGED from [androidx.core:core:1.13.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/89a296e8ff77af406da1444be762a330/transformed/core-1.13.1/AndroidManifest.xml:28:5-89
+MERGED from [androidx.lifecycle:lifecycle-process:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/3cb1588d4fa912fac41bfeec5adad856/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/3cb1588d4fa912fac41bfeec5adad856/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/62c93219508e8741822f44f602464f65/transformed/jetified-startup-runtime-1.1.1/AndroidManifest.xml:25:5-31:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/62c93219508e8741822f44f602464f65/transformed/jetified-startup-runtime-1.1.1/AndroidManifest.xml:25:5-31:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/56b79a054f98a76fbf6935292ae1a288/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/56b79a054f98a76fbf6935292ae1a288/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:24:5-25:19
+	android:extractNativeLibs
+		INJECTED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/debug/AndroidManifest.xml
+	android:appComponentFactory
+		ADDED from [androidx.core:core:1.13.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/89a296e8ff77af406da1444be762a330/transformed/core-1.13.1/AndroidManifest.xml:28:18-86
+	android:name
+		INJECTED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml
+manifest
+ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:1:1-104:12
+MERGED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:1:1-104:12
+INJECTED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/debug/AndroidManifest.xml:1:1-7:12
+INJECTED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/debug/AndroidManifest.xml:1:1-7:12
+INJECTED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/debug/AndroidManifest.xml:1:1-7:12
+MERGED from [:just_audio] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/just_audio/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-7:12
+MERGED from [:audio_session] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/audio_session/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-7:12
+MERGED from [:flutter_contacts] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/flutter_contacts/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-7:12
+MERGED from [:audioplayers_android] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/audioplayers_android/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-7:12
+MERGED from [:url_launcher_android] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/url_launcher_android/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-14:12
+MERGED from [:connectivity_plus] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/connectivity_plus/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-9:12
+MERGED from [:flutter_secure_storage] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/flutter_secure_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-10:12
+MERGED from [:fluttertoast] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/fluttertoast/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-7:12
+MERGED from [:path_provider_android] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/path_provider_android/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-7:12
+MERGED from [:permission_handler_android] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/permission_handler_android/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.media:media:1.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/31dfd4ca196e0e4bd4b3d80592e677cf/transformed/media-1.7.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.media3:media3-extractor:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/755384f1a97a82007ecb8666f282d41d/transformed/jetified-media3-extractor-1.4.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.media3:media3-container:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/6daa7ea2627a2dba674e37c0149ef29a/transformed/jetified-media3-container-1.4.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.media3:media3-datasource:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/8788c09ef97123ff501360e9de04c92b/transformed/jetified-media3-datasource-1.4.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.media3:media3-decoder:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/e3b51da7c1408f7c5863e7aa02856a54/transformed/jetified-media3-decoder-1.4.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.media3:media3-database:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/7bf0da924d3104eabe8288dc1c9fa9fd/transformed/jetified-media3-database-1.4.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.media3:media3-common:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/7f195ca4553f97616e9428cb40959b94/transformed/jetified-media3-common-1.4.1/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.media3:media3-exoplayer-dash:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/f1c75f368c8ac957601890bf441e9fe1/transformed/jetified-media3-exoplayer-dash-1.4.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.media3:media3-exoplayer-hls:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/0b291984de9f5ee3cdf6bee4eb6f90c9/transformed/jetified-media3-exoplayer-hls-1.4.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.media3:media3-exoplayer-smoothstreaming:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/aa6ebe37fa11bc2c8ee8566cd0eaf0b2/transformed/jetified-media3-exoplayer-smoothstreaming-1.4.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.media3:media3-exoplayer:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/73cd93d111a843fe92c71caf63ef6d08/transformed/jetified-media3-exoplayer-1.4.1/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.browser:browser:1.8.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/99f6874a1b4dc480d1f9122437e5afc9/transformed/browser-1.8.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.window:window:1.2.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/bd4e1a3855d7d01fba9265c80d825b7e/transformed/jetified-window-1.2.0/AndroidManifest.xml:17:1-31:12
+MERGED from [androidx.window:window-java:1.2.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/9da4418949fadbf911259e1c7b0ef555/transformed/jetified-window-java-1.2.0/AndroidManifest.xml:17:1-21:12
+MERGED from [androidx.fragment:fragment:1.7.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/eac57d35d7d87adbd68503360169fd6e/transformed/fragment-1.7.1/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.activity:activity:1.8.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/1230e4659e22973b855cc2745cb3fefb/transformed/jetified-activity-1.8.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.loader:loader:1.0.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/0abe099b35e6eacbef2fdac80222150f/transformed/loader-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.viewpager:viewpager:1.0.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/c9e4cfecf3fe8ad32d0b444fa0c35cfb/transformed/viewpager-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.customview:customview:1.0.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/2573faae87475f46df40b7efb8f2d587/transformed/customview-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.core:core:1.13.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/89a296e8ff77af406da1444be762a330/transformed/core-1.13.1/AndroidManifest.xml:17:1-30:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/0ad885e870a612d37ad5ffb966a7a0ab/transformed/jetified-lifecycle-livedata-core-ktx-2.7.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/a9aed03eb53ff36e5e4c810dbd164852/transformed/lifecycle-livedata-2.7.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/935d322bd8892f8476db0e2cb5ce2e01/transformed/lifecycle-viewmodel-2.7.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/abd5c1706b64e129bc5328eeca5ede93/transformed/lifecycle-livedata-core-2.7.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-process:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/3cb1588d4fa912fac41bfeec5adad856/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.savedstate:savedstate:1.2.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/45a850a9bd7d65f463202d1f940fb7c2/transformed/jetified-savedstate-1.2.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/75dd3fa1c3c291ab29522796d34f83ba/transformed/lifecycle-runtime-2.7.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/d3a51db3c9e4e7b8dd1700b706346c47/transformed/jetified-lifecycle-viewmodel-savedstate-2.7.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.core:core-ktx:1.13.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/486fa056c2cbb1abca2c3888ed07c8b5/transformed/jetified-core-ktx-1.13.1/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.security:security-crypto:1.1.0-alpha06] /Users/boffincoders_mini4/.gradle/caches/transforms-3/bd585ff8cae28d5e24df44e5f1654c9f/transformed/jetified-security-crypto-1.1.0-alpha06/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:17:1-55:12
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/62c93219508e8741822f44f602464f65/transformed/jetified-startup-runtime-1.1.1/AndroidManifest.xml:17:1-33:12
+MERGED from [androidx.tracing:tracing:1.2.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/cfc93b449e006c330565c67b98f3b5ba/transformed/jetified-tracing-1.2.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/56b79a054f98a76fbf6935292ae1a288/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:17:1-27:12
+MERGED from [androidx.exifinterface:exifinterface:1.3.6] /Users/boffincoders_mini4/.gradle/caches/transforms-3/ad881436637ebebd7e2a059261c2420a/transformed/exifinterface-1.3.6/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/11d1c225bdeb01d1dbc854ea4b3d127e/transformed/interpolator-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.arch.core:core-runtime:2.2.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/007be345073d765da4dd4db2db787e37/transformed/core-runtime-2.2.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.window.extensions.core:core:1.0.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/76eccc7c16d9ef9314cad72383f3c7d0/transformed/jetified-core-1.0.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.annotation:annotation-experimental:1.4.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/c19df81f77a4370390e71726aa66d99e/transformed/jetified-annotation-experimental-1.4.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.multidex:multidex:2.0.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/4e38e326d170254fccab297bc7f87cc8/transformed/multidex-2.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.getkeepsafe.relinker:relinker:1.4.5] /Users/boffincoders_mini4/.gradle/caches/transforms-3/29a057c4ccba1c56915dfd93e6c3d949/transformed/jetified-relinker-1.4.5/AndroidManifest.xml:2:1-7:12
+	package
+		INJECTED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/debug/AndroidManifest.xml
+	android:versionName
+		INJECTED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/debug/AndroidManifest.xml
+	xmlns:tools
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:2:5-51
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:2:5-51
+	android:versionCode
+		INJECTED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/debug/AndroidManifest.xml
+	xmlns:android
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:1:11-69
+uses-feature#android.hardware.camera
+ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:5:5-8:36
+	tools:targetApi
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:8:9-33
+	android:required
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:7:9-33
+	android:name
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:6:9-47
+uses-feature#android.hardware.telephony
+ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:9:5-12:36
+	tools:targetApi
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:12:9-33
+	android:required
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:11:9-33
+	android:name
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:10:9-50
+uses-permission#android.permission.SYSTEM_ALERT_WINDOW
+ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:14:5-78
+	android:name
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:14:22-75
+uses-permission#android.permission.READ_PHONE_STATE
+ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:15:5-75
+	android:name
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:15:22-72
+uses-permission#android.permission.READ_CALL_LOG
+ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:16:5-72
+	android:name
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:16:22-69
+uses-permission#android.permission.ANSWER_PHONE_CALLS
+ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:17:5-77
+	android:name
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:17:22-74
+uses-permission#android.permission.CALL_PHONE
+ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:18:5-69
+	android:name
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:18:22-66
+uses-permission#android.permission.READ_CONTACTS
+ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:19:5-72
+	android:name
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:19:22-69
+uses-permission#android.permission.MODIFY_PHONE_STATE
+ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:20:5-22:47
+	tools:ignore
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:22:9-44
+	android:name
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:21:9-61
+uses-permission#android.permission.INTERNET
+ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:24:5-67
+MERGED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:24:5-67
+MERGED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:24:5-67
+	android:name
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:24:22-64
+uses-permission#android.permission.FOREGROUND_SERVICE
+ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:25:5-77
+	android:name
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:25:22-74
+uses-permission#android.permission.REQUEST_INSTALL_PACKAGES
+ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:26:5-83
+	android:name
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:26:22-80
+uses-permission#com.google.android.c2dm.permission.RECEIVE
+ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:27:5-82
+	android:name
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:27:22-79
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:28:5-79
+MERGED from [:connectivity_plus] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/connectivity_plus/intermediates/merged_manifest/debug/AndroidManifest.xml:7:5-79
+MERGED from [:connectivity_plus] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/connectivity_plus/intermediates/merged_manifest/debug/AndroidManifest.xml:7:5-79
+MERGED from [androidx.media3:media3-common:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/7f195ca4553f97616e9428cb40959b94/transformed/jetified-media3-common-1.4.1/AndroidManifest.xml:22:5-79
+MERGED from [androidx.media3:media3-common:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/7f195ca4553f97616e9428cb40959b94/transformed/jetified-media3-common-1.4.1/AndroidManifest.xml:22:5-79
+MERGED from [androidx.media3:media3-exoplayer:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/73cd93d111a843fe92c71caf63ef6d08/transformed/jetified-media3-exoplayer-1.4.1/AndroidManifest.xml:22:5-79
+MERGED from [androidx.media3:media3-exoplayer:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/73cd93d111a843fe92c71caf63ef6d08/transformed/jetified-media3-exoplayer-1.4.1/AndroidManifest.xml:22:5-79
+	android:name
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:28:22-76
+uses-permission#android.permission.CAMERA
+ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:29:5-65
+	android:name
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:29:22-62
+uses-permission#android.permission.READ_EXTERNAL_STORAGE
+ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:30:5-80
+	android:name
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:30:22-77
+uses-permission#android.permission.VIBRATE
+ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:31:5-66
+	android:name
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:31:22-63
+uses-permission#android.permission.ACCESS_COARSE_LOCATION
+ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:32:5-81
+	android:name
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:32:22-78
+uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
+ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:33:5-81
+	android:name
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:33:22-78
+queries
+ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:97:5-103:15
+package#com.whatsapp
+ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:98:9-48
+	android:name
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:98:18-45
+intent#action:name:android.intent.action.PROCESS_TEXT+data:mimeType:text/plain
+ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:99:9-102:18
+action#android.intent.action.PROCESS_TEXT
+ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:100:13-73
+	android:name
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:100:21-70
+data
+ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:101:13-51
+	android:mimeType
+		ADDED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:101:19-48
+uses-sdk
+INJECTED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/debug/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/debug/AndroidManifest.xml
+INJECTED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/debug/AndroidManifest.xml
+MERGED from [:just_audio] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/just_audio/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:just_audio] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/just_audio/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:audio_session] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/audio_session/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:audio_session] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/audio_session/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:flutter_contacts] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/flutter_contacts/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:flutter_contacts] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/flutter_contacts/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:audioplayers_android] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/audioplayers_android/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:audioplayers_android] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/audioplayers_android/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:url_launcher_android] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/url_launcher_android/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:url_launcher_android] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/url_launcher_android/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:connectivity_plus] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/connectivity_plus/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:connectivity_plus] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/connectivity_plus/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:flutter_secure_storage] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/flutter_secure_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:6:5-8:53
+MERGED from [:flutter_secure_storage] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/flutter_secure_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:6:5-8:53
+MERGED from [:fluttertoast] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/fluttertoast/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:fluttertoast] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/fluttertoast/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:path_provider_android] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/path_provider_android/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:path_provider_android] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/path_provider_android/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:permission_handler_android] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/permission_handler_android/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:permission_handler_android] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/permission_handler_android/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [androidx.media:media:1.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/31dfd4ca196e0e4bd4b3d80592e677cf/transformed/media-1.7.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.media:media:1.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/31dfd4ca196e0e4bd4b3d80592e677cf/transformed/media-1.7.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.media3:media3-extractor:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/755384f1a97a82007ecb8666f282d41d/transformed/jetified-media3-extractor-1.4.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-extractor:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/755384f1a97a82007ecb8666f282d41d/transformed/jetified-media3-extractor-1.4.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-container:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/6daa7ea2627a2dba674e37c0149ef29a/transformed/jetified-media3-container-1.4.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-container:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/6daa7ea2627a2dba674e37c0149ef29a/transformed/jetified-media3-container-1.4.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-datasource:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/8788c09ef97123ff501360e9de04c92b/transformed/jetified-media3-datasource-1.4.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-datasource:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/8788c09ef97123ff501360e9de04c92b/transformed/jetified-media3-datasource-1.4.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-decoder:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/e3b51da7c1408f7c5863e7aa02856a54/transformed/jetified-media3-decoder-1.4.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-decoder:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/e3b51da7c1408f7c5863e7aa02856a54/transformed/jetified-media3-decoder-1.4.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-database:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/7bf0da924d3104eabe8288dc1c9fa9fd/transformed/jetified-media3-database-1.4.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-database:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/7bf0da924d3104eabe8288dc1c9fa9fd/transformed/jetified-media3-database-1.4.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-common:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/7f195ca4553f97616e9428cb40959b94/transformed/jetified-media3-common-1.4.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-common:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/7f195ca4553f97616e9428cb40959b94/transformed/jetified-media3-common-1.4.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-exoplayer-dash:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/f1c75f368c8ac957601890bf441e9fe1/transformed/jetified-media3-exoplayer-dash-1.4.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-exoplayer-dash:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/f1c75f368c8ac957601890bf441e9fe1/transformed/jetified-media3-exoplayer-dash-1.4.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-exoplayer-hls:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/0b291984de9f5ee3cdf6bee4eb6f90c9/transformed/jetified-media3-exoplayer-hls-1.4.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-exoplayer-hls:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/0b291984de9f5ee3cdf6bee4eb6f90c9/transformed/jetified-media3-exoplayer-hls-1.4.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-exoplayer-smoothstreaming:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/aa6ebe37fa11bc2c8ee8566cd0eaf0b2/transformed/jetified-media3-exoplayer-smoothstreaming-1.4.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-exoplayer-smoothstreaming:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/aa6ebe37fa11bc2c8ee8566cd0eaf0b2/transformed/jetified-media3-exoplayer-smoothstreaming-1.4.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-exoplayer:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/73cd93d111a843fe92c71caf63ef6d08/transformed/jetified-media3-exoplayer-1.4.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.media3:media3-exoplayer:1.4.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/73cd93d111a843fe92c71caf63ef6d08/transformed/jetified-media3-exoplayer-1.4.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.browser:browser:1.8.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/99f6874a1b4dc480d1f9122437e5afc9/transformed/browser-1.8.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.browser:browser:1.8.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/99f6874a1b4dc480d1f9122437e5afc9/transformed/browser-1.8.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.window:window:1.2.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/bd4e1a3855d7d01fba9265c80d825b7e/transformed/jetified-window-1.2.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.window:window:1.2.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/bd4e1a3855d7d01fba9265c80d825b7e/transformed/jetified-window-1.2.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.window:window-java:1.2.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/9da4418949fadbf911259e1c7b0ef555/transformed/jetified-window-java-1.2.0/AndroidManifest.xml:19:5-44
+MERGED from [androidx.window:window-java:1.2.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/9da4418949fadbf911259e1c7b0ef555/transformed/jetified-window-java-1.2.0/AndroidManifest.xml:19:5-44
+MERGED from [androidx.fragment:fragment:1.7.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/eac57d35d7d87adbd68503360169fd6e/transformed/fragment-1.7.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.fragment:fragment:1.7.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/eac57d35d7d87adbd68503360169fd6e/transformed/fragment-1.7.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.activity:activity:1.8.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/1230e4659e22973b855cc2745cb3fefb/transformed/jetified-activity-1.8.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity:1.8.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/1230e4659e22973b855cc2745cb3fefb/transformed/jetified-activity-1.8.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/0abe099b35e6eacbef2fdac80222150f/transformed/loader-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/0abe099b35e6eacbef2fdac80222150f/transformed/loader-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/c9e4cfecf3fe8ad32d0b444fa0c35cfb/transformed/viewpager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/c9e4cfecf3fe8ad32d0b444fa0c35cfb/transformed/viewpager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview:1.0.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/2573faae87475f46df40b7efb8f2d587/transformed/customview-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview:1.0.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/2573faae87475f46df40b7efb8f2d587/transformed/customview-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.13.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/89a296e8ff77af406da1444be762a330/transformed/core-1.13.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.13.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/89a296e8ff77af406da1444be762a330/transformed/core-1.13.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/0ad885e870a612d37ad5ffb966a7a0ab/transformed/jetified-lifecycle-livedata-core-ktx-2.7.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/0ad885e870a612d37ad5ffb966a7a0ab/transformed/jetified-lifecycle-livedata-core-ktx-2.7.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/a9aed03eb53ff36e5e4c810dbd164852/transformed/lifecycle-livedata-2.7.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/a9aed03eb53ff36e5e4c810dbd164852/transformed/lifecycle-livedata-2.7.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/935d322bd8892f8476db0e2cb5ce2e01/transformed/lifecycle-viewmodel-2.7.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/935d322bd8892f8476db0e2cb5ce2e01/transformed/lifecycle-viewmodel-2.7.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/abd5c1706b64e129bc5328eeca5ede93/transformed/lifecycle-livedata-core-2.7.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/abd5c1706b64e129bc5328eeca5ede93/transformed/lifecycle-livedata-core-2.7.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/3cb1588d4fa912fac41bfeec5adad856/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/3cb1588d4fa912fac41bfeec5adad856/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:21:5-44
+MERGED from [androidx.savedstate:savedstate:1.2.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/45a850a9bd7d65f463202d1f940fb7c2/transformed/jetified-savedstate-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate:1.2.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/45a850a9bd7d65f463202d1f940fb7c2/transformed/jetified-savedstate-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/75dd3fa1c3c291ab29522796d34f83ba/transformed/lifecycle-runtime-2.7.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/75dd3fa1c3c291ab29522796d34f83ba/transformed/lifecycle-runtime-2.7.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/d3a51db3c9e4e7b8dd1700b706346c47/transformed/jetified-lifecycle-viewmodel-savedstate-2.7.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/d3a51db3c9e4e7b8dd1700b706346c47/transformed/jetified-lifecycle-viewmodel-savedstate-2.7.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core-ktx:1.13.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/486fa056c2cbb1abca2c3888ed07c8b5/transformed/jetified-core-ktx-1.13.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core-ktx:1.13.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/486fa056c2cbb1abca2c3888ed07c8b5/transformed/jetified-core-ktx-1.13.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.security:security-crypto:1.1.0-alpha06] /Users/boffincoders_mini4/.gradle/caches/transforms-3/bd585ff8cae28d5e24df44e5f1654c9f/transformed/jetified-security-crypto-1.1.0-alpha06/AndroidManifest.xml:20:5-44
+MERGED from [androidx.security:security-crypto:1.1.0-alpha06] /Users/boffincoders_mini4/.gradle/caches/transforms-3/bd585ff8cae28d5e24df44e5f1654c9f/transformed/jetified-security-crypto-1.1.0-alpha06/AndroidManifest.xml:20:5-44
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:21:5-44
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:21:5-44
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/62c93219508e8741822f44f602464f65/transformed/jetified-startup-runtime-1.1.1/AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/62c93219508e8741822f44f602464f65/transformed/jetified-startup-runtime-1.1.1/AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.tracing:tracing:1.2.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/cfc93b449e006c330565c67b98f3b5ba/transformed/jetified-tracing-1.2.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.tracing:tracing:1.2.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/cfc93b449e006c330565c67b98f3b5ba/transformed/jetified-tracing-1.2.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/56b79a054f98a76fbf6935292ae1a288/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/56b79a054f98a76fbf6935292ae1a288/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.exifinterface:exifinterface:1.3.6] /Users/boffincoders_mini4/.gradle/caches/transforms-3/ad881436637ebebd7e2a059261c2420a/transformed/exifinterface-1.3.6/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.exifinterface:exifinterface:1.3.6] /Users/boffincoders_mini4/.gradle/caches/transforms-3/ad881436637ebebd7e2a059261c2420a/transformed/exifinterface-1.3.6/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/11d1c225bdeb01d1dbc854ea4b3d127e/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/11d1c225bdeb01d1dbc854ea4b3d127e/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.2.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/007be345073d765da4dd4db2db787e37/transformed/core-runtime-2.2.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.2.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/007be345073d765da4dd4db2db787e37/transformed/core-runtime-2.2.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.window.extensions.core:core:1.0.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/76eccc7c16d9ef9314cad72383f3c7d0/transformed/jetified-core-1.0.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.window.extensions.core:core:1.0.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/76eccc7c16d9ef9314cad72383f3c7d0/transformed/jetified-core-1.0.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.4.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/c19df81f77a4370390e71726aa66d99e/transformed/jetified-annotation-experimental-1.4.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.4.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/c19df81f77a4370390e71726aa66d99e/transformed/jetified-annotation-experimental-1.4.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.multidex:multidex:2.0.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/4e38e326d170254fccab297bc7f87cc8/transformed/multidex-2.0.0/AndroidManifest.xml:20:5-43
+MERGED from [androidx.multidex:multidex:2.0.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/4e38e326d170254fccab297bc7f87cc8/transformed/multidex-2.0.0/AndroidManifest.xml:20:5-43
+MERGED from [com.getkeepsafe.relinker:relinker:1.4.5] /Users/boffincoders_mini4/.gradle/caches/transforms-3/29a057c4ccba1c56915dfd93e6c3d949/transformed/jetified-relinker-1.4.5/AndroidManifest.xml:5:5-43
+MERGED from [com.getkeepsafe.relinker:relinker:1.4.5] /Users/boffincoders_mini4/.gradle/caches/transforms-3/29a057c4ccba1c56915dfd93e6c3d949/transformed/jetified-relinker-1.4.5/AndroidManifest.xml:5:5-43
+	tools:overrideLibrary
+		ADDED from [:flutter_secure_storage] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/flutter_secure_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:8:9-50
+	android:targetSdkVersion
+		INJECTED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/debug/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/debug/AndroidManifest.xml
+activity#io.flutter.plugins.urllauncher.WebViewActivity
+ADDED from [:url_launcher_android] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/url_launcher_android/intermediates/merged_manifest/debug/AndroidManifest.xml:8:9-11:74
+	android:exported
+		ADDED from [:url_launcher_android] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/url_launcher_android/intermediates/merged_manifest/debug/AndroidManifest.xml:10:13-37
+	android:theme
+		ADDED from [:url_launcher_android] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/url_launcher_android/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-71
+	android:name
+		ADDED from [:url_launcher_android] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/url_launcher_android/intermediates/merged_manifest/debug/AndroidManifest.xml:9:13-74
+uses-library#androidx.window.extensions
+ADDED from [androidx.window:window:1.2.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/bd4e1a3855d7d01fba9265c80d825b7e/transformed/jetified-window-1.2.0/AndroidManifest.xml:23:9-25:40
+	android:required
+		ADDED from [androidx.window:window:1.2.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/bd4e1a3855d7d01fba9265c80d825b7e/transformed/jetified-window-1.2.0/AndroidManifest.xml:25:13-37
+	android:name
+		ADDED from [androidx.window:window:1.2.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/bd4e1a3855d7d01fba9265c80d825b7e/transformed/jetified-window-1.2.0/AndroidManifest.xml:24:13-54
+uses-library#androidx.window.sidecar
+ADDED from [androidx.window:window:1.2.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/bd4e1a3855d7d01fba9265c80d825b7e/transformed/jetified-window-1.2.0/AndroidManifest.xml:26:9-28:40
+	android:required
+		ADDED from [androidx.window:window:1.2.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/bd4e1a3855d7d01fba9265c80d825b7e/transformed/jetified-window-1.2.0/AndroidManifest.xml:28:13-37
+	android:name
+		ADDED from [androidx.window:window:1.2.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/bd4e1a3855d7d01fba9265c80d825b7e/transformed/jetified-window-1.2.0/AndroidManifest.xml:27:13-51
+permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/89a296e8ff77af406da1444be762a330/transformed/core-1.13.1/AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.13.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/89a296e8ff77af406da1444be762a330/transformed/core-1.13.1/AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.13.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/89a296e8ff77af406da1444be762a330/transformed/core-1.13.1/AndroidManifest.xml:23:9-81
+permission#com.kommuno.kommuno.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/89a296e8ff77af406da1444be762a330/transformed/core-1.13.1/AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.13.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/89a296e8ff77af406da1444be762a330/transformed/core-1.13.1/AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.13.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/89a296e8ff77af406da1444be762a330/transformed/core-1.13.1/AndroidManifest.xml:23:9-81
+uses-permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/89a296e8ff77af406da1444be762a330/transformed/core-1.13.1/AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.13.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/89a296e8ff77af406da1444be762a330/transformed/core-1.13.1/AndroidManifest.xml:26:22-94
+uses-permission#com.kommuno.kommuno.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/89a296e8ff77af406da1444be762a330/transformed/core-1.13.1/AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.13.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/89a296e8ff77af406da1444be762a330/transformed/core-1.13.1/AndroidManifest.xml:26:22-94
+provider#androidx.startup.InitializationProvider
+ADDED from [androidx.lifecycle:lifecycle-process:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/3cb1588d4fa912fac41bfeec5adad856/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/62c93219508e8741822f44f602464f65/transformed/jetified-startup-runtime-1.1.1/AndroidManifest.xml:26:9-30:34
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/62c93219508e8741822f44f602464f65/transformed/jetified-startup-runtime-1.1.1/AndroidManifest.xml:26:9-30:34
+	tools:node
+		ADDED from [androidx.lifecycle:lifecycle-process:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/3cb1588d4fa912fac41bfeec5adad856/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:28:13-31
+	android:authorities
+		ADDED from [androidx.lifecycle:lifecycle-process:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/3cb1588d4fa912fac41bfeec5adad856/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:26:13-68
+	android:exported
+		ADDED from [androidx.lifecycle:lifecycle-process:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/3cb1588d4fa912fac41bfeec5adad856/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:27:13-37
+	android:name
+		ADDED from [androidx.lifecycle:lifecycle-process:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/3cb1588d4fa912fac41bfeec5adad856/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:25:13-67
+meta-data#androidx.lifecycle.ProcessLifecycleInitializer
+ADDED from [androidx.lifecycle:lifecycle-process:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/3cb1588d4fa912fac41bfeec5adad856/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.lifecycle:lifecycle-process:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/3cb1588d4fa912fac41bfeec5adad856/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.lifecycle:lifecycle-process:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/3cb1588d4fa912fac41bfeec5adad856/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:30:17-78
+meta-data#androidx.profileinstaller.ProfileInstallerInitializer
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:30:17-85
+receiver#androidx.profileinstaller.ProfileInstallReceiver
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:34:9-52:20
+	android:enabled
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:37:13-35
+	android:exported
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:38:13-36
+	android:permission
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:39:13-57
+	android:directBootAware
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:36:13-44
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:35:13-76
+intent-filter#action:name:androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:40:13-42:29
+action#androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:41:17-91
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:41:25-88
+intent-filter#action:name:androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:43:13-45:29
+action#androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:44:17-85
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:44:25-82
+intent-filter#action:name:androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:46:13-48:29
+action#androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:47:17-88
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:47:25-85
+intent-filter#action:name:androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:49:13-51:29
+action#androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:50:17-95
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:50:25-92

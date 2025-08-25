@@ -1,0 +1,262 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.kommuno.kommuno"
+4    android:versionCode="10"
+5    android:versionName="1.0.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="24"
+9        android:targetSdkVersion="35" />
+10    <!--
+11         The INTERNET permission is required for development. Specifically,
+12         the Flutter tool needs it to communicate with the running application
+13         to allow setting breakpoints, to provide hot reload, etc.
+14    -->
+15    <uses-permission android:name="android.permission.INTERNET" />
+15-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:24:5-67
+15-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:24:22-64
+16
+17    <uses-feature
+17-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:5:5-8:36
+18        android:name="android.hardware.camera"
+18-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:6:9-47
+19        android:required="false" />
+19-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:7:9-33
+20    <uses-feature
+20-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:9:5-12:36
+21        android:name="android.hardware.telephony"
+21-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:10:9-50
+22        android:required="false" />
+22-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:11:9-33
+23
+24    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+24-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:14:5-78
+24-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:14:22-75
+25    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+25-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:15:5-75
+25-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:15:22-72
+26    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+26-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:16:5-72
+26-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:16:22-69
+27    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
+27-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:17:5-77
+27-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:17:22-74
+28    <uses-permission android:name="android.permission.CALL_PHONE" />
+28-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:18:5-69
+28-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:18:22-66
+29    <uses-permission android:name="android.permission.READ_CONTACTS" />
+29-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:19:5-72
+29-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:19:22-69
+30    <uses-permission android:name="android.permission.MODIFY_PHONE_STATE" />
+30-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:20:5-22:47
+30-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:21:9-61
+31    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+31-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:25:5-77
+31-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:25:22-74
+32    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+32-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:26:5-83
+32-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:26:22-80
+33    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+33-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:27:5-82
+33-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:27:22-79
+34    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+34-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:28:5-79
+34-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:28:22-76
+35    <uses-permission android:name="android.permission.CAMERA" />
+35-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:29:5-65
+35-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:29:22-62
+36    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+36-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:30:5-80
+36-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:30:22-77
+37    <uses-permission android:name="android.permission.VIBRATE" />
+37-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:31:5-66
+37-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:31:22-63
+38    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+38-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:32:5-81
+38-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:32:22-78
+39    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+39-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:33:5-81
+39-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:33:22-78
+40    <!--
+41 Required to query activities that can process text, see:
+42         https://developer.android.com/training/package-visibility and
+43         https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT.
+44
+45         In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin.
+46    -->
+47    <queries>
+47-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:97:5-103:15
+48        <package android:name="com.whatsapp" />
+48-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:98:9-48
+48-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:98:18-45
+49
+50        <intent>
+50-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:99:9-102:18
+51            <action android:name="android.intent.action.PROCESS_TEXT" />
+51-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:100:13-73
+51-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:100:21-70
+52
+53            <data android:mimeType="text/plain" />
+53-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:101:13-51
+53-->/Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/AndroidManifest.xml:101:19-48
+54        </intent>
+55    </queries>
+56
+57    <permission
+57-->[androidx.core:core:1.13.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/89a296e8ff77af406da1444be762a330/transformed/core-1.13.1/AndroidManifest.xml:22:5-24:47
+58        android:name="com.kommuno.kommuno.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+58-->[androidx.core:core:1.13.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/89a296e8ff77af406da1444be762a330/transformed/core-1.13.1/AndroidManifest.xml:23:9-81
+59        android:protectionLevel="signature" />
+59-->[androidx.core:core:1.13.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/89a296e8ff77af406da1444be762a330/transformed/core-1.13.1/AndroidManifest.xml:24:9-44
+60
+61    <uses-permission android:name="com.kommuno.kommuno.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+61-->[androidx.core:core:1.13.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/89a296e8ff77af406da1444be762a330/transformed/core-1.13.1/AndroidManifest.xml:26:5-97
+61-->[androidx.core:core:1.13.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/89a296e8ff77af406da1444be762a330/transformed/core-1.13.1/AndroidManifest.xml:26:22-94
+62
+63    <application
+64        android:name="android.app.Application"
+65        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+65-->[androidx.core:core:1.13.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/89a296e8ff77af406da1444be762a330/transformed/core-1.13.1/AndroidManifest.xml:28:18-86
+66        android:debuggable="true"
+67        android:extractNativeLibs="false"
+68        android:icon="@mipmap/ic_launcher_1"
+69        android:label="Smart Ping" >
+70        <activity
+71            android:name="com.kommuno.kommuno.MainActivity"
+72            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+73            android:exported="true"
+74            android:hardwareAccelerated="true"
+75            android:launchMode="singleTop"
+76            android:taskAffinity=""
+77            android:theme="@style/LaunchTheme"
+78            android:windowSoftInputMode="adjustResize" >
+79
+80            <!--
+81                 Specifies an Android theme to apply to this Activity as soon as
+82                 the Android process has started. This theme is visible to the user
+83                 while the Flutter UI initializes. After that, this theme continues
+84                 to determine the Window background behind the Flutter UI.
+85            -->
+86            <meta-data
+87                android:name="io.flutter.embedding.android.NormalTheme"
+88                android:resource="@style/NormalTheme" />
+89
+90            <intent-filter>
+91                <action android:name="android.intent.action.MAIN" />
+92
+93                <category android:name="android.intent.category.LAUNCHER" />
+94            </intent-filter>
+95        </activity>
+96        <!--
+97             Don't delete the meta-data below.
+98             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java
+99        -->
+100        <meta-data
+101            android:name="flutterEmbedding"
+102            android:value="2" />
+103
+104        <service
+105            android:name="com.kommuno.kommuno.AppForegroundService"
+106            android:exported="false"
+107            android:foregroundServiceType="phoneCall"
+108            android:stopWithTask="false" />
+109
+110        <receiver
+111            android:name="com.kommuno.kommuno.AppBootCompleteReceiver"
+112            android:exported="true" >
+113            <intent-filter>
+114                <action android:name="android.intent.action.BOOT_COMPLETED" />
+115            </intent-filter>
+116        </receiver>
+117        <receiver
+118            android:name="com.kommuno.kommuno.AppPhoneCallReceiver"
+119            android:exported="true" >
+120            <intent-filter>
+121                <action android:name="android.intent.action.PHONE_STATE" />
+122            </intent-filter>
+123        </receiver>
+124
+125        <activity
+125-->[:url_launcher_android] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/url_launcher_android/intermediates/merged_manifest/debug/AndroidManifest.xml:8:9-11:74
+126            android:name="io.flutter.plugins.urllauncher.WebViewActivity"
+126-->[:url_launcher_android] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/url_launcher_android/intermediates/merged_manifest/debug/AndroidManifest.xml:9:13-74
+127            android:exported="false"
+127-->[:url_launcher_android] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/url_launcher_android/intermediates/merged_manifest/debug/AndroidManifest.xml:10:13-37
+128            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+128-->[:url_launcher_android] /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/url_launcher_android/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-71
+129
+130        <uses-library
+130-->[androidx.window:window:1.2.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/bd4e1a3855d7d01fba9265c80d825b7e/transformed/jetified-window-1.2.0/AndroidManifest.xml:23:9-25:40
+131            android:name="androidx.window.extensions"
+131-->[androidx.window:window:1.2.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/bd4e1a3855d7d01fba9265c80d825b7e/transformed/jetified-window-1.2.0/AndroidManifest.xml:24:13-54
+132            android:required="false" />
+132-->[androidx.window:window:1.2.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/bd4e1a3855d7d01fba9265c80d825b7e/transformed/jetified-window-1.2.0/AndroidManifest.xml:25:13-37
+133        <uses-library
+133-->[androidx.window:window:1.2.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/bd4e1a3855d7d01fba9265c80d825b7e/transformed/jetified-window-1.2.0/AndroidManifest.xml:26:9-28:40
+134            android:name="androidx.window.sidecar"
+134-->[androidx.window:window:1.2.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/bd4e1a3855d7d01fba9265c80d825b7e/transformed/jetified-window-1.2.0/AndroidManifest.xml:27:13-51
+135            android:required="false" />
+135-->[androidx.window:window:1.2.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/bd4e1a3855d7d01fba9265c80d825b7e/transformed/jetified-window-1.2.0/AndroidManifest.xml:28:13-37
+136
+137        <provider
+137-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/3cb1588d4fa912fac41bfeec5adad856/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:24:9-32:20
+138            android:name="androidx.startup.InitializationProvider"
+138-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/3cb1588d4fa912fac41bfeec5adad856/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:25:13-67
+139            android:authorities="com.kommuno.kommuno.androidx-startup"
+139-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/3cb1588d4fa912fac41bfeec5adad856/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:26:13-68
+140            android:exported="false" >
+140-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/3cb1588d4fa912fac41bfeec5adad856/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:27:13-37
+141            <meta-data
+141-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/3cb1588d4fa912fac41bfeec5adad856/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:29:13-31:52
+142                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+142-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/3cb1588d4fa912fac41bfeec5adad856/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:30:17-78
+143                android:value="androidx.startup" />
+143-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/boffincoders_mini4/.gradle/caches/transforms-3/3cb1588d4fa912fac41bfeec5adad856/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:31:17-49
+144            <meta-data
+144-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:29:13-31:52
+145                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+145-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:30:17-85
+146                android:value="androidx.startup" />
+146-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:31:17-49
+147        </provider>
+148
+149        <receiver
+149-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:34:9-52:20
+150            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+150-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:35:13-76
+151            android:directBootAware="false"
+151-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:36:13-44
+152            android:enabled="true"
+152-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:37:13-35
+153            android:exported="true"
+153-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:38:13-36
+154            android:permission="android.permission.DUMP" >
+154-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:39:13-57
+155            <intent-filter>
+155-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:40:13-42:29
+156                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+156-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:41:17-91
+156-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:41:25-88
+157            </intent-filter>
+158            <intent-filter>
+158-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:43:13-45:29
+159                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+159-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:44:17-85
+159-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:44:25-82
+160            </intent-filter>
+161            <intent-filter>
+161-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:46:13-48:29
+162                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+162-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:47:17-88
+162-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:47:25-85
+163            </intent-filter>
+164            <intent-filter>
+164-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:49:13-51:29
+165                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+165-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:50:17-95
+165-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/AndroidManifest.xml:50:25-92
+166            </intent-filter>
+167        </receiver>
+168    </application>
+169
+170</manifest>

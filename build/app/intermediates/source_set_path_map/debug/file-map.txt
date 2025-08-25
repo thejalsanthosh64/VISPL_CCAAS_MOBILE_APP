@@ -1,0 +1,41 @@
+com.kommuno.kommuno.app-core-runtime-2.2.0-0 /Users/boffincoders_mini4/.gradle/caches/transforms-3/007be345073d765da4dd4db2db787e37/transformed/core-runtime-2.2.0/res
+com.kommuno.kommuno.app-jetified-lifecycle-livedata-core-ktx-2.7.0-1 /Users/boffincoders_mini4/.gradle/caches/transforms-3/0ad885e870a612d37ad5ffb966a7a0ab/transformed/jetified-lifecycle-livedata-core-ktx-2.7.0/res
+com.kommuno.kommuno.app-jetified-activity-1.8.1-2 /Users/boffincoders_mini4/.gradle/caches/transforms-3/1230e4659e22973b855cc2745cb3fefb/transformed/jetified-activity-1.8.1/res
+com.kommuno.kommuno.app-media-1.7.0-3 /Users/boffincoders_mini4/.gradle/caches/transforms-3/31dfd4ca196e0e4bd4b3d80592e677cf/transformed/media-1.7.0/res
+com.kommuno.kommuno.app-jetified-lifecycle-process-2.7.0-4 /Users/boffincoders_mini4/.gradle/caches/transforms-3/3cb1588d4fa912fac41bfeec5adad856/transformed/jetified-lifecycle-process-2.7.0/res
+com.kommuno.kommuno.app-jetified-savedstate-1.2.1-5 /Users/boffincoders_mini4/.gradle/caches/transforms-3/45a850a9bd7d65f463202d1f940fb7c2/transformed/jetified-savedstate-1.2.1/res
+com.kommuno.kommuno.app-jetified-core-ktx-1.13.1-6 /Users/boffincoders_mini4/.gradle/caches/transforms-3/486fa056c2cbb1abca2c3888ed07c8b5/transformed/jetified-core-ktx-1.13.1/res
+com.kommuno.kommuno.app-jetified-startup-runtime-1.1.1-7 /Users/boffincoders_mini4/.gradle/caches/transforms-3/62c93219508e8741822f44f602464f65/transformed/jetified-startup-runtime-1.1.1/res
+com.kommuno.kommuno.app-jetified-media3-exoplayer-1.4.1-8 /Users/boffincoders_mini4/.gradle/caches/transforms-3/73cd93d111a843fe92c71caf63ef6d08/transformed/jetified-media3-exoplayer-1.4.1/res
+com.kommuno.kommuno.app-lifecycle-runtime-2.7.0-9 /Users/boffincoders_mini4/.gradle/caches/transforms-3/75dd3fa1c3c291ab29522796d34f83ba/transformed/lifecycle-runtime-2.7.0/res
+com.kommuno.kommuno.app-jetified-core-1.0.0-10 /Users/boffincoders_mini4/.gradle/caches/transforms-3/76eccc7c16d9ef9314cad72383f3c7d0/transformed/jetified-core-1.0.0/res
+com.kommuno.kommuno.app-core-1.13.1-11 /Users/boffincoders_mini4/.gradle/caches/transforms-3/89a296e8ff77af406da1444be762a330/transformed/core-1.13.1/res
+com.kommuno.kommuno.app-lifecycle-viewmodel-2.7.0-12 /Users/boffincoders_mini4/.gradle/caches/transforms-3/935d322bd8892f8476db0e2cb5ce2e01/transformed/lifecycle-viewmodel-2.7.0/res
+com.kommuno.kommuno.app-jetified-profileinstaller-1.3.1-13 /Users/boffincoders_mini4/.gradle/caches/transforms-3/957017c27231c5ea010a23c95deee1dd/transformed/jetified-profileinstaller-1.3.1/res
+com.kommuno.kommuno.app-browser-1.8.0-14 /Users/boffincoders_mini4/.gradle/caches/transforms-3/99f6874a1b4dc480d1f9122437e5afc9/transformed/browser-1.8.0/res
+com.kommuno.kommuno.app-jetified-window-java-1.2.0-15 /Users/boffincoders_mini4/.gradle/caches/transforms-3/9da4418949fadbf911259e1c7b0ef555/transformed/jetified-window-java-1.2.0/res
+com.kommuno.kommuno.app-lifecycle-livedata-2.7.0-16 /Users/boffincoders_mini4/.gradle/caches/transforms-3/a9aed03eb53ff36e5e4c810dbd164852/transformed/lifecycle-livedata-2.7.0/res
+com.kommuno.kommuno.app-lifecycle-livedata-core-2.7.0-17 /Users/boffincoders_mini4/.gradle/caches/transforms-3/abd5c1706b64e129bc5328eeca5ede93/transformed/lifecycle-livedata-core-2.7.0/res
+com.kommuno.kommuno.app-jetified-window-1.2.0-18 /Users/boffincoders_mini4/.gradle/caches/transforms-3/bd4e1a3855d7d01fba9265c80d825b7e/transformed/jetified-window-1.2.0/res
+com.kommuno.kommuno.app-jetified-security-crypto-1.1.0-alpha06-19 /Users/boffincoders_mini4/.gradle/caches/transforms-3/bd585ff8cae28d5e24df44e5f1654c9f/transformed/jetified-security-crypto-1.1.0-alpha06/res
+com.kommuno.kommuno.app-jetified-annotation-experimental-1.4.0-20 /Users/boffincoders_mini4/.gradle/caches/transforms-3/c19df81f77a4370390e71726aa66d99e/transformed/jetified-annotation-experimental-1.4.0/res
+com.kommuno.kommuno.app-jetified-tracing-1.2.0-21 /Users/boffincoders_mini4/.gradle/caches/transforms-3/cfc93b449e006c330565c67b98f3b5ba/transformed/jetified-tracing-1.2.0/res
+com.kommuno.kommuno.app-jetified-lifecycle-viewmodel-savedstate-2.7.0-22 /Users/boffincoders_mini4/.gradle/caches/transforms-3/d3a51db3c9e4e7b8dd1700b706346c47/transformed/jetified-lifecycle-viewmodel-savedstate-2.7.0/res
+com.kommuno.kommuno.app-fragment-1.7.1-23 /Users/boffincoders_mini4/.gradle/caches/transforms-3/eac57d35d7d87adbd68503360169fd6e/transformed/fragment-1.7.1/res
+com.kommuno.kommuno.app-debug-24 /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/debug/res
+com.kommuno.kommuno.app-main-25 /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/android/app/src/main/res
+com.kommuno.kommuno.app-pngs-26 /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/app/generated/res/pngs/debug
+com.kommuno.kommuno.app-resValues-27 /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/app/generated/res/resValues/debug
+com.kommuno.kommuno.app-packageDebugResources-28 /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/app/intermediates/incremental/debug/packageDebugResources/merged.dir
+com.kommuno.kommuno.app-packageDebugResources-29 /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/app/intermediates/incremental/debug/packageDebugResources/stripped.dir
+com.kommuno.kommuno.app-merged_res-30 /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/app/intermediates/merged_res/debug
+com.kommuno.kommuno.app-packaged_res-31 /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/audio_session/intermediates/packaged_res/debug
+com.kommuno.kommuno.app-packaged_res-32 /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/audioplayers_android/intermediates/packaged_res/debug
+com.kommuno.kommuno.app-packaged_res-33 /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/connectivity_plus/intermediates/packaged_res/debug
+com.kommuno.kommuno.app-packaged_res-34 /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/flutter_contacts/intermediates/packaged_res/debug
+com.kommuno.kommuno.app-packaged_res-35 /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/flutter_secure_storage/intermediates/packaged_res/debug
+com.kommuno.kommuno.app-packaged_res-36 /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/fluttertoast/intermediates/packaged_res/debug
+com.kommuno.kommuno.app-packaged_res-37 /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/just_audio/intermediates/packaged_res/debug
+com.kommuno.kommuno.app-packaged_res-38 /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/path_provider_android/intermediates/packaged_res/debug
+com.kommuno.kommuno.app-packaged_res-39 /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/permission_handler_android/intermediates/packaged_res/debug
+com.kommuno.kommuno.app-packaged_res-40 /Volumes/Varinder Singh/Varinder Singh/projects/flutter/client/kommuno/VISPL_CCAAS_MOBILE_APP/build/url_launcher_android/intermediates/packaged_res/debug

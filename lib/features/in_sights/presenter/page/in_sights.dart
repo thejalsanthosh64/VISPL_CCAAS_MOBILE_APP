@@ -1,0 +1,360 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kommuno/core/common/app_constant.dart';
+import 'package:kommuno/core/common/app_theme/app_theme.dart';
+import 'package:kommuno/core/common/widget/app_avatar.dart';
+import 'package:kommuno/core/common/widget/custom_field_deoration.dart';
+import 'package:kommuno/core/common/widget/empty_error_widget.dart';
+import 'package:kommuno/core/common/widget/loading_indicator.dart';
+import 'package:kommuno/core/common/widget/my_app_bar.dart';
+import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
+import 'package:kommuno/core/common/widget/user_details/data/model/user_details_model.dart';
+import 'package:kommuno/core/utilities/app_methods.dart';
+import 'package:kommuno/core/utilities/date_utility.dart';
+import 'package:kommuno/core/utilities/extension_method.dart';
+import 'package:kommuno/core/utilities/shortcuts/widget/app_shortcut_button.dart';
+import 'package:kommuno/features/break/presenter/view/break_in_button.dart';
+import 'package:kommuno/features/in_sights/cubit/in_sights_cubit/in_sights_cubit.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/features/in_sights/data/enum/in_sights_date_enum.dart';
+import 'package:kommuno/features/in_sights/presenter/widget/calls_info_container.dart';
+import 'package:kommuno/features/in_sights/presenter/widget/days_chip.dart';
+import 'package:kommuno/features/in_sights/presenter/widget/duration_info_container.dart';
+
+class InSightsScreen extends StatelessWidget {
+  const InSightsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => InSightsCubit(),
+      child: const _InSightsState(),
+    );
+  }
+}
+
+class _InSightsState extends StatelessWidget {
+  const _InSightsState();
+
+  SizedBox get _kSized10 =>
+      const SizedBox(height: AppConstant.kSized10, width: AppConstant.kSized10);
+
+  SizedBox get _kSized20 =>
+      const SizedBox(height: AppConstant.kSized20, width: AppConstant.kSized20);
+
+  SizedBox get _kSized5 =>
+      const SizedBox(height: AppConstant.kSized5, width: AppConstant.kSized5);
+
+  InSightsCubit _inSightsCubit(BuildContext context) =>
+      context.read<InSightsCubit>();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      floatingActionButton: const AppShortcutButton(),
+      appBar: MyAppBar(
+        title: AppLocalizations.of(context)!.insights,
+        actions: [BreakInButton.outline()],
+      ),
+      body: _buildBody(context: context),
+    );
+  }
+
+  Widget _buildBody({required BuildContext context}) {
+    final userDetails = context.read<UserDetailsCubit>().userDetailsModel;
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppConstant.kBodyHorizontalPadding),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _kSized10,
+          _buildUserDetails(userDetails: userDetails),
+          _kSized10,
+          Expanded(child: _buildInsightsDetails(userDetails: userDetails)),
+          _kSized10,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUserDetails({required UserDetailsModel userDetails}) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AppAvatar(
+          child: Text(userDetails.agentName.capitalizeFirstLetterOfTwoWords,
+              style: AppTextStyle.whiteNormal),
+        ),
+        const SizedBox(width: AppConstant.kSized15),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(userDetails.agentName, style: AppTextStyle.appColorNormal),
+            Text(
+                addByIndiaCountryCodeWithoutPlus(
+                    number: userDetails.agentMobile),
+                style: AppTextStyle.appColorNormal),
+          ],
+        )
+      ],
+    );
+  }
+
+  Widget _buildInsightsDetails({required UserDetailsModel userDetails}) {
+    return BlocBuilder<InSightsCubit, InSightsState>(
+      builder: (context, state) {
+        if (state is InSightsInitialState) {
+          Future.delayed(
+            Duration.zero,
+            () {
+              if (context.mounted) {
+                _inSightsCubit(context).getInSights(
+                  smeId: userDetails.smeId,
+                  isLoading: true,
+                  inSightsDateEnum: InSightsDateEnum.today,
+                );
+              }
+            },
+          );
+        } else if (state is InSightsLoadingState) {
+          return const AppLoadingIndicator();
+        } else if (state is InSightsErrorState) {
+          return EmptyErrorWidget(
+            text: AppLocalizations.of(context)!.somethingWentWrong,
+            onTap: () {
+              _inSightsCubit(context).getInSights(
+                smeId: userDetails.smeId,
+                isLoading: true,
+                inSightsDateEnum: InSightsDateEnum.today,
+              );
+            },
+          );
+        } else if (state is InSightsSuccessState) {
+          return RefreshIndicator(
+            onRefresh: () async {
+              _inSightsCubit(context).getInSights(
+                smeId: userDetails.smeId,
+                inSightsDateEnum: state.inSightsDateEnum,
+                selectedDateTimeRange: state.dateTimeRange,
+              );
+            },
+            child: SingleChildScrollView(
+              physics: const ClampingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics()),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildDaysChip(
+                      context: context, userDetails: userDetails, state: state),
+                  _kSized10,
+                  CustomFieldDecoration(
+                    suffixIcon: const [Icon(Icons.calendar_month)],
+                    value: state.dateTimeRange != null
+                        ? "${DateUtility.getDateYMDOnly(date: state.dateTimeRange!.start)}    ${DateUtility.getDateYMDOnly(date: state.dateTimeRange!.end)}"
+                        : null,
+                    hinText: AppLocalizations.of(context)!.selectDateTime,
+                    style: AppTextStyle.appColorNormal,
+                    onTap: () async {
+                      final dateRange = await appDateRangePicker(
+                        context: context,
+                        currentDate: DateTime.now(),
+                        firstDate:
+                            DateTime.now().subtract(const Duration(days: 90)),
+                        lastDate: DateTime.now(),
+                      );
+                      if (context.mounted && dateRange != null) {
+                        _inSightsCubit(context).getInSights(
+                            smeId: userDetails.smeId,
+                            selectedDateTimeRange: dateRange);
+                      }
+                    },
+                  ),
+                  _kSized10,
+                  ..._buildCallsInfo(
+                    context: context,
+                    title: AppLocalizations.of(context)!.incomingCalls,
+                    totalValue: state.insightsResponse.totalInCalls,
+                    failValue: state.insightsResponse.inFailedCalls,
+                    successValue: state.insightsResponse.inSuccessCalls,
+                    successPercentAge: double.tryParse(
+                        state.insightsResponse.inSuccess?.toStringAsFixed(2) ??
+                            ''),
+                  ),
+                  _kSized20,
+                  const Divider(height: 0),
+                  _kSized5,
+                  ..._buildCallsInfo(
+                    context: context,
+                    title: AppLocalizations.of(context)!.outgoingCalls,
+                    totalValue: state.insightsResponse.totalOutCalls,
+                    failValue: state.insightsResponse.outFailedCalls,
+                    successValue: state.insightsResponse.outSuccessCalls,
+                    successPercentAge: double.tryParse(
+                        state.insightsResponse.outSuccess?.toStringAsFixed(2) ??
+                            ''),
+                  ),
+                  _kSized20,
+                  _buildDuration(context: context, state: state),
+                  _kSized20,
+                ],
+              ),
+            ),
+          );
+        }
+
+        return const SizedBox();
+      },
+    );
+  }
+
+  Widget _buildDaysChip(
+      {required BuildContext context,
+      required UserDetailsModel userDetails,
+      required InSightsSuccessState state}) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: List.generate(
+          InSightsDateEnum.values.length,
+          (index) {
+            return DaysChip(
+              isSelected:
+                  state.inSightsDateEnum == InSightsDateEnum.values[index],
+              text: _getChipText(
+                  inSightsDateEnum: InSightsDateEnum.values[index],
+                  context: context),
+              onTap: () {
+                _inSightsCubit(context).getInSights(
+                    smeId: userDetails.smeId,
+                    inSightsDateEnum: InSightsDateEnum.values[index]);
+              },
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  String _getChipText(
+      {required InSightsDateEnum inSightsDateEnum,
+      required BuildContext context}) {
+    switch (inSightsDateEnum) {
+      case InSightsDateEnum.today:
+        return AppLocalizations.of(context)!.today;
+      case InSightsDateEnum.yesterday:
+        return AppLocalizations.of(context)!.yesterday;
+      case InSightsDateEnum.last7Days:
+        return AppLocalizations.of(context)!.last7Days;
+      case InSightsDateEnum.last15Days:
+        return AppLocalizations.of(context)!.last15Days;
+      case InSightsDateEnum.last30Days:
+        return AppLocalizations.of(context)!.last30Days;
+    }
+  }
+
+  List<Widget> _buildCallsInfo({
+    required BuildContext context,
+    required String title,
+    int? totalValue,
+    int? successValue,
+    int? failValue,
+    double? successPercentAge,
+  }) {
+    return [
+      Text(
+        title,
+        style: AppTextStyle.black18,
+      ),
+      _kSized10,
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Flexible(
+            child: FittedBox(
+              child: CallsInfoContainer(
+                color: AppColors.appColor,
+                title: AppLocalizations.of(context)!.totalCalls,
+                count: totalValue,
+              ),
+            ),
+          ),
+          _kSized5,
+          Flexible(
+            child: FittedBox(
+              child: CallsInfoContainer(
+                title: AppLocalizations.of(context)!.success,
+                count: successValue,
+              ),
+            ),
+          ),
+          _kSized5,
+          Flexible(
+            child: FittedBox(
+              child: CallsInfoContainer(
+                title: AppLocalizations.of(context)!.fail,
+                count: failValue,
+              ),
+            ),
+          ),
+          _kSized5,
+          Flexible(
+            child: FittedBox(
+              child: CallsInfoContainer(
+                title: AppLocalizations.of(context)!.successPercent,
+                count: successPercentAge,
+              ),
+            ),
+          )
+        ],
+      )
+    ];
+  }
+
+  Widget _buildDuration(
+      {required BuildContext context, required InSightsSuccessState state}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Flexible(
+          child: FittedBox(
+            child: DurationInfoContainer(
+              title: AppLocalizations.of(context)!.totalCallDuration,
+              color: AppColors.appColor,
+              count: state.insightsResponse.totalCallDuration,
+            ),
+          ),
+        ),
+        _kSized5,
+        Flexible(
+          child: FittedBox(
+            child: DurationInfoContainer(
+              title: AppLocalizations.of(context)!.avgCallDuration,
+              count: state.insightsResponse.avgCallDuration,
+            ),
+          ),
+        ),
+        _kSized5,
+        Flexible(
+          child: FittedBox(
+            child: DurationInfoContainer(
+              title: AppLocalizations.of(context)!.totalActiveTime,
+              count: state.insightsResponse.avgCallDuration,
+            ),
+          ),
+        ),
+        _kSized5,
+        Flexible(
+          child: FittedBox(
+            child: DurationInfoContainer(
+              title: AppLocalizations.of(context)!.totalBreakTime,
+              count: state.insightsResponse.lunchHours,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
