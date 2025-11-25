@@ -7,7 +7,8 @@ import 'package:kommuno/core/common/widget/app_text_field.dart';
 import 'package:kommuno/core/common/widget/custom_field_deoration.dart';
 import 'package:kommuno/core/common/widget/mobile_textfield.dart';
 import 'package:kommuno/core/common/widget/my_app_bar.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:kommuno/core/utilities/date_utility.dart';
 import 'package:kommuno/features/break/presenter/view/break_in_button.dart';
 import 'package:kommuno/features/schedule_call/cubit/add_schedule_call_cubit/add_schedule_call_cubit.dart';
@@ -60,11 +61,13 @@ class _AddScheduleCallState extends StatelessWidget {
         title: AppLocalizations.of(context)!.scheduleACall,
         actions: [BreakInButton.outline()],
       ),
-      body: _buildBody(),
+      body: _buildBody(context: context),
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody({required BuildContext context}) {
+        final smeId = context.read<UserDetailsCubit>().userDetailsModel.smeId;
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(
@@ -126,6 +129,7 @@ class _AddScheduleCallState extends StatelessWidget {
                     text: AppLocalizations.of(context)!.save,
                     onTap: () {
                       _addScheduleCallCubit(context).addScheduleCall(
+                         smeId: smeId,
                         number: _addScheduleCallCubit(context)
                             .mobileController
                             .text,

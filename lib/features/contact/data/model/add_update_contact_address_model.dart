@@ -71,45 +71,53 @@ class AddUpdateContactsRequestModel extends Equatable {
     );
   }
 
-  factory AddUpdateContactsRequestModel.fromJson(Map<String, dynamic> json) {
-    return AddUpdateContactsRequestModel(
-      customerNumber: json["customerNumber"],
-      customerName: json["customerName"],
-      customerNumberSecondary: json["customerNumberSecondary"] == null
-          ? []
-          : List<String>.from(json["customerNumberSecondary"]!.map((x) => x)),
-      addressBookId: json["addressBookId"],
-      agentNumber: json["agentNumber"],
-      companyName: json["companyName"],
-      createdBy: json["createdBy"],
-      emailId: json["emailId"],
-      mode: json["mode"],
-      insertDateTime: DateTime.parse(json["insertDateTime"] ?? "").toLocal(),
-      updatedDateTime: DateTime.parse(json["updatedDateTime"] ?? "").toLocal(),
-      visibilityFlag: json["visibilityFlag"],
-      smeId: json["smeId"],
-    );
-  }
+factory AddUpdateContactsRequestModel.fromJson(Map<String, dynamic> json) {
+  return AddUpdateContactsRequestModel(
+    customerNumber: json["customer_number_primary"] ?? "",
+    customerName: json["customer_name"] ?? "",
+    customerNumberSecondary: json["customer_number_secondary"] == null
+        ? []
+        : [json["customer_number_secondary"].toString()],
+    addressBookId: 0, // backend does not return this
+    agentNumber: json["agent_number"]?.toString() ?? "",
+    companyName: json["company_name"] ?? "",
+    createdBy: json["created_by"] ?? 0,
+    emailId: json["email_id"] ?? "",
+    mode: json["mode"]?.toString() ?? "0",
+    insertDateTime: json["insert_date_time"] != null
+        ? DateTime.parse(json["insert_date_time"])
+        : DateTime.now(),
+    updatedDateTime: json["updated_date_time"] != null
+        ? DateTime.tryParse(json["updated_date_time"])
+        : null,
+    visibilityFlag: json["visibility_flag"]?.toString() ?? "1",
+    smeId: json["sme_id"]?.toString() ?? "",
+  );
+}
 
-  Map<String, dynamic> toJson() => {
-        "customerNumber": addByIndiaCountryCode(number: customerNumber),
-        "customerName": customerName,
-        "customerNumberSecondary":
-            customerNumberSecondary.map((x) => x).toList(),
-        "addressBookId": addressBookId,
-        "agentNumber": agentNumber,
-        "companyName": companyName,
-        "createdBy": createdBy,
-        "emailId": emailId,
-        "mode": mode,
-        "insertDateTime":
-            DateUtility.sendRequestDateTimeFormat(date: insertDateTime.toUtc()),
-        if (updatedDateTime != null)
-          "updatedDateTime": DateUtility.sendRequestDateTimeFormat(
-              date: updatedDateTime!.toUtc()),
-        "visibilityFlag": visibilityFlag,
-        "smeId": smeId,
-      };
+
+ Map<String, dynamic> toJson() {
+  return {
+    "sme_id": int.tryParse(smeId) ?? 0,
+    "customer_name": customerName,
+    "customer_number_primary":
+        addByIndiaCountryCode(number: customerNumber).replaceAll("+", ""),
+    "customer_number_secondary":
+        customerNumberSecondary.isNotEmpty ? customerNumberSecondary.first : null,
+    "company_name": companyName,
+    "email_id": emailId,
+    "created_by": createdBy,
+    "mode": int.tryParse(mode) ?? 0,
+    "visibility_flag": int.tryParse(visibilityFlag) ?? 1,
+    "insert_date_time": DateUtility.sendRequestDateTimeFormat(
+        date: insertDateTime.toUtc()),
+    "updated_date_time": updatedDateTime != null
+        ? DateUtility.sendRequestDateTimeFormat(
+            date: updatedDateTime!.toUtc())
+        : null,
+  };
+}
+
 
   @override
   String toString() {

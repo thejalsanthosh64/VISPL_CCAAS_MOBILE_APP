@@ -33,4 +33,7 @@ abstract class AppRouteNames {
   static const String remarks = '/remarks';
 
   static const String switchCampaign = '/switchCampaign';
+
+
+  static const String  activeScreen= '/activeScreen';
 }

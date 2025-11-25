@@ -24,7 +24,7 @@ import 'package:kommuno/features/leads/data/model/response/leads_unique_calls_mo
 import 'package:kommuno/features/leads/presenter/page/add_lead_note.dart';
 import 'package:kommuno/features/leads/presenter/page/edit_lead.dart';
 import 'package:kommuno/generated/assets.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 part 'leads_list_tile.dart';
 

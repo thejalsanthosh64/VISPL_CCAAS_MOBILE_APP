@@ -10,7 +10,7 @@ import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit
 import 'package:kommuno/features/leads/cubit/edit_lead_cubit/edit_lead_cubit.dart';
 import 'package:kommuno/features/leads/data/model/request/edit_lead_request_data.dart';
 import 'package:kommuno/features/leads/data/model/response/leads_source_city_product_status_data.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:kommuno/features/leads/data/model/response/leads_unique_calls_model.dart';
 import 'package:kommuno/features/leads/presenter/widget/leads_dropdown.dart';
 

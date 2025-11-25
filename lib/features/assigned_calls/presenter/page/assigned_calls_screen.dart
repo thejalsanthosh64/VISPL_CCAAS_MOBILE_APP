@@ -5,13 +5,13 @@ import 'package:kommuno/core/common/widget/empty_error_widget.dart';
 import 'package:kommuno/core/common/widget/hide_keyboard_widget.dart';
 import 'package:kommuno/core/common/widget/loading_indicator.dart';
 import 'package:kommuno/core/common/widget/my_app_bar.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:kommuno/core/common/widget/search_field.dart';
 import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
 import 'package:kommuno/core/utilities/shortcuts/widget/app_shortcut_button.dart';
 import 'package:kommuno/features/assigned_calls/cubit/assigned_calls_cubit.dart';
 import 'package:kommuno/features/assigned_calls/presenter/widget/assigned_calls_list.dart';
 import 'package:kommuno/features/break/presenter/view/break_in_button.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 class AssignedCallsScreen extends StatelessWidget {
   const AssignedCallsScreen({super.key});

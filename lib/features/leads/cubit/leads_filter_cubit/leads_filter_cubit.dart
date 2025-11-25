@@ -15,7 +15,7 @@ import 'package:kommuno/features/leads/data/model/request/leads_filter_date_sort
 import 'package:kommuno/features/leads/data/model/request/leads_filter_request_model.dart';
 import 'package:kommuno/features/leads/data/model/response/leads_source_city_product_status_data.dart';
 import 'package:kommuno/features/leads/data/repository/lead_repo.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 part 'leads_filter_state.dart';
 

@@ -9,7 +9,7 @@ import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/core/exception/app_dio_exception.dart';
 import 'package:kommuno/features/campaigns/data/model/response/campaign_data.dart';
 import 'package:kommuno/features/campaigns/data/repository/campaign_repo.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 part 'campaign_list_state.dart';
 
@@ -18,7 +18,7 @@ class CampaignListCubit extends Cubit<CampaignListState> {
 
   final _campaignRepo = CampaignRepo();
 
-  Future<void> loadCampaigns({required String smeId}) async {
+  Future<void> loadCampaigns({required int smeId}) async {
     try {
       emit(const CampaignListLoadingState());
       final res = await _campaignRepo.getCampaigns(smeId: smeId);

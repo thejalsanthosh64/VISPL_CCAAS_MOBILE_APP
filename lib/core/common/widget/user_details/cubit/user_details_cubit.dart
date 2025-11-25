@@ -7,7 +7,7 @@ import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/core/common/widget/user_details/data/model/user_details_model.dart';
 import 'package:kommuno/core/common/widget/user_details/data/repository/user_details_repo.dart';
 import 'package:kommuno/core/exception/app_dio_exception.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 part 'user_details_state.dart';
 
@@ -28,7 +28,7 @@ class UserDetailsCubit extends Cubit<UserDetailsState> {
       final res = await _userDetailsRepo.loadUserDetails();
       if (res.isSuccess) {
         final data = List<Map<String, dynamic>>.from(res.data as List);
-        if (data.isNotEmpty) {
+        if (data. isNotEmpty) {
           userDetailsModel = UserDetailsModel.fromJson(data.first);
           emit(UserDetailsSuccessState(userDetailsModel: userDetailsModel));
         } else {

@@ -7,9 +7,9 @@ import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/core/exception/app_dio_exception.dart';
 import 'package:kommuno/core/utilities/debouncer.dart';
 import 'package:kommuno/core/utilities/pagination_scroll_controller.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:kommuno/features/assigned_calls/data/model/assigned_calls_list_model.dart';
 import 'package:kommuno/features/assigned_calls/data/repository/assigned_calls_repo.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 part 'assigned_calls_state.dart';
 

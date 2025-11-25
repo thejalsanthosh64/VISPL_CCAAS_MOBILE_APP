@@ -2,7 +2,6 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kommuno/core/common/app_keys.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:kommuno/core/common/widget/loading_indicator.dart';
 import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/core/exception/app_dio_exception.dart';
@@ -10,6 +9,7 @@ import 'package:kommuno/core/utilities/app_methods.dart';
 import 'package:kommuno/core/utilities/validation.dart';
 import 'package:kommuno/features/auth/data/model/forgot_password_response.dart';
 import 'package:kommuno/features/auth/data/repository/auth_repo.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 part 'forget_password_state.dart';
 

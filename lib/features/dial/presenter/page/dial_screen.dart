@@ -10,7 +10,7 @@ import 'package:kommuno/core/utilities/shortcuts/widget/app_shortcut_button.dart
 import 'package:kommuno/features/break/presenter/view/break_in_button.dart';
 import 'package:kommuno/core/common/widget/mobile_textfield.dart';
 import 'package:kommuno/core/common/widget/my_app_bar.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:kommuno/features/dial/cubit/dial_cubit.dart';
 import 'package:kommuno/features/dial/presenter/widget/num_widget.dart';
 import 'package:kommuno/generated/assets.dart';

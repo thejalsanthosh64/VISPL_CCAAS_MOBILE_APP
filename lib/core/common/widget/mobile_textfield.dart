@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kommuno/core/common/app_constant.dart';
 import 'package:kommuno/core/common/app_theme/app_theme.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'app_text_field.dart';
 
 class MobileTextField extends StatelessWidget {

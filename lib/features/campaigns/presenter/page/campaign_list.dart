@@ -10,7 +10,7 @@ import 'package:kommuno/core/common/widget/app_button.dart';
 import 'package:kommuno/core/common/widget/empty_error_widget.dart';
 import 'package:kommuno/core/common/widget/loading_indicator.dart';
 import 'package:kommuno/core/common/widget/my_app_bar.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
 import 'package:kommuno/core/common/widget/user_details/data/model/user_details_model.dart';
 import 'package:kommuno/core/common/widget/user_details/user_details_widget.dart';
@@ -61,7 +61,7 @@ class _CampaignListState extends StatelessWidget {
     required BuildContext context,
   }) {
     final userDetails = context.read<UserDetailsCubit>().userDetailsModel;
-    context.read<CampaignListCubit>().loadCampaigns(smeId: "${userDetails.smeId}");
+    context.read<CampaignListCubit>().loadCampaigns(smeId: userDetails.smeId);
   }
 
   SizedBox get _kSized10 => const SizedBox(height: AppConstant.kSized10, width: AppConstant.kSized10);
@@ -183,16 +183,32 @@ class _CampaignListState extends StatelessWidget {
               final queueId = campaign.campaignQueue != null ? int.tryParse(campaign.campaignQueue ?? "0") : null;
               context.read<UpdateUserCampaignCubit>().updateUserCampaign(
                     updateCampaignData: UpdateUserCampaignData(
-                      smeId: userData.smeId,
-                      agentName: userData.agentName,
-                      queueId: queueId,
-                      selectedCampaigns: [
-                        SelectedCampaign(
-                          queueId: queueId,
-                          campaignId: campaign.id,
-                          campaignName: campaign.campaignName,
-                        )
-                      ],
+                      // smeId: userData.smeId,
+                      // agentName: userData.agentName,
+                      // queueId: queueId,
+                      // selectedCampaigns: [
+                      //   SelectedCampaign(
+                      //     queueId: queueId,
+                      //     campaignId: campaign.id,
+                      //     campaignName: campaign.campaignName,
+
+ agentId: userData.agentId,
+    agentName: userData.agentName,
+    queueId: campaign.campaignQueue ?? "0",
+    selectedCampaigns: [
+      SelectedCampaignItem(
+        itemText: campaign.campaignName ?? "",
+        name: campaign.campaignName ?? "",
+        itemId: campaign.id ?? "",
+        id: campaign.id ?? "",
+        category: campaign.campaignType??"",
+        group: campaign.campaignType??"",
+        queueId: campaign.campaignQueue ?? "0",
+      )
+    ],
+
+                      //   )
+                      // ],
                     ),
                     campaignData: campaign,
                   );

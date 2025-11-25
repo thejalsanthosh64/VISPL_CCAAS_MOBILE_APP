@@ -10,7 +10,7 @@ import 'package:kommuno/core/common/widget/app_button.dart';
 import 'package:kommuno/features/break/presenter/view/break_in_button.dart';
 import 'package:kommuno/core/common/widget/mobile_textfield.dart';
 import 'package:kommuno/core/common/widget/my_app_bar.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
 import 'package:kommuno/core/utilities/extension_method.dart';
 import 'package:kommuno/features/contact/cubit/add_update_contact/add_update_contact_cubit.dart';
@@ -54,7 +54,7 @@ class _AddUpdateContactState extends StatelessWidget {
             const SizedBox(width: AppConstant.kSized10)
           ],
         ),
-        body: _buildForm(),
+        body: _buildForm(context),
       ),
     );
   }
@@ -64,7 +64,9 @@ class _AddUpdateContactState extends StatelessWidget {
   AddUpdateContactCubit _addUpdateContactCubit(BuildContext context) =>
       context.read<AddUpdateContactCubit>();
 
-  Widget _buildForm() {
+  Widget _buildForm(BuildContext context ) {
+    final userDetails = context.read<UserDetailsCubit>().userDetailsModel;
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(
@@ -160,7 +162,7 @@ class _AddUpdateContactState extends StatelessWidget {
                                 .text,
                             updatedDateTime: DateTime.now());
                     _addUpdateContactCubit(context).updateContact(
-                        addNewContactDetails: localUpdateContactDetails);
+                        addNewContactDetails: localUpdateContactDetails,userDetails: userDetails);
                   } else {
                     final userDetails =
                         context.read<UserDetailsCubit>().userDetailsModel;
@@ -185,8 +187,10 @@ class _AddUpdateContactState extends StatelessWidget {
                       insertDateTime: now,
                       updatedDateTime: now,
                     );
+                    print("📤 ADD CONTACT BODY → ${addNewContactDetails.toJson()}");
+
                     _addUpdateContactCubit(context).addNewContact(
-                        addNewContactDetails: addNewContactDetails);
+                        addNewContactDetails: addNewContactDetails, userDetails: userDetails);
                   }
                 },
               ),

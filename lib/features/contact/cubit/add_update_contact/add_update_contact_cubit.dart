@@ -2,13 +2,15 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kommuno/core/common/app_keys.dart';
+import 'package:kommuno/core/common/repo/activity_log_repo.dart';
 import 'package:kommuno/core/common/widget/loading_indicator.dart';
 import 'package:kommuno/core/common/widget/toast_manager.dart';
+import 'package:kommuno/core/common/widget/user_details/data/model/user_details_model.dart';
 import 'package:kommuno/core/exception/app_dio_exception.dart';
 import 'package:kommuno/core/utilities/app_methods.dart';
 import 'package:kommuno/core/utilities/debouncer.dart';
 import 'package:kommuno/core/utilities/validation.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:kommuno/features/contact/data/model/add_update_contact_address_model.dart';
 import 'package:kommuno/features/contact/data/repository/contact_repo.dart';
 
@@ -16,7 +18,7 @@ part 'add_update_contact_state.dart';
 
 class AddUpdateContactCubit extends Cubit<AddUpdateContactState> {
   final AddUpdateContactsRequestModel? updateContactDetails;
-
+ final ActivityHelperRepo logRepo = ActivityHelperRepo();
   AddUpdateContactCubit({
     this.updateContactDetails,
   }) : super(const AddUpdateContactState()) {
@@ -49,7 +51,8 @@ class AddUpdateContactCubit extends Cubit<AddUpdateContactState> {
   }
 
   Future<void> addNewContact(
-      {required AddUpdateContactsRequestModel addNewContactDetails}) async {
+      {required AddUpdateContactsRequestModel addNewContactDetails,  required UserDetailsModel userDetails,
+}) async {
     try {
       if (AppValidation.isEmpty(addNewContactDetails.customerName)) {
         FToastManager().showToast(
@@ -76,6 +79,17 @@ class AddUpdateContactCubit extends Cubit<AddUpdateContactState> {
             addUpdateContactsRequest: addNewContactDetails);
         FToastManager().showToast(message: res.message);
         if (res.isSuccess) {
+            
+
+       await logRepo.setActivityLogs(
+        userDetails.smeId,
+        action: "create",
+        moduleName: "contacts",
+        userRole: userDetails.roles,
+        message: "${userDetails.agentName} Added Successfully New Customer",
+        agentId: userDetails.agentId,
+      );
+
           emit(state.copyWith(addNewContactDetails: addNewContactDetails));
         }
       }
@@ -92,7 +106,8 @@ class AddUpdateContactCubit extends Cubit<AddUpdateContactState> {
   }
 
   Future<void> updateContact(
-      {required AddUpdateContactsRequestModel addNewContactDetails}) async {
+      {required AddUpdateContactsRequestModel addNewContactDetails,   required UserDetailsModel userDetails,
+}) async {
     try {
       if (AppValidation.isEmpty(addNewContactDetails.customerName)) {
         FToastManager().showToast(
@@ -119,6 +134,17 @@ class AddUpdateContactCubit extends Cubit<AddUpdateContactState> {
             addUpdateContactsRequest: addNewContactDetails);
         FToastManager().showToast(message: res.message);
         if (res.isSuccess) {
+
+      await logRepo.setActivityLogs(
+        userDetails.smeId,                    
+        action: "update",
+                moduleName: "contacts",
+
+        userRole: userDetails.roles,
+        message: "${userDetails.agentName} Updated Successfully New Customer",
+        agentId: userDetails.agentId,
+      
+      );
           emit(state.copyWith(addNewContactDetails: addNewContactDetails));
         }
       }

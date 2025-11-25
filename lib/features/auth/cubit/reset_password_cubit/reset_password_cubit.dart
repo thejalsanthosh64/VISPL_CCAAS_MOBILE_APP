@@ -8,7 +8,7 @@ import 'package:kommuno/core/exception/app_dio_exception.dart';
 import 'package:kommuno/core/utilities/app_methods.dart';
 import 'package:kommuno/core/utilities/validation.dart';
 import 'package:kommuno/features/auth/data/repository/auth_repo.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 part 'reset_password_state.dart';
 

@@ -14,7 +14,7 @@ import 'package:kommuno/core/utilities/extension_method.dart';
 import 'package:kommuno/features/assigned_calls/data/model/assigned_calls_list_model.dart';
 import 'package:kommuno/features/remarks/data/model/request/remarks_required_fields_model.dart';
 import 'package:kommuno/generated/assets.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 class AssignedCallsListTile extends StatelessWidget {
   const AssignedCallsListTile({

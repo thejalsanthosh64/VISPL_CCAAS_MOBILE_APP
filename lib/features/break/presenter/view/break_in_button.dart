@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:kommuno/core/common/app_constant.dart';
 import 'package:kommuno/core/common/app_theme/app_theme.dart';
 import 'package:kommuno/core/common/widget/app_button.dart';
 import 'package:kommuno/core/common/widget/app_outline_button.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
 import 'package:kommuno/core/common/widget/user_details/data/model/user_details_model.dart';
@@ -13,6 +13,7 @@ import 'package:kommuno/core/utilities/validation.dart';
 import 'package:kommuno/features/break/cubit/break_cubit.dart';
 import 'package:kommuno/features/break/data/model/break_in_request_model.dart';
 import 'package:kommuno/features/break/data/model/break_out_request_model.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 class BreakInButton extends StatelessWidget {
   const BreakInButton._private(this._isOutline);
@@ -34,6 +35,7 @@ class BreakInButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     return BlocBuilder<BreakCubit, BreakState>(
       builder: (context, state) {
         bool isOnBreak = false;
@@ -44,6 +46,7 @@ class BreakInButton extends StatelessWidget {
         }
 
         if (_isOutline && !isOnBreak) {
+          
           return AppOutlineButton(
             width: _kBreakInButtonSize.width,
             height: _kBreakInButtonSize.height,
@@ -81,10 +84,16 @@ class BreakInButton extends StatelessWidget {
       FToastManager().showToast(
           message: AppLocalizations.of(context)!.youAreCurrentlyInactive);
     } else if (isOnBreak) {
-      _breakCubit(context).breakOut(
-        breakOutRequestData: BreakOutRequestModel(
-            endDate: DateTime.now(), smeId: "${userDetails.smeId}"),
-      );
+            final now = DateTime.now();
+
+    _breakCubit(context).breakOut(
+  breakOutRequestData: BreakOutRequestModel(
+    smeId: "${userDetails.smeId}",
+    endDate: now,
+    endDateTime: DateFormat("yyyy-MM-dd HH:mm:ss").format(DateTime.now()),
+  ),
+);
+
     } else {
       _breakInRequest(context: context, userDetails: userDetails);
     }
@@ -179,13 +188,19 @@ class BreakInButton extends StatelessWidget {
     if (context.mounted) {
       selectedReason.dispose();
       if (requestBreakIn ?? false) {
-        _breakCubit(context).breakIn(
-          breakInRequestData: BreakInRequestModel(
-            message: selectedReason.value,
-            smeId: "${userDetails.smeId}",
-            startDate: DateTime.now(),
-          ),
-        );
+      final now = DateTime.now();
+
+_breakCubit(context).breakIn(
+  breakInRequestData: BreakInRequestModel(
+    message: selectedReason.value,
+    smeId: "${userDetails.smeId}",
+    startDate: now,  
+    startDateTime: DateFormat("yyyy-MM-dd HH:mm:ss").format(now),
+  ),
+
+
+);
+
       }
     }
   }

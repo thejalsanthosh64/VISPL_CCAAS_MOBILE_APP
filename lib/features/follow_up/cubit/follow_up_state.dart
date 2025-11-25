@@ -21,6 +21,8 @@ final class FollowUpLoadingState extends FollowUpState {
 final class FollowUpErrorState extends FollowUpState {
   const FollowUpErrorState();
 
+
+
   @override
   List<Object?> get props => [];
 }
@@ -54,3 +56,4 @@ final class FollowUpSuccessState extends FollowUpState {
   List<Object?> get props =>
       [initialRecord, followUpListModel, searchedFollowUpListModel];
 }
+

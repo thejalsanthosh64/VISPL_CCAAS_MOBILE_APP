@@ -8,7 +8,7 @@ import 'package:kommuno/core/exception/app_dio_exception.dart';
 import 'package:kommuno/core/utilities/validation.dart';
 import 'package:kommuno/features/leads/data/model/request/add_customer_note_request.dart';
 import 'package:kommuno/features/leads/data/repository/lead_repo.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 part 'add_lead_note_state.dart';
 

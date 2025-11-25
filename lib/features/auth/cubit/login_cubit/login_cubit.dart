@@ -1,11 +1,12 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kommuno/core/common/app_constant.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:kommuno/core/common/app_keys.dart';
-import 'package:kommuno/core/utilities/auto_logout_manager.dart';
+import 'package:kommuno/core/network_manager/websocket_service.dart';
+import 'package:kommuno/core/utilities/call_manager/call_session.dart';
 import 'package:kommuno/core/utilities/user_login_info_manager/user_login_info_manager.dart';
 import 'package:kommuno/core/common/widget/loading_indicator.dart';
 import 'package:kommuno/core/common/widget/toast_manager.dart';
@@ -14,6 +15,9 @@ import 'package:kommuno/core/utilities/app_methods.dart';
 import 'package:kommuno/core/utilities/validation.dart';
 import 'package:kommuno/features/auth/data/model/login_request_model.dart';
 import 'package:kommuno/features/auth/data/repository/auth_repo.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
+import 'package:kommuno/features/calls/cubit/call_cubit.dart';
+import 'package:kommuno/features/calls/presenter/page/call_screen.dart';
 
 part 'login_state.dart';
 
@@ -54,6 +58,7 @@ class LoginCubit extends Cubit<LoginState> {
           deviceType: AppConstant.loginDeviceType,
         ));
         if (res.isSuccess) {
+       
           await UserLoginInfoManager.setLoginUserInfo(userInfo: res.data);
           emit(state.copyWith(isUserLoginSuccess: true));
         } else {

@@ -4,7 +4,7 @@ import 'package:kommuno/core/utilities/user_login_info_manager/user_login_info_m
 import 'package:kommuno/features/schedule_call/data/model/request/add_schedule_call_request_model.dart';
 
 class ScheduleCallRepo {
-  final _dioClient = DioClient(mountPoint: ApiEndpoints.authMountPoint);
+  final _dioClient = DioClient();
 
   Future<CommonResponseModel> getScheduleCalls({
     required int smeId,
@@ -22,12 +22,15 @@ class ScheduleCallRepo {
 
   Future<CommonResponseModel> addScheduleCall(
       {required AddScheduleCallRequestModel
-          addScheduleCallRequestModel}) async {
+          addScheduleCallRequestModel,    required int smeId,
+}) async {
     try {
       final res = await _dioClient.post(
           ApiEndpoints.addScheduleCall(
-              UserLoginInfoManager.userLoginInfoModel!.userId),
+              smeId),
           data: addScheduleCallRequestModel.toJson());
+          print("📥 Add Schedule Call RESPONSE → ${res.data}");
+
       return res;
     } catch (e) {
       rethrow;

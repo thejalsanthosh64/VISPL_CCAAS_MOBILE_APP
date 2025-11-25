@@ -5,7 +5,7 @@ import 'package:kommuno/core/common/widget/app_avatar.dart';
 import 'package:kommuno/core/common/widget/app_svg_picture.dart';
 import 'package:kommuno/features/break/presenter/view/break_in_button.dart';
 import 'package:kommuno/core/common/widget/my_app_bar.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:kommuno/features/leads/presenter/widget/lead_personal_details.dart';
 import 'package:kommuno/features/leads/presenter/widget/leads_details_tile.dart';
 import 'package:kommuno/features/leads/presenter/widget/no_record_found.dart';

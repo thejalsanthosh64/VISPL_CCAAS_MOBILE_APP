@@ -15,7 +15,7 @@ import 'package:kommuno/core/utilities/extension_method.dart';
 import 'package:kommuno/core/utilities/shortcuts/widget/app_shortcut_button.dart';
 import 'package:kommuno/features/break/presenter/view/break_in_button.dart';
 import 'package:kommuno/features/in_sights/cubit/in_sights_cubit/in_sights_cubit.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:kommuno/features/in_sights/data/enum/in_sights_date_enum.dart';
 import 'package:kommuno/features/in_sights/presenter/widget/calls_info_container.dart';
 import 'package:kommuno/features/in_sights/presenter/widget/days_chip.dart';

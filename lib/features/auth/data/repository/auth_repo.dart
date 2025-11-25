@@ -4,7 +4,7 @@ import 'package:kommuno/core/utilities/user_login_info_manager/user_login_info_m
 import 'package:kommuno/features/auth/data/model/login_request_model.dart';
 
 final class AuthRepo {
-  final _dioClient = DioClient(mountPoint: ApiEndpoints.authMountPoint);
+  final _dioClient = DioClient();
 
   Future<CommonResponseModel> loginUser(
       {required LoginRequestModel loginRequestModel}) async {

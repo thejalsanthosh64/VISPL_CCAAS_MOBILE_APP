@@ -7,7 +7,7 @@ import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/core/exception/app_dio_exception.dart';
 import 'package:kommuno/features/schedule_call/data/model/response/schedule_calls_response_model.dart';
 import 'package:kommuno/features/schedule_call/data/repository/schedule_call_repo.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 part 'schedule_state.dart';
 

@@ -5,7 +5,7 @@ import 'package:kommuno/core/utilities/date_utility.dart';
 import 'package:kommuno/core/utilities/user_login_info_manager/user_login_info_manager.dart';
 
 class InSightsRepo {
-  final _dioClient = DioClient(mountPoint: ApiEndpoints.authMountPoint);
+  final _dioClient = DioClient();
 
   Future<CommonResponseModel> getInsight({
     required DateTime startDate,

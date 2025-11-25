@@ -12,7 +12,7 @@ import 'package:kommuno/features/break/presenter/view/break_in_button.dart';
 import 'package:kommuno/core/common/widget/empty_error_widget.dart';
 import 'package:kommuno/core/common/widget/loading_indicator.dart';
 import 'package:kommuno/core/common/widget/my_app_bar.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:kommuno/core/common/widget/search_field.dart';
 import 'package:kommuno/core/utilities/app_methods.dart';
 import 'package:kommuno/features/leads/cubit/lead_cubit/leads_cubit.dart';

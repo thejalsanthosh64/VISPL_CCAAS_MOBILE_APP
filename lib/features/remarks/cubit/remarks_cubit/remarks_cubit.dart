@@ -5,7 +5,7 @@ import 'package:kommuno/core/common/app_keys.dart';
 import 'package:kommuno/core/common/widget/loading_indicator.dart';
 import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/core/exception/app_dio_exception.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:kommuno/features/remarks/data/model/request/remarks_request_model.dart';
 import 'package:kommuno/features/remarks/data/model/request/send_remarks_request_model.dart';
 import 'package:kommuno/features/remarks/data/model/response/remarks_data_model.dart';
@@ -27,11 +27,11 @@ class RemarksCubit extends Cubit<RemarksState> {
   }
 
   Future<void> getRemarksList(
-      {required RemarksRequestModel remarksRequestModel}) async {
+      {required RemarksRequestModel remarksRequestModel,required int smeId}) async {
     try {
       emit(const RemarksLoadingState());
       final res = await _remarksRepo.getRemarksList(
-          remarksRequestModel: remarksRequestModel);
+          remarksRequestModel: remarksRequestModel,smeId: smeId);
       if (res.isSuccess) {
         final remarksDataModel = List<RemarksDataModel>.from(
           (res.data as List<dynamic>).map(
@@ -69,11 +69,11 @@ class RemarksCubit extends Cubit<RemarksState> {
   }
 
   Future<void> setRemarks(
-      {required SendRemarksRequestModel sendRemarksRequestModel}) async {
+      {required SendRemarksRequestModel sendRemarksRequestModel,required int smeId}) async {
     try {
       AppLoadingIndicator.showLoadingIndicator();
       final res = await _remarksRepo.setRemarks(
-          sendRemarksRequestModel: sendRemarksRequestModel);
+          sendRemarksRequestModel: sendRemarksRequestModel,smeId: smeId);
       if (res.isSuccess) {
         if (state is RemarksSuccessState) {
           emit((state as RemarksSuccessState)

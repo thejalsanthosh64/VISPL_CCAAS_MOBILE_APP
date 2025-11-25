@@ -20,7 +20,7 @@ import 'package:kommuno/features/contact/data/model/server_contact_response_mode
 import 'package:kommuno/features/contact/data/repository/contact_repo.dart';
 import 'package:kommuno/features/contact/presenter/widget/alphabetic_list.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 part 'contact_list_state.dart';
 

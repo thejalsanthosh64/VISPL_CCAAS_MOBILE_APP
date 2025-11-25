@@ -15,7 +15,7 @@ import 'package:kommuno/features/contact/data/model/add_update_contact_address_m
 import 'package:kommuno/generated/assets.dart';
 import 'alphabetic_list.dart';
 import 'contact_list_tile.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 class ServerAlphabeticList extends StatefulWidget {
   const ServerAlphabeticList({super.key});
@@ -30,7 +30,7 @@ class _ServerAlphabeticListState extends State<ServerAlphabeticList>
 
   late UserDetailsModel _userDetails;
 
-  final Map<int, SlidableController> _slidableControllers = {};
+final Map<String, SlidableController> _slidableControllers = {};
 
   @override
   void initState() {

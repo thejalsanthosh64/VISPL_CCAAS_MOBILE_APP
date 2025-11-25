@@ -11,7 +11,7 @@ import 'package:kommuno/features/leads/data/model/request/edit_lead_request_data
 import 'package:kommuno/features/leads/data/model/response/leads_source_city_product_status_data.dart';
 import 'package:kommuno/features/leads/data/model/response/leads_unique_calls_model.dart';
 import 'package:kommuno/features/leads/data/repository/lead_repo.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 part 'edit_lead_state.dart';
 

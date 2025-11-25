@@ -2,16 +2,15 @@ import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:kommuno/core/common/app_keys.dart';
 import 'package:kommuno/core/common/widget/loading_indicator.dart';
 import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/core/exception/app_dio_exception.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:kommuno/core/utilities/date_utility.dart';
 import 'package:kommuno/features/break/data/model/break_in_request_model.dart';
 import 'package:kommuno/features/break/data/model/break_out_request_model.dart';
 import 'package:kommuno/features/break/data/model/break_response.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:kommuno/features/break/data/repository/break_repo.dart';
 
 part 'break_state.dart';
@@ -31,45 +30,58 @@ class BreakCubit extends Cubit<BreakState> {
     super.close();
   }
 
+
   Future<void> getBreakDetails({bool isLoading = true}) async {
-    try {
-      if (isLoading) {
-        emit(const BreakLoadingState());
+  try {
+    if (isLoading) {
+      emit(const BreakLoadingState());
+    } else {
+      AppLoadingIndicator.showLoadingIndicator();
+    }
+    final res = await _breakRepo.getBreakDetails();
+
+    if (res.isSuccess) {
+      final breakResponse = BreakResponseModel.fromJson(res.data);
+      
+      final isOnBreak = breakResponse.breakStatus == 4;
+      
+      if (state is BreakSuccessState) {
+        emit((state as BreakSuccessState).copyWith(
+          breakResponseModel: breakResponse,
+          isOnBreak: isOnBreak, 
+        ));
       } else {
-        AppLoadingIndicator.showLoadingIndicator();
+        emit(BreakSuccessState(
+          breakResponseModel: breakResponse,
+          isOnBreak: isOnBreak,  
+        ));
       }
-      final res = await _breakRepo.getBreakDetails();
-      if (res.isSuccess) {
-        final breakResponse = BreakResponseModel.fromJson(res.data);
-        if (state is BreakSuccessState) {
-          emit((state as BreakSuccessState).copyWith(breakResponseModel: breakResponse));
-        } else {
-          emit(BreakSuccessState(breakResponseModel: breakResponse));
-        }
-        _startTimer(isOnBreak: breakResponse.breakStatus == 4);
-      } else {
-        if (isLoading) {
-          emit(const BreakErrorState());
-        }
-        FToastManager().showToast(message: res.message);
-      }
-    } on AppDioException catch (e) {
+      
+      // THEN: Start the timer (it will now read from the correct state)
+      _startTimer(isOnBreak: isOnBreak);
+    } else {
       if (isLoading) {
         emit(const BreakErrorState());
       }
-      FToastManager().showToast(message: e.message);
-    } catch (e, s) {
-      if (isLoading) {
-        emit(const BreakErrorState());
-      }
-      FToastManager().showToast(message: AppLocalizations.of(AppKeys.navigatorKey.currentContext!)!.somethingWentWrong);
-      debugPrint("BreakCubit $e");
-      debugPrint("$s");
+      FToastManager().showToast(message: res.message);
     }
-    if (!isLoading) {
-      AppLoadingIndicator.dismissLoadingIndicator();
+  } on AppDioException catch (e) {
+    if (isLoading) {
+      emit(const BreakErrorState());
     }
+    FToastManager().showToast(message: e.message);
+  } catch (e, s) {
+    if (isLoading) {
+      emit(const BreakErrorState());
+    }
+    FToastManager().showToast(message: AppLocalizations.of(AppKeys.navigatorKey.currentContext!)!.somethingWentWrong);
+    debugPrint("BreakCubit $e");
+    debugPrint("$s");
   }
+  if (!isLoading) {
+    AppLoadingIndicator.dismissLoadingIndicator();
+  }
+}
 
   Future<void> breakIn({required BreakInRequestModel breakInRequestData}) async {
     try {
@@ -77,6 +89,8 @@ class BreakCubit extends Cubit<BreakState> {
       final res = await _breakRepo.breakIn(breakInRequestData: breakInRequestData);
       FToastManager().showToast(message: res.message);
       if (res.isSuccess) {
+        print("✔ Break In API SUCCESS: ${res.data}");
+
         getBreakDetails(isLoading: false);
       }
     } on AppDioException catch (e) {
@@ -108,6 +122,7 @@ class BreakCubit extends Cubit<BreakState> {
   }
 
   Future<void> _startTimer({required bool isOnBreak}) async {
+
     if (state is BreakSuccessState) {
       BreakSuccessState currentState = state as BreakSuccessState;
       if (currentState.breakResponseModel.status != 0) {
@@ -120,9 +135,12 @@ class BreakCubit extends Cubit<BreakState> {
                   : null);
         }
         _timer = Timer.periodic(
+          
           const Duration(seconds: 1),
           (time) {
+
             currentState = state as BreakSuccessState;
+
             emit(
               currentState.copyWith(
                 breakResponseModel: currentState.breakResponseModel

@@ -9,7 +9,7 @@ import 'package:kommuno/features/auth/cubit/reset_password_cubit/reset_password_
 import 'package:kommuno/features/auth/presenter/widget/auth_container.dart';
 import 'package:kommuno/features/auth/presenter/widget/auth_text_field.dart';
 import 'package:kommuno/features/auth/presenter/widget/common_forgot_password_bg.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 class ResetPasswordScreen extends StatelessWidget {
   const ResetPasswordScreen({super.key});

@@ -11,6 +11,8 @@ import 'package:kommuno/features/auth/presenter/page/forget_password.dart';
 import 'package:kommuno/features/auth/presenter/page/login_screen.dart';
 import 'package:kommuno/features/auth/presenter/page/otp_verify.dart';
 import 'package:kommuno/features/auth/presenter/page/reset_password.dart';
+import 'package:kommuno/features/calls/presenter/page/call_screen.dart';
+import 'package:kommuno/features/calls/presenter/page/after_call_wrapUp_.dart';
 import 'package:kommuno/features/campaigns/presenter/page/campaign_list.dart';
 import 'package:kommuno/features/contact/presenter/page/add_update_contact.dart';
 import 'package:kommuno/features/contact/presenter/page/contact_list.dart';
@@ -25,7 +27,7 @@ import 'package:kommuno/features/recent_calls/presenter/page/recent_calls.dart';
 import 'package:kommuno/features/remarks/presenter/page/remarks.dart';
 import 'package:kommuno/features/schedule_call/presenter/page/add_schedule_call.dart';
 import 'package:kommuno/features/splash_screen.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 part 'app_route_names.dart';
 
@@ -63,6 +65,8 @@ abstract interface class AppRouterManager {
         return _GeneratePageRoute(widget: const HomeScreen(), settings: settings);
       case AppRouteNames.dialScreen:
         return _GeneratePageRoute(widget: const DialScreen(), settings: settings);
+         case AppRouteNames.activeScreen:
+        return _GeneratePageRoute(widget: const AfterCallWrapUpScreen(callerName: "test",duration: Duration(seconds: 2),phoneNumber: "8921388124",), settings: settings);
       case AppRouteNames.leads:
         return _GeneratePageRoute(widget: const LeadsScreen(), settings: settings);
       case AppRouteNames.leadsDetails:

@@ -28,23 +28,37 @@ abstract class ApiEndpoints {
   static String userDetails(String userName) => "user/$userName/typedetail";
 
   ///Id will be agent_id
-  static String getAllContacts(int id) => "user/$id/addressbook/listnew";
+  // static String getAllContacts(int id) => "user/$id/addressbook/listnew";
 
-  static String addContacts(int id) => "user/$id/setCustomerName";
+  // static String addContacts(int id) => "user/$id/setCustomerName";
 
-  static String updateContacts(int id) => "user/$id/updateCustomerName";
+  // static String updateContacts(int id) => "user/$id/updateCustomerName";
 
-  static String getFollowUpCall(int id) => "$id/getFollowUpCall";
+ static String getAllContacts(String smeId) => "/sme/$smeId/getAddressbookDetail";
+  static String addContacts(String smeId) => "/sme/$smeId/setAddressbookDetail";
+  static String updateContacts(String smeId) => "/sme/$smeId/setAddressbookDetail";
 
-  static String changeScheduleStatus(int smeId) => "$smeId/changeScheduleStatus";
+
+
+  // static String getFollowUpCall(int id) => "$id/getFollowUpCall";
+  static String getPastScheduledCalls(int id) => "/sme/$id/getPastScheduledCalls";
+
+  static String getTodayScheduledCalls(int id) => "/sme/$id/getTodayScheduledCalls";
+
+  static String getUpcomingScheduledCalls(int id) => "/sme/$id/getUpcomingScheduledCalls";
+
+  static String changeScheduleStatus(int smeId) => "/sme/$smeId/changeScheduleStatus";
+  static String deleteFollowUp(int smeId, String followUpId) =>
+    "/sme/$smeId/followup/$followUpId";
+
 
   static String getAssignedCalls(int id) => "$id/getOutgoingCampaign";
 
-  static String breakList(int id) => "$id/break/list";
+  static String breakList(int id) => "$authMountPoint/$id/break/list";
 
-  static String breakIn(int id) => "$id/break/in";
+  static String breakIn(int id) => "agent/$id/break/in";
 
-  static String breakOut(int id) => "$id/break/out";
+  static String breakOut(int id) => "agent/$id/break/out";
 
   static String addManualLead(int smeId) => "sme/$smeId/addManualLead";
 
@@ -56,25 +70,50 @@ abstract class ApiEndpoints {
 
   static String addCustomerNote(int smeId) => "$smeId/addCustomerNote";
 
-  static String addScheduleCall(int id) => "user/$id/call/schedule";
+  // static String addScheduleCall(int id) => "user/$id/call/schedule";
+    static String addScheduleCall(int id) => "sme/$id/setFollowUpCall";
+
 
   static String getScheduledCalls(int smeId) => "$smeId/getScheduledCalls";
 
-  static String getInsight(int smeId) => "user/$smeId/insight";
+  static String getInsight(int smeId) => "sme/$smeId/insight";
 
-  static String getListRemarks(int id) => "$id/getListRemarks";
+  static String getListRemarks(int id) => "sme/$id/getListRemarks";
 
-  static String setRemarks(int id) => "$id/setRemarks";
+  static String setRemarks(int id) => "sme/$id/setRemarks";
 
   static const clickToCall = "user/clickToCall";
 
   static String getLongCodesForCall(int id) => "$id/getLongcodesForCall";
 
-  static const clickToCallLiveCall = "user/clickToCallLiveCall";
+  static const clickToCallLiveCall = "crm/clickToCallLiveCall";
 
-  static String getRecentCalls(int id) => "$id/todayCallHistory";
+  static String holdCall(int smeId) => "/agent/$smeId/hold";
 
-  static String getLoginCampaigns(int id) => "$id/getLoginCampaigns";
+  static String unHoldCall(int smeId) => "/agent/$smeId/unhold";
 
-  static String updateAgentCurrentCampaign(int id) => "$id/updateAgentCurrentCampaign";
+  static String muteCall(int smeId) => "/agent/$smeId/mute";
+
+  static String unMuteCall(int smeId) => "/agent/$smeId/unmute";
+
+  static String dropCall(int smeId) => "/agent/$smeId/dropCall";
+
+  static String transferCall(int smeId) => "/agent/$smeId/unattended";
+
+  static String conferenceall(int smeId) => "/agent/$smeId/attended";
+
+  static String getQueueAgent(int smeId) => "/agent/$smeId/getQueueAgent";
+
+  static String getAgentStatusDetail(int smeId) => "/agent/$smeId/getAgentStatusDetail";
+
+
+  static String getRecentCalls(int id) => "agent/$id/todayCallHistory";
+
+  static String getLoginCampaigns(int id) => "sme/$id/getLoginCampaigns";
+
+  // static String updateAgentCurrentCampaign(int id) => "$id/updateAgentCurrentCampaign";
+
+  static String updateAgentCurrentCampaign(int id) => "agent/$id/updateAgentCurrentCallMode";
+
+   
 }

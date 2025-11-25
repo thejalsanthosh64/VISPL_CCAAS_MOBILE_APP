@@ -12,7 +12,7 @@ import 'package:kommuno/features/auth/cubit/otp_verify_cubit/otp_verify_cubit.da
 import 'package:kommuno/features/auth/data/model/forgot_password_response.dart';
 import 'package:kommuno/features/auth/presenter/widget/auth_container.dart';
 import 'package:kommuno/features/auth/presenter/widget/common_forgot_password_bg.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:pinput/pinput.dart';
 
 class OtpVerifyScreen extends StatelessWidget {

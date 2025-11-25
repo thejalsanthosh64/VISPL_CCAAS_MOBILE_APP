@@ -6,7 +6,7 @@ import 'package:kommuno/core/common/app_routes/app_routes_manager.dart';
 import 'package:kommuno/core/common/app_theme/app_theme.dart';
 import 'package:kommuno/core/common/widget/app_avatar.dart';
 import 'package:kommuno/core/common/widget/app_slidable_action.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:kommuno/core/common/widget/app_svg_picture.dart';
 import 'package:kommuno/core/common/widget/make_call_button.dart';
 import 'package:kommuno/core/common/widget/slidable_icon_button.dart';
@@ -113,7 +113,8 @@ class RecentCallsListTile extends StatelessWidget {
                   smeId: userDetailsModel.smeId,
                   initialRecordValue: 1,
                   isLoading: false,
-                  recentCallsRequestModel: recentCallsRequestModel,
+                  // recentCallsRequestModel: recentCallsRequestModel,
+                  agentNumber:userDetailsModel.agentMobile
                 );
               }
             },

@@ -7,7 +7,7 @@ import 'package:kommuno/core/common/widget/empty_error_widget.dart';
 import 'package:kommuno/core/common/widget/hide_keyboard_widget.dart';
 import 'package:kommuno/core/common/widget/loading_indicator.dart';
 import 'package:kommuno/core/common/widget/my_app_bar.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:kommuno/core/common/widget/search_field.dart';
 import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
 import 'package:kommuno/core/utilities/app_methods.dart';
@@ -40,6 +40,8 @@ class _RecentCallsState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final smeId = context.read<UserDetailsCubit>().userDetailsModel.smeId;
+      final agentNumber = context.read<UserDetailsCubit>().userDetailsModel.agentMobile;
+
     return HideKeyboardWidget(
       child: Scaffold(
         floatingActionButton: const AppShortcutButton(),
@@ -47,12 +49,15 @@ class _RecentCallsState extends StatelessWidget {
           title: AppLocalizations.of(context)!.recentCalls,
           actions: [BreakInButton.outline()],
         ),
-        body: _buildBody(smeId: smeId),
+        body: _buildBody(smeId: smeId,agentNumber: agentNumber),
       ),
     );
   }
 
-  Widget _buildBody({required int smeId}) {
+  Widget _buildBody({required int smeId,required String agentNumber}) {
+
+
+    
     return BlocBuilder<RecentCallsCubit, RecentCallsState>(
       builder: (context, state) {
         if (state is RecentCallsInitialState) {
@@ -60,7 +65,7 @@ class _RecentCallsState extends StatelessWidget {
             Duration.zero,
             () {
               if (context.mounted) {
-                _recentCallsCubit(context).getRecentCalls(smeId: smeId);
+                _recentCallsCubit(context).getRecentCalls(smeId: smeId,agentNumber: agentNumber);
               }
             },
           );
@@ -70,7 +75,7 @@ class _RecentCallsState extends StatelessWidget {
           return EmptyErrorWidget(
             text: AppLocalizations.of(context)!.somethingWentWrong,
             onTap: () {
-              _recentCallsCubit(context).getRecentCalls(smeId: smeId);
+              _recentCallsCubit(context).getRecentCalls(smeId: smeId,agentNumber:agentNumber);
             },
           );
         } else if (state is RecentCallsSuccessState) {
@@ -125,7 +130,7 @@ class _RecentCallsState extends StatelessWidget {
                     );
                     if (context.mounted && selectedDate != null) {
                       _recentCallsCubit(context).onSelectDate(
-                          selectedDate: selectedDate, smeId: smeId);
+                          selectedDate: selectedDate, smeId: smeId,agentNumber: agentNumber);
                     }
                   },
                 ),

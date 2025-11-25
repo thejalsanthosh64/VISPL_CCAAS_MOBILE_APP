@@ -9,7 +9,7 @@ import 'package:kommuno/features/auth/cubit/login_cubit/login_cubit.dart';
 import 'package:kommuno/features/auth/presenter/widget/auth_container.dart';
 import 'package:kommuno/features/auth/presenter/widget/auth_text_field.dart';
 import 'package:kommuno/generated/assets.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -61,6 +61,9 @@ class _LoginScreenState extends StatelessWidget {
         if (state.isUserLoginSuccess) {
           Navigator.of(context)
               .pushReplacementNamed(AppRouteNames.assignCampaign);
+
+
+          // Navigator.of(context).pushReplacementNamed(AppRouteNames.homeMiddleware);
         }
       },
       builder: (context, state) {

@@ -10,7 +10,7 @@ import 'package:kommuno/core/utilities/user_login_info_manager/user_login_info_m
 import 'package:kommuno/core/utilities/validation.dart';
 import 'package:kommuno/features/leads/data/model/request/add_lead_request_model.dart';
 import 'package:kommuno/features/leads/data/repository/lead_repo.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 part 'add_lead_state.dart';
 

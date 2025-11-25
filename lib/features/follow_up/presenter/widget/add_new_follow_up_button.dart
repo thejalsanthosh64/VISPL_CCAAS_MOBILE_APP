@@ -5,7 +5,7 @@ import 'package:kommuno/core/common/app_theme/app_theme.dart';
 import 'package:kommuno/core/common/widget/app_svg_picture.dart';
 import 'package:kommuno/features/schedule_call/data/model/request/add_schedule_call_request_model.dart';
 import 'package:kommuno/generated/assets.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 class AddNewFollowUpButton extends StatelessWidget {
   const AddNewFollowUpButton({

@@ -7,7 +7,7 @@ import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/core/exception/app_dio_exception.dart';
 import 'package:kommuno/features/in_sights/data/enum/in_sights_date_enum.dart';
 import 'package:kommuno/features/in_sights/data/model/response/in_sights_response.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:kommuno/features/in_sights/data/repository/in_sights_repo.dart';
 
 part 'in_sights_state.dart';

@@ -165,5 +165,12 @@
   "pleaseEnterPrice" : "Please enter price",
   "pleaseSelectPriceSortOrder" : "Please select price sort order",
   "failedToMakePhoneCall" : "Failed to make phone call",
-  "waitForTheCall" : "Your request has been submitted. Please wait for the call."
+  "waitForTheCall" : "Your request has been submitted. Please wait for the call.",
+
+   "noMatchingRecordsFound" : "No matching records found",
+
+  "noRecordsFound" : "No records found",
+  "areYouSure":"Are you sure?",
+  "confirmMessage":"Once confirmed, you will not be able to revert this!",
+  "delete":"Yes, delete it"
  }

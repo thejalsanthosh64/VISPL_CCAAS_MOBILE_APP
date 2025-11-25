@@ -76,7 +76,7 @@ class BreakResponseModel extends Equatable {
       signOut: json["signOut"],
       signOutStr: json["signOutStr"],
       status: json["status"],
-      breakStatus: json["break_status"],
+       breakStatus: json["breakStatus"] ?? json["break_status"],
       totalActiveTime: json["totalActiveTime"],
       totalActiveTimeStr: json["totalActiveTimeStr"],
       totalBreakTime: json["totalBreakTime"],

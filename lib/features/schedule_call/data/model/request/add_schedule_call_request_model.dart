@@ -1,20 +1,21 @@
 import 'package:equatable/equatable.dart';
 import 'package:kommuno/core/utilities/date_utility.dart';
-
 class AddScheduleCallRequestModel extends Equatable {
   const AddScheduleCallRequestModel({
-    required this.smeId,
+    this.smeId,
     required this.message,
     required this.customerNumber,
     required this.customerName,
     required this.scheduleDateTime,
+    required this.agentId,
   });
 
-  final String smeId;
+  final String? smeId;
   final String message;
   final String customerNumber;
   final String customerName;
   final DateTime scheduleDateTime;
+  final String agentId;
 
   AddScheduleCallRequestModel copyWith({
     String? smeId,
@@ -22,6 +23,7 @@ class AddScheduleCallRequestModel extends Equatable {
     String? customerNumber,
     String? customerName,
     DateTime? scheduleDateTime,
+    String? agentId,
   }) {
     return AddScheduleCallRequestModel(
       smeId: smeId ?? this.smeId,
@@ -29,6 +31,7 @@ class AddScheduleCallRequestModel extends Equatable {
       customerNumber: customerNumber ?? this.customerNumber,
       customerName: customerName ?? this.customerName,
       scheduleDateTime: scheduleDateTime ?? this.scheduleDateTime,
+      agentId: agentId ?? this.agentId,
     );
   }
 
@@ -39,21 +42,26 @@ class AddScheduleCallRequestModel extends Equatable {
       customerNumber: json["customerNumber"],
       customerName: json["customerName"],
       scheduleDateTime: DateTime.parse(json["scheduleDateTime"]).toLocal(),
+      agentId: json["created_by"],
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        "sme_id": smeId,
-        "message": message,
-        "customerNumber": customerNumber,
-        "customerName": customerName,
-        "scheduleDateTime": DateUtility.scheduleCallRequestDateTimeFormat(
-            date: scheduleDateTime.toUtc()),
-      };
+  Map<String, dynamic> toJson() {
+    final data = {
+      "message": message,
+      "customerNumber": customerNumber,
+      "customerName": customerName,
+      "scheduleDateTime":
+          DateUtility.scheduleCallRequestDateTimeFormat(
+              date: scheduleDateTime),
+      "agentId": agentId,
+    };
 
-  @override
-  String toString() {
-    return "$smeId, $message, $customerNumber, $customerName, $scheduleDateTime, ";
+    if (smeId != null && smeId!.isNotEmpty) {
+      data["sme_id"] = smeId??"";
+    }
+
+    return data;
   }
 
   @override
@@ -63,5 +71,6 @@ class AddScheduleCallRequestModel extends Equatable {
         customerNumber,
         customerName,
         scheduleDateTime,
+        agentId,
       ];
 }

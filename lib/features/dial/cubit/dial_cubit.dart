@@ -6,7 +6,7 @@ import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/core/utilities/call_manager/call_manager.dart';
 import 'package:kommuno/core/utilities/validation.dart';
 import 'package:kommuno/features/dial/data/model/dial_data_model.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 part 'dial_state.dart';
 

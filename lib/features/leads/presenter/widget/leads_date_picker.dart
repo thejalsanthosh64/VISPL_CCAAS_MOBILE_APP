@@ -3,7 +3,7 @@ import 'package:kommuno/core/common/app_constant.dart';
 import 'package:kommuno/core/common/app_theme/app_theme.dart';
 import 'package:kommuno/core/common/widget/app_text_field.dart';
 import 'package:kommuno/core/utilities/app_methods.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 class LeadsDatePicker extends StatelessWidget {
   const LeadsDatePicker({

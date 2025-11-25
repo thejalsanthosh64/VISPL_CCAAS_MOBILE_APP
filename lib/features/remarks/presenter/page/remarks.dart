@@ -16,7 +16,7 @@ import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit
 import 'package:kommuno/core/utilities/app_methods.dart';
 import 'package:kommuno/features/break/presenter/view/break_in_button.dart';
 import 'package:kommuno/features/remarks/cubit/remarks_cubit/remarks_cubit.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:kommuno/features/remarks/data/model/request/remarks_request_model.dart';
 import 'package:kommuno/features/remarks/data/model/request/remarks_required_fields_model.dart';
 import 'package:kommuno/features/remarks/data/model/request/send_remarks_request_model.dart';
@@ -168,7 +168,7 @@ class _RemarksScreenState extends StatelessWidget {
                   itemCount: state.remarksDataModel.length,
                   itemBuilder: (__, index) {
                     return RemarksListTile(
-                      remarks: state.remarksDataModel[index].remarks,
+                      remarks: state.remarksDataModel[index].remarks??"",
                       dateTime: state.remarksDataModel[index].startDateTime,
                     );
                   },
@@ -224,7 +224,7 @@ class _RemarksScreenState extends StatelessWidget {
                 customerNumber:
                     remarksRequiredFieldsModel?.customerNumber ?? '',
                 insertDateTime: DateTime.now(),
-              ));
+              ),smeId: smeId);
             },
             customBorder: const CircleBorder(),
             child: const AppAvatar(
@@ -250,7 +250,7 @@ class _RemarksScreenState extends StatelessWidget {
           remarksRequestModel: RemarksRequestModel(
         customerNumber: remarksRequiredFieldsModel!.customerNumber,
         smeId: smeId,
-      ));
+      ),smeId: smeId);
     }
   }
 }

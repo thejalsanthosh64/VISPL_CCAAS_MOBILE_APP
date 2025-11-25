@@ -5,7 +5,7 @@ import 'package:kommuno/features/break/data/model/break_in_request_model.dart';
 import 'package:kommuno/features/break/data/model/break_out_request_model.dart';
 
 final class BreakRepo {
-  final _dioClient = DioClient(mountPoint: ApiEndpoints.authMountPoint);
+  final _dioClient = DioClient();
 
   Future<CommonResponseModel> getBreakDetails() async {
     try {

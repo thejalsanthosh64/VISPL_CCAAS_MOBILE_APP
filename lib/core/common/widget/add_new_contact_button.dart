@@ -5,7 +5,7 @@ import 'package:kommuno/core/common/app_theme/app_theme.dart';
 import 'package:kommuno/core/common/widget/app_svg_picture.dart';
 import 'package:kommuno/features/contact/data/model/add_update_contact_address_model.dart';
 import 'package:kommuno/generated/assets.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 class AddNewContactButton extends StatelessWidget {
   const AddNewContactButton({

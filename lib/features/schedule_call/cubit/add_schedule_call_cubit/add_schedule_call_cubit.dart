@@ -8,7 +8,7 @@ import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
 import 'package:kommuno/core/exception/app_dio_exception.dart';
 import 'package:kommuno/core/utilities/app_methods.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:kommuno/core/utilities/validation.dart';
 import 'package:kommuno/features/schedule_call/data/model/request/add_schedule_call_request_model.dart';
 import 'package:kommuno/features/schedule_call/data/repository/schedule_call_repo.dart';
@@ -60,12 +60,15 @@ class AddScheduleCallCubit extends Cubit<AddScheduleCallState> {
   }
 
   Future<void> addScheduleCall({
+      required int smeId,
+
     required String number,
     required String customerName,
     required String note,
     DateTime? selectedDateTime,
   }) async {
     try {
+      
       if (AppValidation.isEmpty(number)) {
         FToastManager().showToast(
             message: AppLocalizations.of(AppKeys.navigatorKey.currentContext!)!
@@ -93,10 +96,13 @@ class AddScheduleCallCubit extends Cubit<AddScheduleCallState> {
           customerName: customerName,
           customerNumber: addByIndiaCountryCode(number: number),
           scheduleDateTime: selectedDateTime,
-          smeId: "${userDetailsModel.smeId}",
+          agentId: "${userDetailsModel.agentId}",
         );
+
+              print("📤 Add Schedule Call → ${addScheduleCallRequestModel.toJson()}");
+
         final res = await _scheduleCallRepo.addScheduleCall(
-            addScheduleCallRequestModel: addScheduleCallRequestModel);
+            addScheduleCallRequestModel: addScheduleCallRequestModel,smeId:smeId );
         FToastManager().showToast(message: res.message);
         if (res.isSuccess) {
           emit(AddSScheduleCallSuccessState(

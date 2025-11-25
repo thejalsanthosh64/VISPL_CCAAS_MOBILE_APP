@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:kommuno/core/common/app_keys.dart';
@@ -60,6 +62,11 @@ class DioClient {
     ProgressCallback? onReceiveProgress,
   }) async {
     try {
+
+        debugPrint("===== DIO POST REQUEST =====");
+    debugPrint("URL: $uri");
+    debugPrint("BODY: ${const JsonEncoder.withIndent('  ').convert(data)}");
+    debugPrint("HEADERS: ${_dio.options.headers}");
       final response = await _dio.post(
         uri,
         data: data,

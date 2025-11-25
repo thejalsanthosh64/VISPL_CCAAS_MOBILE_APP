@@ -1,13 +1,12 @@
 import 'package:equatable/equatable.dart';
-
 class RemarksDataModel extends Equatable {
   const RemarksDataModel({
-    required this.remarks,
+    this.remarks,
     required this.startDateTime,
     this.answer,
   });
 
-  final String remarks;
+  final String? remarks;
   final DateTime startDateTime;
   final int? answer;
 
@@ -25,7 +24,7 @@ class RemarksDataModel extends Equatable {
 
   factory RemarksDataModel.fromJson(Map<String, dynamic> json) {
     return RemarksDataModel(
-      remarks: json["remarks"],
+      remarks: json["remarks"]?.toString(),      // <- SAFE
       startDateTime: DateTime.parse(json["start_date_time"]).toLocal(),
       answer: json["answer"],
     );
@@ -36,11 +35,6 @@ class RemarksDataModel extends Equatable {
         "start_date_time": startDateTime.toUtc(),
         "answer": answer,
       };
-
-  @override
-  String toString() {
-    return "$remarks, $startDateTime, $answer, ";
-  }
 
   @override
   List<Object?> get props => [

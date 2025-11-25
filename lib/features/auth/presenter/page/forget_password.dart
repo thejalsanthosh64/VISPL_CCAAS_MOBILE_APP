@@ -8,8 +8,8 @@ import 'package:kommuno/features/auth/cubit/forget_password_cubit/forget_passwor
 import 'package:kommuno/features/auth/presenter/widget/auth_text_field.dart';
 import 'package:kommuno/features/auth/presenter/widget/common_forgot_password_bg.dart';
 import 'package:kommuno/generated/assets.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../widget/auth_container.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 class ForgetPasswordScreen extends StatelessWidget {
   const ForgetPasswordScreen({super.key});

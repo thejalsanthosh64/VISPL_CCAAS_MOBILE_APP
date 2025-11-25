@@ -5,7 +5,7 @@ import 'package:kommuno/core/common/widget/empty_error_widget.dart';
 import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
 import 'package:kommuno/features/recent_calls/cubit/recent_calls_cubit/recent_calls_cubit.dart';
 import 'package:kommuno/features/recent_calls/presenter/widget/recent_calls_list_tile.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 class RecentCallsList extends StatefulWidget {
   const RecentCallsList({super.key});
@@ -19,6 +19,7 @@ class _RecentCallsListState extends State<RecentCallsList>
   final Map<int, SlidableController> _slidableControllers = {};
 
   late final int _smeId;
+  late final agentNumber;
 
   RecentCallsCubit get _recentCallsCubit => context.read<RecentCallsCubit>();
 
@@ -26,6 +27,8 @@ class _RecentCallsListState extends State<RecentCallsList>
   void initState() {
     super.initState();
     _smeId = context.read<UserDetailsCubit>().userDetailsModel.smeId;
+     agentNumber = context.read<UserDetailsCubit>().userDetailsModel.agentMobile;
+
     _recentCallsCubit.paginationScrollController.init(loadAction: () {
       if (_recentCallsCubit.state is RecentCallsSuccessState &&
           (_recentCallsCubit.state as RecentCallsSuccessState)
@@ -34,9 +37,10 @@ class _RecentCallsListState extends State<RecentCallsList>
         return _recentCallsCubit.getRecentCalls(
           isLoading: false,
           smeId: _smeId,
-          recentCallsRequestModel:
-              (_recentCallsCubit.state as RecentCallsSuccessState)
-                  .recentCallsRequestModel,
+          agentNumber: agentNumber
+          // recentCallsRequestModel:
+          //     (_recentCallsCubit.state as RecentCallsSuccessState)
+          //         .recentCallsRequestModel,
         );
       }
       return Future.value(
@@ -68,7 +72,8 @@ class _RecentCallsListState extends State<RecentCallsList>
                 _recentCallsCubit.getRecentCalls(
                     smeId: _smeId,
                     isLoading: false,
-                    recentCallsRequestModel: state.recentCallsRequestModel,
+                    // recentCallsRequestModel: state.recentCallsRequestModel,
+                    agentNumber: agentNumber,
                     initialRecordValue: 1);
               },
             );
@@ -78,7 +83,8 @@ class _RecentCallsListState extends State<RecentCallsList>
                 _recentCallsCubit.getRecentCalls(
                     smeId: _smeId,
                     isLoading: false,
-                    recentCallsRequestModel: state.recentCallsRequestModel,
+                    // recentCallsRequestModel: state.recentCallsRequestModel,
+                    agentNumber: agentNumber,
                     initialRecordValue: 1);
               },
               child: SlidableAutoCloseBehavior(

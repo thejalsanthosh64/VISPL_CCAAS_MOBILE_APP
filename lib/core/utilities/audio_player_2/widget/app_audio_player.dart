@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:kommuno/core/common/app_constant.dart';
 import 'package:kommuno/core/common/app_theme/app_theme.dart';
 import 'package:kommuno/core/utilities/audio_player_2/manager/audio_manager.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 class AppAudioPlayer1 extends StatefulWidget {
   const AppAudioPlayer1({super.key, required this.audioUrl});

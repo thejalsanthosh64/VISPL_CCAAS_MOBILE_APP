@@ -9,7 +9,7 @@ import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit
 import 'package:kommuno/core/utilities/app_methods.dart';
 import 'package:kommuno/features/break/cubit/break_cubit.dart';
 import 'package:kommuno/features/break/presenter/widget/time_container.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 import 'break_in_button.dart';
 

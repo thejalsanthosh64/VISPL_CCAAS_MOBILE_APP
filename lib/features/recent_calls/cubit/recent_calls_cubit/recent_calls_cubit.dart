@@ -12,7 +12,7 @@ import 'package:kommuno/features/recent_calls/data/enum/recent_calls_filter_enum
 import 'package:kommuno/features/recent_calls/data/model/request/recent_calls_request_model.dart';
 import 'package:kommuno/features/recent_calls/data/model/response/recent_calls_data.dart';
 import 'package:kommuno/features/recent_calls/data/repository/recent_calls_repo.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 
 part 'recent_calls_state.dart';
 
@@ -35,32 +35,74 @@ class RecentCallsCubit extends Cubit<RecentCallsState> {
     super.close();
   }
 
-  Future<bool> getRecentCalls({
-    List<RecentCallsRequestModel>? recentCallsRequestModel,
-    bool isLoading = true,
-    required int smeId,
-    int? initialRecordValue,
-  }) async {
-    bool hasMoreData = true;
-    try {
-      int batchSize = 20;
-      int initialRecord = 1;
-      if (isLoading) {
-        emit(const RecentCallsLoadingState());
-      } else {
-        AppLoadingIndicator.showLoadingIndicator();
-        if (state is RecentCallsSuccessState) {
-          initialRecord = initialRecordValue ??
-              (state as RecentCallsSuccessState).initialRecord + batchSize;
-        }
-      }
+  // Future<bool> getRecentCalls({
+  //   List<RecentCallsRequestModel>? recentCallsRequestModel,
+  //   bool isLoading = true,
+  //   required int smeId,
+  //   int? initialRecordValue,
+  // }) async {
+  //   bool hasMoreData = true;
+  //   try {
+  //     int batchSize = 20;
+  //     int initialRecord = 1;
+  //     if (isLoading) {
+  //       emit(const RecentCallsLoadingState());
+  //     } else {
+  //       AppLoadingIndicator.showLoadingIndicator();
+  //       if (state is RecentCallsSuccessState) {
+  //         initialRecord = initialRecordValue ??
+  //             (state as RecentCallsSuccessState).initialRecord + batchSize;
+  //       }
+  //     }
 
-      final res = await _recentCallsRepo.getRecentCalls(
-        initialRecord: initialRecord,
-        smeId: smeId,
-        batchSize: batchSize,
-        recentCallsRequestModel: recentCallsRequestModel,
-      );
+  //     final res = await _recentCallsRepo.getRecentCalls(
+  //       initialRecord: initialRecord,
+  //       smeId: smeId,
+  //       batchSize: batchSize,
+  //       recentCallsRequestModel: recentCallsRequestModel,
+  //     );
+
+Future<bool> getRecentCalls({
+  bool isLoading = true,
+  required int smeId,
+  required String agentNumber,
+  int? initialRecordValue,
+  DateTimeRange? selectedDateRange,
+}) async {
+  bool hasMoreData = true;
+  try {
+    int batchSize = 20;
+    int initialRecord = 1;
+    
+    if (isLoading) {
+      emit(const RecentCallsLoadingState());
+    } else {
+      AppLoadingIndicator.showLoadingIndicator();
+      if (state is RecentCallsSuccessState) {
+        initialRecord = initialRecordValue ??
+            (state as RecentCallsSuccessState).initialRecord + batchSize;
+      }
+    }
+
+    // Default to today if no date range provided
+    final dateRange = selectedDateRange ?? DateTimeRange(
+      start: DateTime.now().subtract(const Duration(days: 1)),
+      end: DateTime.now(),
+    );
+
+    final requestModel = RecentCallsRequestModel(
+      agentNumber: agentNumber,
+      startDateTime: dateRange.start.toUtc().toIso8601String(),
+      endDateTime: dateRange.end.toUtc().toIso8601String(),
+      batchSize: batchSize,
+      initialRecord: initialRecord,
+    );
+
+    final res = await _recentCallsRepo.getRecentCalls(
+
+      requestModel: requestModel,
+    smeId: smeId
+    );
       if (res.isSuccess) {
         final recentCallsData = List<RecentCallsData>.from(
           (res.data as List<dynamic>).map(
@@ -83,20 +125,22 @@ class RecentCallsCubit extends Cubit<RecentCallsState> {
             list = [...currentState.recentCallsData];
             list.addAll(recentCallsData);
           }
-          if (recentCallsRequestModel == null) {
-            dateController.clear();
-          }
+          // if (recentCallsRequestModel == null) {
+          //   dateController.clear();
+          // }
           emit((state as RecentCallsSuccessState).copyWith(
               initialRecord: initialRecord,
               recentCallsData: list,
-              recentCallsRequestModel: () => recentCallsRequestModel,
-              selectedDate:
-                  recentCallsRequestModel == null ? () => null : null));
+              // recentCallsRequestModel: () => recentCallsRequestModel,
+              // selectedDate:
+                  // recentCallsRequestModel == null ? () => null : null
+                  )
+                  );
         } else {
           emit(RecentCallsSuccessState(
             initialRecord: initialRecord,
             recentCallsData: recentCallsData,
-            recentCallsRequestModel: recentCallsRequestModel,
+            // recentCallsRequestModel: recentCallsRequestModel,
           ));
         }
       } else {
@@ -145,32 +189,58 @@ class RecentCallsCubit extends Cubit<RecentCallsState> {
     }
   }
 
-  void onSelectDate({DateTimeRange? selectedDate, required int smeId}) {
-    if (state is RecentCallsSuccessState) {
-      final currentState = state as RecentCallsSuccessState;
-      dateController.text = selectedDate != null
-          ? "${DateUtility.getDateYMDOnly(date: selectedDate.start)}    ${DateUtility.getDateYMDOnly(date: selectedDate.end)}"
-          : '';
-      emit(currentState.copyWith(selectedDate: () => selectedDate));
-      getRecentCalls(
-        smeId: smeId,
-        isLoading: false,
-        initialRecordValue: 1,
-        recentCallsRequestModel: selectedDate == null
-            ? null
-            : [
-                RecentCallsRequestModel(
-                  recentCallsFilterEnum: RecentCallsFilterEnum.startDate,
-                  val: DateUtility.sendRequestDateTimeFormat(
-                      date: selectedDate.start),
-                ),
-                RecentCallsRequestModel(
-                  recentCallsFilterEnum: RecentCallsFilterEnum.endDate,
-                  val: DateUtility.sendRequestDateTimeFormat(
-                      date: selectedDate.end),
-                )
-              ],
-      );
-    }
+  // void onSelectDate({DateTimeRange? selectedDate, required int smeId}) {
+  //   if (state is RecentCallsSuccessState) {
+  //     final currentState = state as RecentCallsSuccessState;
+  //     dateController.text = selectedDate != null
+  //         ? "${DateUtility.getDateYMDOnly(date: selectedDate.start)}    ${DateUtility.getDateYMDOnly(date: selectedDate.end)}"
+  //         : '';
+  //     emit(currentState.copyWith(selectedDate: () => selectedDate));
+  //     getRecentCalls(
+  //       smeId: smeId,
+  //       isLoading: false,
+  //       initialRecordValue: 1,
+  //       recentCallsRequestModel: selectedDate == null
+  //           ? null
+  //           : [
+  //               RecentCallsRequestModel(
+  //                 recentCallsFilterEnum: RecentCallsFilterEnum.startDate,
+  //                 val: DateUtility.sendRequestDateTimeFormat(
+  //                     date: selectedDate.start),
+  //               ),
+  //               RecentCallsRequestModel(
+  //                 recentCallsFilterEnum: RecentCallsFilterEnum.endDate,
+  //                 val: DateUtility.sendRequestDateTimeFormat(
+  //                     date: selectedDate.end),
+  //               )
+  //             ],
+  //     );
+  //   }
+  // }
+
+  void onSelectDate({DateTimeRange? selectedDate, required int smeId, required String agentNumber}) {
+  if (state is RecentCallsSuccessState) {
+    final currentState = state as RecentCallsSuccessState;
+    
+    // Use selected date or default to today
+    final DateTimeRange dateRange = selectedDate ?? DateTimeRange(
+      start: DateTime.now().subtract(const Duration(days: 1)), // Yesterday
+      end: DateTime.now(),
+    );
+    
+    dateController.text = selectedDate != null
+        ? "${DateUtility.getDateYMDOnly(date: dateRange.start)}    ${DateUtility.getDateYMDOnly(date: dateRange.end)}"
+        : '';
+    
+    emit(currentState.copyWith(selectedDate: () => selectedDate));
+    
+    getRecentCalls(
+      smeId: smeId,
+      agentNumber: agentNumber,
+      isLoading: false,
+      initialRecordValue: 1,
+      selectedDateRange: dateRange,
+    );
   }
+}
 }

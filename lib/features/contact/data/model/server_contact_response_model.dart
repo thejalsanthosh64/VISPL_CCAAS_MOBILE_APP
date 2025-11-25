@@ -43,7 +43,7 @@ class ServerContactsResponseModel extends Equatable {
     required this.isUpdated,
   });
 
-  final int id;
+  final String id;
   final int smeId;
   final String customerName;
   final String customerNumberPrimary;
@@ -53,13 +53,14 @@ class ServerContactsResponseModel extends Equatable {
   final String emailId;
   final dynamic address;
   final int createdBy;
-  final int visibilityFlag;
+  final String visibilityFlag;
   final DateTime insertDateTime;
   final DateTime? updatedDateTime;
   final int isUpdated;
 
   ServerContactsResponseModel copyWith({
-    int? id,
+       String? id,
+
     int? smeId,
     String? customerName,
     String? customerNumberPrimary,
@@ -69,7 +70,7 @@ class ServerContactsResponseModel extends Equatable {
     String? emailId,
     dynamic address,
     int? createdBy,
-    int? visibilityFlag,
+    String? visibilityFlag,
     DateTime? insertDateTime,
     DateTime? updatedDateTime,
     int? isUpdated,
@@ -96,21 +97,22 @@ class ServerContactsResponseModel extends Equatable {
 
   factory ServerContactsResponseModel.fromJson(Map<String, dynamic> json) {
     return ServerContactsResponseModel(
-      id: json["id"],
+      id: json["_id"], 
       smeId: json["sme_id"],
-      customerName: json["customer_name"],
-      customerNumberPrimary: json["customer_number_primary"],
-      mode: json["MODE"],
-      customerNumberSecondary: json["customer_number_secondary"],
-      companyName: json["company_name"],
-      emailId: json["email_id"],
-      address: json["address"],
-      createdBy: json["created_by"],
-      visibilityFlag: json["visibility_flag"],
-      insertDateTime: DateTime.parse(json["insert_date_time"] ?? "").toLocal(),
-      updatedDateTime:
-          DateTime.tryParse(json["updated_date_time"] ?? "")?.toLocal(),
-      isUpdated: json["is_updated"],
+      customerName: json["customer_name"] ?? "",
+      customerNumberPrimary: json["customer_number_primary"] ?? "",
+      mode: json["mode"] ?? 0, 
+      customerNumberSecondary: json["customer_number_secondary"]??"",
+      companyName: json["company_name"] ?? "",
+      emailId: json["email_id"] ?? "",
+      address: json["address"]??"",
+      createdBy: json["created_by"] ?? 0,
+      visibilityFlag: json["visibility_flag"]??"",
+      insertDateTime: DateTime.parse(json["insert_date_time"]),
+      updatedDateTime: json["updated_date_time"] != null
+          ? DateTime.tryParse(json["updated_date_time"])
+          : null,
+      isUpdated: json["is_updated"] ?? 0,
     );
   }
 
