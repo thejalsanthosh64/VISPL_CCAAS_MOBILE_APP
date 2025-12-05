@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kommuno/core/common/repo/activity_log_repo.dart';
+import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
 import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:kommuno/core/common/app_constant.dart';
@@ -8,7 +10,6 @@ import 'package:kommuno/core/common/app_routes/app_routes_manager.dart';
 import 'package:kommuno/core/common/app_theme/app_theme.dart';
 import 'package:kommuno/core/common/widget/loading_indicator.dart';
 import 'package:kommuno/core/common/widget/toast_manager.dart';
-import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
 import 'package:kommuno/core/exception/app_dio_exception.dart';
 import 'package:kommuno/core/utilities/app_methods.dart';
 import 'package:kommuno/core/utilities/campaign_manager.dart';
@@ -49,7 +50,8 @@ abstract class LogoutManager {
           ),
           TextButton(
             onPressed: () {
-              logoutUser(context: ctx);
+               Navigator.of(ctx).pop();
+            logoutUser(context: context);
             },
             child: Text(AppLocalizations.of(ctx)!.logout),
           ),
@@ -59,15 +61,33 @@ abstract class LogoutManager {
     );
   }
 
-  static Future<void> logoutUser({required BuildContext context}) async {
+  static Future<void> logoutUser({required BuildContext context,
+}) async {
+   final userDetailsCubit = context.read<UserDetailsCubit>();
     AppLoadingIndicator.showLoadingIndicator();
+
     try {
+    final waitingSeconds = userDetailsCubit.stopWaitingTimer();
+      userDetailsCubit.stopActiveTimer();
+
+    final user = UserLoginInfoManager.userLoginInfoModel!;
+
+
+await ActivityHelperRepo().updateAgentActivityTime(
+        smeId: user.smeId,
+        agentId: user.userId ,
+        time: waitingSeconds,
+        status: "Waiting",
+      );
+
       final res = await AuthRepo().logoutUser(
         username: UserLoginInfoManager.userLoginInfoModel?.username ?? "",
         mode: AppConstant.loginDeviceType,
       );
 
+
       if (res.isSuccess) {
+       
         UserLoginInfoManager.setLoginUserInfo(userInfo: null);
         CampaignManager.setCampaignInfo(campaign: null);
         for (var key in StorageEnum.values) {
@@ -75,7 +95,10 @@ abstract class LogoutManager {
         }
         await HiveService.deleteAll();
         if (context.mounted) {
-          Navigator.of(context).pushNamedAndRemoveUntil(AppRouteNames.loginScreen, (settings) => false);
+AppKeys.navigatorKey.currentState!.pushNamedAndRemoveUntil(
+  AppRouteNames.loginScreen,
+  (_) => false,
+);
         }
       } else {
         FToastManager().showToast(message: res.message);

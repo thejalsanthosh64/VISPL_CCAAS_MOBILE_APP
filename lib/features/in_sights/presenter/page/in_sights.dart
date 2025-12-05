@@ -341,7 +341,7 @@ class _InSightsState extends StatelessWidget {
           child: FittedBox(
             child: DurationInfoContainer(
               title: AppLocalizations.of(context)!.totalActiveTime,
-              count: state.insightsResponse.avgCallDuration,
+              count: state.insightsResponse.officeHours,
             ),
           ),
         ),

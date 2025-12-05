@@ -6,6 +6,8 @@ class CallState {
   final String callerName;
   final String phoneNumber;
 
+
+
   const CallState({
     this.isConnected = false,
     this.isMuted = false,
@@ -31,5 +33,27 @@ class CallState {
       callerName: callerName ?? this.callerName,
       phoneNumber: phoneNumber ?? this.phoneNumber,
     );
+  }
+
+    @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is CallState &&
+        other.isConnected == isConnected &&
+        other.isMuted == isMuted &&
+        other.isHold == isHold &&
+        other.callerName == callerName &&
+        other.phoneNumber == phoneNumber && 
+        other.duration == duration;
+  }
+
+  @override
+  int get hashCode {
+    return isConnected.hashCode ^
+        isMuted.hashCode ^
+        isHold.hashCode ^
+        callerName.hashCode ^
+        phoneNumber.hashCode ^ 
+        duration.hashCode;
   }
 }

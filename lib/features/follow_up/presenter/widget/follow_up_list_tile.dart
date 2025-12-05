@@ -130,7 +130,7 @@ class FollowUpListTile extends StatelessWidget {
               ),
             ),
 
-            _kSized5,
+            _kSized10,
             InkWell(
               customBorder: const CircleBorder(),
               onTap: () async {

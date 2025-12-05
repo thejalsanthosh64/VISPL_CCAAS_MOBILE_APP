@@ -12,7 +12,7 @@ import 'package:kommuno/features/auth/presenter/page/login_screen.dart';
 import 'package:kommuno/features/auth/presenter/page/otp_verify.dart';
 import 'package:kommuno/features/auth/presenter/page/reset_password.dart';
 import 'package:kommuno/features/calls/presenter/page/call_screen.dart';
-import 'package:kommuno/features/calls/presenter/page/after_call_wrapUp_.dart';
+import 'package:kommuno/features/calls/presenter/page/call_wrapup_.dart';
 import 'package:kommuno/features/campaigns/presenter/page/campaign_list.dart';
 import 'package:kommuno/features/contact/presenter/page/add_update_contact.dart';
 import 'package:kommuno/features/contact/presenter/page/contact_list.dart';

@@ -63,10 +63,13 @@ class DioClient {
   }) async {
     try {
 
-        debugPrint("===== DIO POST REQUEST =====");
-    debugPrint("URL: $uri");
-    debugPrint("BODY: ${const JsonEncoder.withIndent('  ').convert(data)}");
-    debugPrint("HEADERS: ${_dio.options.headers}");
+   debugPrint("===== DIO POST REQUEST =====");
+debugPrint("BASE URL: ${_dio.options.baseUrl}");
+debugPrint("ENDPOINT: $uri");
+debugPrint("FULL URL: ${_dio.options.baseUrl}$uri");
+  debugPrint("BODY: ${const JsonEncoder.withIndent('  ').convert(data)}");
+
+
       final response = await _dio.post(
         uri,
         data: data,
@@ -76,6 +79,9 @@ class DioClient {
         onSendProgress: onSendProgress,
         onReceiveProgress: onReceiveProgress,
       );
+         debugPrint("STATUS: ${response.statusCode}");
+    debugPrint("RESPONSE: ${response.data}");
+
       return CommonResponseModel.fromJson(response.data);
     } on DioException catch (e) {
       throw AppDioException.fromDioException(e);

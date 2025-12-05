@@ -34,4 +34,44 @@ data: {
       rethrow;
     }
   }
+
+
+
+  Future<CommonResponseModel> updateWebrtcAgentStatus({
+  required int smeId,
+  required int agentId,
+}) async {
+  final body = {
+    "status": 0,
+    "agentId": agentId,
+    "insertDateTime": DateTime.now().toString().split(".").first,
+    "readyToTakeCallStatus": 1,
+    "agentLiveStatus": "Waiting",
+    "liveStatusActivityMode": "LoginMode"
+  };
+
+  final res = await _dioClient.post(
+    ApiEndpoints.updateWebrtcAgentStatus(smeId),
+    data: body,
+  );
+  return res;
+}
+Future<CommonResponseModel> setIsAlive({
+  required String username,
+  required String role,
+}) async {
+  final body = {
+    "username": username,
+    "mode": "login",
+    "role": role,            
+    "isWebrtcUser": 0,
+  };
+
+  final res = await _dioClient.post(
+    ApiEndpoints.setIsAlive(username),
+    data: body,
+  );
+  return res;
+}
+
 }

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kommuno/core/common/app_keys.dart';
@@ -8,8 +10,11 @@ import 'package:kommuno/core/network_manager/websocket_service.dart';
 import 'package:kommuno/core/utilities/app_methods.dart';
 import 'package:kommuno/core/utilities/call_manager/call_session.dart';
 import 'package:kommuno/core/utilities/campaign_manager.dart';
+import 'package:kommuno/features/calls/cubit/call_cubit.dart';
 import 'package:kommuno/features/calls/data/repository/call_repo.dart';
 import 'package:kommuno/core/l10n/app_localizations.dart';
+import 'package:kommuno/features/calls/presenter/page/call_wrapup_.dart';
+import 'package:kommuno/features/contact/presenter/widget/contact_helper.dart';
 import 'package:uuid/uuid.dart';
 
 // class CallManager {
@@ -331,39 +336,71 @@ class CallManager {
         "agentNumber": userDetails.agentMobile,
       };
 
-      debugPrint('📞 Making new call request...');
+debugPrint(
+  " newCallRequestDetails => ${jsonEncode(newCallRequestDetails)}"
+);
+      debugPrint(' Making new call request...');
+
+
       final res = await _callsRepo.makeNewCallV2(
           newCallRequestData: newCallRequestDetails);
 
       if (res.isSuccess) {
-        debugPrint('✅ Call API Success: ${res.message}');
+        debugPrint(' Call API Success: ${res.message}');
         
-        // Save session (no channel yet)
         CallSession.save(
           session: sessionId,
           channel: "",
           sme: userDetails.smeId,
           agent: userDetails.agentId,
           name: userDetails.agentName,
+          type: "Outgoing",
         );
 
+        final ctx = AppKeys.navigatorKey.currentContext!;
+        
+        final callStateCubit = CallStateCubit();
+
         // Connect WebSocket
-        debugPrint('🔌 Connecting WebSocket...');
-        CallWebSocketManager.connect(
+        debugPrint(' Connecting WebSocket...');
+        CallWebSocketManager.connectForCall(
           sessionId: sessionId,
           smeId: userDetails.smeId,
           agentId: userDetails.agentId,
+          cubit: callStateCubit,
         );
+ final contactName = ContactLookup.getName(number);
+        final displayName = contactName != "Unknown" ? contactName : number;
+
+        Navigator.push(
+  ctx,
+  MaterialPageRoute(
+    builder: (_) => MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: callStateCubit),
+        BlocProvider.value(value: UserDetailsCubit.instance!),  
+      ],
+      child: AfterCallWrapUpScreen(
+        callerName: displayName,
+        phoneNumber: number,
+        duration: Duration.zero,
+        waitingForConnection: true,
+      ),
+    ),
+  ),
+);
+
+
 
         FToastManager().showToast(
             message: AppLocalizations.of(AppKeys.navigatorKey.currentContext!)!
                 .waitForTheCall);
       } else {
-        debugPrint('❌ Call API Failed: ${res.message}');
+        debugPrint(' Call API Failed: ${res.message}');
         FToastManager().showToast(message: res.message);
       }
     } catch (e, s) {
-      debugPrint("❌ makeNewCall ERROR: $e\n$s");
+      debugPrint(" makeNewCall ERROR: $e\n$s");
       FToastManager().showToast(
         message: AppLocalizations.of(AppKeys.navigatorKey.currentContext!)!
             .somethingWentWrong,

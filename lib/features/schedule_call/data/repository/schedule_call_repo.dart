@@ -1,6 +1,5 @@
 import 'package:kommuno/core/network_manager/common_response_model.dart';
 import 'package:kommuno/core/network_manager/dio_client.dart';
-import 'package:kommuno/core/utilities/user_login_info_manager/user_login_info_manager.dart';
 import 'package:kommuno/features/schedule_call/data/model/request/add_schedule_call_request_model.dart';
 
 class ScheduleCallRepo {
@@ -36,4 +35,24 @@ class ScheduleCallRepo {
       rethrow;
     }
   }
+
+  Future<CommonResponseModel> nearTimeScheduleCalls({
+  required int smeId,
+  required int agentId,
+  required String time,
+}) async {
+  try {
+    final res = await _dioClient.post(
+      ApiEndpoints.nearTimeScheduleCalls(smeId),
+      data: {
+        "agentId": agentId,
+        "time": time,
+      },
+    );
+    return res;
+  } catch (e) {
+    rethrow;
+  }
+}
+
 }

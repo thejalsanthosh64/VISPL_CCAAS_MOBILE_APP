@@ -3,8 +3,11 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kommuno/core/common/app_keys.dart';
+import 'package:kommuno/core/common/repo/activity_log_repo.dart';
 import 'package:kommuno/core/common/widget/loading_indicator.dart';
 import 'package:kommuno/core/common/widget/toast_manager.dart';
+import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
+import 'package:kommuno/core/common/widget/user_details/data/model/user_details_model.dart';
 import 'package:kommuno/core/exception/app_dio_exception.dart';
 import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:kommuno/core/utilities/date_utility.dart';
@@ -83,11 +86,30 @@ class BreakCubit extends Cubit<BreakState> {
   }
 }
 
-  Future<void> breakIn({required BreakInRequestModel breakInRequestData}) async {
+  Future<void> breakIn({required BreakInRequestModel breakInRequestData,required BuildContext context,}) async {
     try {
       AppLoadingIndicator.showLoadingIndicator();
+      
+      UserDetailsModel? user;
+
+        final userDetailsCubit = context.read<UserDetailsCubit>();
+       int waitingSeconds = userDetailsCubit.stopWaitingTimer();
+       debugPrint(" breakIn waitingSeconds: $waitingSeconds");
+
+        user = userDetailsCubit.userDetailsModel;
+        await ActivityHelperRepo().updateAgentActivityTime(
+      smeId: user.smeId,
+      agentId: user.agentId ?? 0,
+      time: waitingSeconds,
+      status: "Waiting",
+    );
+
       final res = await _breakRepo.breakIn(breakInRequestData: breakInRequestData);
+
+
       FToastManager().showToast(message: res.message);
+
+
       if (res.isSuccess) {
         print("✔ Break In API SUCCESS: ${res.data}");
 
@@ -103,13 +125,19 @@ class BreakCubit extends Cubit<BreakState> {
     AppLoadingIndicator.dismissLoadingIndicator();
   }
 
-  Future<void> breakOut({required BreakOutRequestModel breakOutRequestData}) async {
+  Future<void> breakOut({required BreakOutRequestModel breakOutRequestData,required BuildContext context}) async {
     try {
       AppLoadingIndicator.showLoadingIndicator();
+              final userDetailsCubit = context.read<UserDetailsCubit>();
+
       final res = await _breakRepo.breakOut(breakOutRequestData: breakOutRequestData);
       FToastManager().showToast(message: res.message);
       if (res.isSuccess) {
+
+      userDetailsCubit.startWaitingTimer(); 
         getBreakDetails(isLoading: false);
+
+
       }
     } on AppDioException catch (e) {
       FToastManager().showToast(message: e.message);
@@ -121,7 +149,7 @@ class BreakCubit extends Cubit<BreakState> {
     AppLoadingIndicator.dismissLoadingIndicator();
   }
 
-  Future<void> _startTimer({required bool isOnBreak}) async {
+  Future<void> _startTimer({required bool isOnBreak,}) async {
 
     if (state is BreakSuccessState) {
       BreakSuccessState currentState = state as BreakSuccessState;

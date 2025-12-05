@@ -87,6 +87,7 @@ class BreakInButton extends StatelessWidget {
             final now = DateTime.now();
 
     _breakCubit(context).breakOut(
+      context: context,
   breakOutRequestData: BreakOutRequestModel(
     smeId: "${userDetails.smeId}",
     endDate: now,
@@ -191,6 +192,7 @@ class BreakInButton extends StatelessWidget {
       final now = DateTime.now();
 
 _breakCubit(context).breakIn(
+  context: context,
   breakInRequestData: BreakInRequestModel(
     message: selectedReason.value,
     smeId: "${userDetails.smeId}",

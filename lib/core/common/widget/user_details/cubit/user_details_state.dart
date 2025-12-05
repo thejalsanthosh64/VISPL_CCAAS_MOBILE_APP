@@ -35,8 +35,48 @@ final class UserDetailsNotFoundState extends UserDetailsState {
 final class UserDetailsSuccessState extends UserDetailsState {
   final UserDetailsModel userDetailsModel;
 
-  const UserDetailsSuccessState({required this.userDetailsModel});
+  final String agentStatus;    
+  final int waitingSeconds;   
+    final int activeSeconds; 
+  final int officeHours;
+
+
+  const UserDetailsSuccessState({
+    required this.userDetailsModel,
+    this.agentStatus = "Waiting",
+    this.waitingSeconds = 0,
+        this.activeSeconds = 0, 
+                this.officeHours = 0, 
+
+
+  });
+
+  UserDetailsSuccessState copyWith({
+    UserDetailsModel? userDetailsModel,
+    String? agentStatus,
+    int? waitingSeconds,
+        int? activeSeconds,
+           int? officeHours
+
+
+  }) {
+    return UserDetailsSuccessState(
+      userDetailsModel: userDetailsModel ?? this.userDetailsModel,
+      agentStatus: agentStatus ?? this.agentStatus,
+      waitingSeconds: waitingSeconds ?? this.waitingSeconds,
+            activeSeconds: activeSeconds ?? this.activeSeconds,
+
+            officeHours: officeHours ?? this.officeHours,
+
+    );
+  }
 
   @override
-  List<Object?> get props => [userDetailsModel];
+  List<Object?> get props => [
+        userDetailsModel,
+        agentStatus,
+        waitingSeconds,
+        activeSeconds,officeHours
+      ];
 }
+

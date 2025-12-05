@@ -183,15 +183,6 @@ class _CampaignListState extends StatelessWidget {
               final queueId = campaign.campaignQueue != null ? int.tryParse(campaign.campaignQueue ?? "0") : null;
               context.read<UpdateUserCampaignCubit>().updateUserCampaign(
                     updateCampaignData: UpdateUserCampaignData(
-                      // smeId: userData.smeId,
-                      // agentName: userData.agentName,
-                      // queueId: queueId,
-                      // selectedCampaigns: [
-                      //   SelectedCampaign(
-                      //     queueId: queueId,
-                      //     campaignId: campaign.id,
-                      //     campaignName: campaign.campaignName,
-
  agentId: userData.agentId,
     agentName: userData.agentName,
     queueId: campaign.campaignQueue ?? "0",

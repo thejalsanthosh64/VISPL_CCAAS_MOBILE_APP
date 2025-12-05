@@ -19,6 +19,7 @@ import 'package:kommuno/features/contact/data/model/device_contact_list_model.da
 import 'package:kommuno/features/contact/data/model/server_contact_response_model.dart';
 import 'package:kommuno/features/contact/data/repository/contact_repo.dart';
 import 'package:kommuno/features/contact/presenter/widget/alphabetic_list.dart';
+import 'package:kommuno/features/contact/presenter/widget/contact_helper.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:kommuno/core/l10n/app_localizations.dart';
 
@@ -57,6 +58,17 @@ class ContactListCubit extends Cubit<ContactListState> {
         final contacts = await FlutterContacts.getContacts(
             withThumbnail: true, sorted: true, withProperties: true);
         final contactList = _groupByDevicesList(contacts: contacts);
+
+ for (var group in contactList) {
+        for (var c in group.contactDisplayDetails) {
+          final dn = c.displayName?.trim() ?? "";
+          if (dn.isNotEmpty && dn.toLowerCase() != "unknown") {
+            ContactLookup.deviceNames[
+              ContactLookup.normalize(c.number)
+            ] = dn;
+          }
+        }
+      }
         emit(DeviceContactListState(
             contactList: contactList, selectedMenu: state.selectedMenu));
       } else {
@@ -86,6 +98,9 @@ class ContactListCubit extends Cubit<ContactListState> {
       int batchSize = 20;
       int initialRecord = 1;
       if (isLoading) {
+
+
+        
         emit(ContactListLoadingState(selectedMenu: state.selectedMenu));
       } else {
         AppLoadingIndicator.showLoadingIndicator();
@@ -127,6 +142,22 @@ class ContactListCubit extends Cubit<ContactListState> {
             ];
           }
           final contactList = _groupByServerList(contacts: contacts);
+for (var group in contactList) {
+          for (var c in group.contactDisplayDetails) {
+            final name = c.customerName.trim();
+            if (name.isNotEmpty && name.toLowerCase() != "unknown" && name.toLowerCase() != "no name") {
+              ContactLookup.serverNames[
+                ContactLookup.normalize(c.customerNumberPrimary)
+              ] = name;
+            }
+          }
+        }
+
+        debugPrint(" Server contacts loaded: ${ContactLookup.serverNames.length}");
+
+
+
+
           emit((state as ServerContactListState).copyWith(
               contactList: contactList, initialRecord: initialRecord));
         } else {

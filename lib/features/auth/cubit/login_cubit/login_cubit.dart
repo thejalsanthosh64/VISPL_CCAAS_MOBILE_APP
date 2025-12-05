@@ -58,7 +58,7 @@ class LoginCubit extends Cubit<LoginState> {
           deviceType: AppConstant.loginDeviceType,
         ));
         if (res.isSuccess) {
-       
+
           await UserLoginInfoManager.setLoginUserInfo(userInfo: res.data);
           emit(state.copyWith(isUserLoginSuccess: true));
         } else {

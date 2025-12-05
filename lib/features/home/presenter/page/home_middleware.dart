@@ -10,6 +10,8 @@ import 'package:kommuno/core/common/widget/user_details/user_details_widget.dart
 import 'package:kommuno/core/utilities/app_methods.dart';
 import 'package:kommuno/core/utilities/shortcuts/cubit/shortcuts_cubit.dart';
 import 'package:kommuno/features/break/cubit/break_cubit.dart';
+import 'package:kommuno/features/calls/cubit/call_cubit.dart';
+import 'package:kommuno/features/in_sights/cubit/in_sights_cubit/in_sights_cubit.dart';
 
 class HomeMiddleware extends StatelessWidget {
   const HomeMiddleware({super.key});
@@ -35,6 +37,9 @@ class HomeMiddleware extends StatelessWidget {
           BlocProvider(create: (__) => UserDetailsCubit()),
           BlocProvider(create: (__) => BreakCubit()),
           BlocProvider(create: (__) => ShortcutsCubit()),
+                    BlocProvider(create: (_) => CallStateCubit()),
+                    BlocProvider(create: (_) => InSightsCubit()),
+
         ],
         child: const _HomeMiddleWareState(),
       ),

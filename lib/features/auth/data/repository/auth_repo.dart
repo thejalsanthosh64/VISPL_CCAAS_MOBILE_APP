@@ -1,3 +1,8 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kommuno/core/common/app_keys.dart';
+import 'package:kommuno/core/common/repo/activity_log_repo.dart';
+import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
 import 'package:kommuno/core/network_manager/common_response_model.dart';
 import 'package:kommuno/core/network_manager/dio_client.dart';
 import 'package:kommuno/core/utilities/user_login_info_manager/user_login_info_manager.dart';
@@ -55,6 +60,10 @@ final class AuthRepo {
     required String mode,
   }) async {
     try {
+
+
+
+
       final res = await _dioClient.post(
           ApiEndpoints.logout(UserLoginInfoManager.userLoginInfoModel!.userId),
           data: {
@@ -62,9 +71,41 @@ final class AuthRepo {
             "token": "",
             "username": username,
           });
+
+if(res.isSuccess){
+
+final user = UserLoginInfoManager.userLoginInfoModel!;
+
+await ActivityHelperRepo().setActivityLogs(
+user.smeId,
+  userRole: user.role,
+  moduleName: "auth",
+  action: "logout",
+  message: "${user.username} Successfully Logged Out",
+  agentId: user.userId,
+);
+
+await ActivityHelperRepo().updateUserOnlineOffline(
+  smeId: user.smeId,
+  onlineStatus: "Offline",
+  userName: user.username,
+  role: user.role,
+  agentId: user.userId,
+  agentLiveStatus: "Logout",
+  callModePermission: 1,
+  agentLoginType: "self_sign_in",
+);
+
+
+ }
+
       return res;
     } catch (e) {
       rethrow;
     }
   }
+
+
+
+
 }

@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kommuno/core/common/app_keys.dart';
 import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/core/exception/app_dio_exception.dart';
+import 'package:kommuno/core/utilities/user_login_info_manager/user_login_info_manager.dart';
 import 'package:kommuno/features/campaigns/data/model/response/campaign_data.dart';
 import 'package:kommuno/features/campaigns/data/repository/campaign_repo.dart';
 import 'package:kommuno/core/l10n/app_localizations.dart';
@@ -17,12 +18,25 @@ class CampaignListCubit extends Cubit<CampaignListState> {
   CampaignListCubit() : super(const CampaignListInitialState());
 
   final _campaignRepo = CampaignRepo();
+    final loginInfo = UserLoginInfoManager.userLoginInfoModel!;
 
   Future<void> loadCampaigns({required int smeId}) async {
     try {
       emit(const CampaignListLoadingState());
       final res = await _campaignRepo.getCampaigns(smeId: smeId);
       if (res.isSuccess) {
+
+     await _campaignRepo.setIsAlive(
+        username: loginInfo.username,
+        role: loginInfo.role,
+      );
+
+      await _campaignRepo.updateWebrtcAgentStatus(
+        smeId: smeId,
+        agentId: loginInfo.userId,
+     
+      );
+
         final data = List<Map<String, dynamic>>.from(res.data as List);
         List<CampaignData> campaignList = [...data.map((e) => CampaignData.fromJson(e))];
         emit(CampaignListSuccessState(campaignList: campaignList));

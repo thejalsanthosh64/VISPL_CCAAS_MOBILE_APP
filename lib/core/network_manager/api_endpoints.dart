@@ -17,7 +17,7 @@ abstract class ApiEndpoints {
 
   static const login = "oauth/signin";
 
-  static String logout(int id) => "$id/setNotificationToken";
+  static String logout(int id) => "sme/$id/setNotificationToken";
 
   static String forgotPassword(String userName) => "component/$userName/forget/password";
 
@@ -86,7 +86,7 @@ abstract class ApiEndpoints {
 
   static String getLongCodesForCall(int id) => "$id/getLongcodesForCall";
 
-  static const clickToCallLiveCall = "crm/clickToCallLiveCall";
+  static const clickToCallLiveCall = "/crm/clickToCallLiveCall";
 
   static String holdCall(int smeId) => "/agent/$smeId/hold";
 
@@ -101,6 +101,12 @@ abstract class ApiEndpoints {
   static String transferCall(int smeId) => "/agent/$smeId/unattended";
 
   static String conferenceall(int smeId) => "/agent/$smeId/attended";
+    static String getAgentStatus(int smeId) => "/sme/$smeId/getAgentStatus";
+
+  static String getQueue(int smeId) => "/sme/$smeId/getQueue";
+
+  static String getTeamLeads(int smeId) => "/teamlead/$smeId/getTeamLeads";
+
 
   static String getQueueAgent(int smeId) => "/agent/$smeId/getQueueAgent";
 
@@ -114,6 +120,22 @@ abstract class ApiEndpoints {
   // static String updateAgentCurrentCampaign(int id) => "$id/updateAgentCurrentCampaign";
 
   static String updateAgentCurrentCampaign(int id) => "agent/$id/updateAgentCurrentCallMode";
+    static String saveRating(int smeId) => "/agent/$smeId/saveRating";
 
-   
+  static String saveRatingInCrm(int smeId) => "/agent/$smeId/saveRatingInCrm";
+
+    static String setIsAlive(String username) => "/sme/$username/setIsAlive";
+
+  static String updateWebrtcAgentStatus(int smeId) => "/sme/$smeId/updateWebrtcAgentStatus";
+    static String nearTimeScheduleCalls(int smeId) => "/sme/$smeId/nearTimeScheduleCalls";
+    static String updateUserOnlineOffline(String username) => "/sme/$username/updateUserOnlineOffline";
+
+
+
+    static String updateAgentActivityTime(int smeId) => "/agent/$smeId/updateAgentActivityTime";
+    static String updateLiveCallStatus(int smeId) => "/agent/$smeId/updateLiveCallStatus";
+    static String updateAgentLiveStatus(int smeId) => "/agent/$smeId/updateAgentLiveStatus";
+    static String setActivityLogs(int id) => "/common/$id/setActivityLogs";
+
+
 }

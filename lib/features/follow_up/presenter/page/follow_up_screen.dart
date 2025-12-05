@@ -312,10 +312,8 @@ Future<bool?> _showDeleteDialog(BuildContext context) {
             onPressed: () => Navigator.of(context).pop(false),
             child:  Text(AppLocalizations.of(context)!.cancel),
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.white,
-            ),
+          TextButton(
+         
             onPressed: () => Navigator.of(context).pop(true),
             child:  Text(AppLocalizations.of(context)!.delete),
           ),

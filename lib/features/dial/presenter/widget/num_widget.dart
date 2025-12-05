@@ -57,7 +57,7 @@ class NumWidget extends StatelessWidget {
                       ),
                       style: ButtonStyle(
                         backgroundColor: WidgetStateProperty.all(
-                            state.number.length == 10
+                            state.number.length >= 10 && state.number.length <= 12
                                 ? AppColors.green
                                 : AppColors.grey),
                       ),

@@ -28,7 +28,7 @@ class CommonResponseModel extends Equatable {
   factory CommonResponseModel.fromJson(Map<String, dynamic> json) {
     return CommonResponseModel(
       status: json["status"],
-      message: json["message"],
+      message: json['message']?.toString() ?? '',
       data: json["data"],
     );
   }

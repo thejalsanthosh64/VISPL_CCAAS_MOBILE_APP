@@ -5,5 +5,5 @@ abstract class AppRegEx {
   static final checkEnglishLetter =  RegExp(r'^[a-zA-Z]');
 
 
-  static final indianNo = RegExp(r'^[6-9]\d{9}$');
+  static final indianNo = RegExp(r'^[6-9]\d{9,11}$');
 }

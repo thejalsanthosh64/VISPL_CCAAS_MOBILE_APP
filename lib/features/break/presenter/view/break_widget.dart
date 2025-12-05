@@ -75,14 +75,28 @@ class BreakWidget extends StatelessWidget {
                     time: state.breakResponseModel.signInStr ??
                         AppConstant.breakDefaultTime,
                   ),
-                  TimeContainer(
-                    title: AppLocalizations.of(context)!.activeTime,
-                    time: (state.breakResponseModel.totalActiveTime ?? 0) > 0
-                        ? getDurationFromSeconds(
-                            duration: state.breakResponseModel.totalActiveTime!,
-                            isShowText: false)
-                        : AppConstant.breakDefaultTime,
-                  ),
+                 TimeContainer(
+  title: AppLocalizations.of(context)!.activeTime,
+  time: () {
+    final userState = context.watch<UserDetailsCubit>().state;
+
+    int office = 0;
+    int active = 0;
+
+    if (userState is UserDetailsSuccessState) {
+      office = userState.officeHours;      
+      active = userState.activeSeconds;    
+    }
+
+    final total = office + active;
+  // print(" officeHours: $office, activeSeconds: $active, total: $total");
+
+    return total > 0
+        ? getDurationFromSeconds(duration: total, isShowText: false)
+        : AppConstant.breakDefaultTime;
+  }(),
+),
+
                 ],
               ),
               _kSized15,

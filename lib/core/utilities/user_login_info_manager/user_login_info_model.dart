@@ -10,6 +10,7 @@ class UserLoginInfoModel extends Equatable {
     required this.userId,
     required this.accessToken,
     required this.tokenType,
+    required this.smeId
   });
 
   final String username;
@@ -20,6 +21,8 @@ class UserLoginInfoModel extends Equatable {
   final int userId;
   final String accessToken;
   final String tokenType;
+    final int smeId;
+
 
   UserLoginInfoModel copyWith({
     String? username,
@@ -30,6 +33,8 @@ class UserLoginInfoModel extends Equatable {
     int? userId,
     String? accessToken,
     String? tokenType,
+        int? smeId,
+
   }) {
     return UserLoginInfoModel(
       username: username ?? this.username,
@@ -40,6 +45,8 @@ class UserLoginInfoModel extends Equatable {
       userId: userId ?? this.userId,
       accessToken: accessToken ?? this.accessToken,
       tokenType: tokenType ?? this.tokenType,
+            smeId: smeId ?? this.smeId,
+
     );
   }
 
@@ -53,6 +60,7 @@ class UserLoginInfoModel extends Equatable {
       userId: json["user_id"],
       accessToken: json["access_token"],
       tokenType: json["token_type"],
+      smeId: json["smeId"]
     );
   }
 
@@ -65,6 +73,7 @@ class UserLoginInfoModel extends Equatable {
         "user_id": userId,
         "access_token": accessToken,
         "token_type": tokenType,
+        "smeId":smeId
       };
 
   @override

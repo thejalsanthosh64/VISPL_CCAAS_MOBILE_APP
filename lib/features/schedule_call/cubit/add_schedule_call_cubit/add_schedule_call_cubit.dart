@@ -9,6 +9,7 @@ import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit
 import 'package:kommuno/core/exception/app_dio_exception.dart';
 import 'package:kommuno/core/utilities/app_methods.dart';
 import 'package:kommuno/core/l10n/app_localizations.dart';
+import 'package:kommuno/core/utilities/date_utility.dart';
 import 'package:kommuno/core/utilities/validation.dart';
 import 'package:kommuno/features/schedule_call/data/model/request/add_schedule_call_request_model.dart';
 import 'package:kommuno/features/schedule_call/data/repository/schedule_call_repo.dart';
@@ -103,12 +104,20 @@ class AddScheduleCallCubit extends Cubit<AddScheduleCallState> {
 
         final res = await _scheduleCallRepo.addScheduleCall(
             addScheduleCallRequestModel: addScheduleCallRequestModel,smeId:smeId );
+
+         final followUpCubit = await _scheduleCallRepo.nearTimeScheduleCalls(agentId: userDetailsModel.agentId,smeId: smeId,time: DateUtility.scheduleCallRequestDateTimeFormat(
+              date: selectedDateTime));
+
+            
         FToastManager().showToast(message: res.message);
         if (res.isSuccess) {
+
+
           emit(AddSScheduleCallSuccessState(
               selectedDateTime: selectedDateTime,
               addScheduleCallRequestModel: addScheduleCallRequestModel));
         }
+
       }
     } on AppDioException catch (e) {
       FToastManager().showToast(message: e.message);

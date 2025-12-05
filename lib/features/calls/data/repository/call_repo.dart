@@ -151,7 +151,7 @@ Future<CommonResponseModel> getQueueAgents({
 }) async {
   try {
     final res = await _dioClient.post(
-      "/agent/$smeId/getQueueAgent",
+      ApiEndpoints.getQueueAgent(smeId),
       data: {"queueId": queueId},
     );
     return res;
@@ -166,7 +166,7 @@ Future<CommonResponseModel> getAgentStatus({
 }) async {
   try {
     final res = await _dioClient.post(
-      "/agent/$smeId/getAgentStatusDetail",
+      ApiEndpoints.getAgentStatusDetail(smeId),
       data: {"agent_id": agentId},
     );
     return res;
@@ -174,6 +174,81 @@ Future<CommonResponseModel> getAgentStatus({
     rethrow;
   }
 }
+
+  Future<CommonResponseModel> getAllAgents({
+    required int smeId,
+  }) async {
+    try {
+      final res = await _dioClient.post(
+        ApiEndpoints.getAgentStatus(smeId),
+        data: {"role": UserLoginInfoManager.userLoginInfoModel!.role},
+      );
+      return res;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<CommonResponseModel> getAllQueues({
+    required int smeId,
+  }) async {
+    try {
+      final res = await _dioClient.post(
+        ApiEndpoints.getQueue(smeId),
+        data: {"ignore": "Parallel Ringing"},
+      );
+      return res;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<CommonResponseModel> getTeamLeads({
+    required int smeId,
+  }) async {
+    try {
+      final res = await _dioClient.post(
+        ApiEndpoints.getTeamLeads(smeId),
+      );
+      return res;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+Future<CommonResponseModel> saveRating({
+  required int smeId,
+  required Map<String, dynamic> body,
+}) async {
+  try {
+    final res = await _dioClient.post(
+       ApiEndpoints.saveRating(smeId),
+      data: body,
+    );
+    return res;
+  } catch (e) {
+    rethrow;
+  }
+}
+
+Future<CommonResponseModel> saveRatingCrm({
+  required int smeId,
+  required Map<String, dynamic> body,
+}) async {
+  try {
+    final res = await _dioClient.post(
+      ApiEndpoints.saveRatingInCrm(smeId),
+      data: body,
+    );
+    return res;
+  } catch (e) {
+    rethrow;
+  }
+}
+
+
+
+
 
 
 }

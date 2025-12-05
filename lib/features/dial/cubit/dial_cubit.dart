@@ -23,7 +23,7 @@ class DialCubit extends Cubit<DialState> {
 
   void changeDialNo(DialDataModel dialData) {
     String dialNo = state.number;
-    if (dialNo.length < 10) {
+    if (dialNo.length < 12) {
       final cursorPosition = dialController.selection.base.offset;
       final latest = dialNo.split("");
       latest.insert(cursorPosition, dialData.dialNo);
