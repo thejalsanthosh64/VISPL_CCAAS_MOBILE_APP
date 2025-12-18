@@ -270,13 +270,13 @@ Widget _buildStatus(String status, String timer) {
   return Row(
     mainAxisSize: MainAxisSize.min,
     children: [
-      Icon(Icons.circle, size: 10, color: color),
+      const Icon(Icons.circle, size: 10, color: color),
   
       const SizedBox(width: 6),
   
       Text(
         status,
-        style: TextStyle(
+        style: const TextStyle(
           color: color,
           fontWeight: FontWeight.w700,
           fontSize: 13,
@@ -288,7 +288,7 @@ Widget _buildStatus(String status, String timer) {
         const SizedBox(width: 6),
         Text(
           timer,
-          style: TextStyle(
+          style: const TextStyle(
             color: color,
             fontWeight: FontWeight.w700,
             fontSize: 13,

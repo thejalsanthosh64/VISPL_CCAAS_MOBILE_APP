@@ -13,7 +13,6 @@ import 'package:kommuno/core/common/widget/slidable_icon_button.dart';
 import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
 import 'package:kommuno/core/common/widget/whatsapp_launcher_button.dart';
 import 'package:kommuno/core/utilities/app_methods.dart';
-import 'package:kommuno/core/utilities/audio_player/widget/app_audio_player.dart';
 import 'package:kommuno/core/utilities/audio_player_2/widget/app_audio_player.dart';
 import 'package:kommuno/core/utilities/date_utility.dart';
 import 'package:kommuno/features/contact/data/model/add_update_contact_address_model.dart';

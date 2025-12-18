@@ -1,8 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kommuno/core/common/app_keys.dart';
+
 import 'package:kommuno/core/common/repo/activity_log_repo.dart';
-import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
 import 'package:kommuno/core/network_manager/common_response_model.dart';
 import 'package:kommuno/core/network_manager/dio_client.dart';
 import 'package:kommuno/core/utilities/user_login_info_manager/user_login_info_manager.dart';

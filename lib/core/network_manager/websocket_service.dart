@@ -300,7 +300,7 @@ static void _showReminderPopup(Map<String, dynamic> data) {
                           displayName.isNotEmpty && displayName != "Unknown"
                               ? displayName[0].toUpperCase()
                               : "?",
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: AppColors.appColor,

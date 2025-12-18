@@ -70,11 +70,18 @@ class BreakWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  TimeContainer(
-                    title: AppLocalizations.of(context)!.timeIn,
-                    time: state.breakResponseModel.signInStr ??
-                        AppConstant.breakDefaultTime,
-                  ),
+               
+                // TimeContainer(
+                //     title: AppLocalizations.of(context)!.timeOut,
+                //     time: state.breakResponseModel.signOutStr ??
+                //         AppConstant.breakDefaultTime,
+                //   ),
+                                   
+                  // TimeContainer(
+                  //   title: AppLocalizations.of(context)!.timeIn,
+                  //   time: state.breakResponseModel.signInStr ??
+                  //       AppConstant.breakDefaultTime,
+                  // ),
                  TimeContainer(
   title: AppLocalizations.of(context)!.activeTime,
   time: () {
@@ -96,29 +103,36 @@ class BreakWidget extends StatelessWidget {
         : AppConstant.breakDefaultTime;
   }(),
 ),
-
-                ],
-              ),
-              _kSized15,
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TimeContainer(
-                    title: AppLocalizations.of(context)!.timeOut,
-                    time: state.breakResponseModel.signOutStr ??
-                        AppConstant.breakDefaultTime,
-                  ),
-                  TimeContainer(
+ TimeContainer(
                     title: AppLocalizations.of(context)!.breakTime,
                     time: state.breakTime > 0
                         ? getDurationFromSeconds(
                             duration: state.breakTime, isShowText: false)
                         : AppConstant.breakDefaultTime,
                   ),
+
                 ],
               ),
-            ],
+              _kSized15,
+              // Row(
+              //   crossAxisAlignment: CrossAxisAlignment.start,
+              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //   children: [
+                  // TimeContainer(
+                  //   title: AppLocalizations.of(context)!.timeOut,
+                  //   time: state.breakResponseModel.signOutStr ??
+                  //       AppConstant.breakDefaultTime,
+                  // ),
+                  // TimeContainer(
+                  //   title: AppLocalizations.of(context)!.breakTime,
+                  //   time: state.breakTime > 0
+                  //       ? getDurationFromSeconds(
+                  //           duration: state.breakTime, isShowText: false)
+                  //       : AppConstant.breakDefaultTime,
+                  // ),
+                ],
+            //   ),
+            // ],
           );
         }
         return const SizedBox();
