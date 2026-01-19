@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kommuno/core/common/app_constant.dart';
 import 'package:kommuno/core/common/app_keys.dart';
+import 'package:kommuno/core/network_manager/alive_set_service.dart';
 import 'package:kommuno/core/utilities/user_login_info_manager/user_login_info_manager.dart';
 import 'package:kommuno/core/common/widget/loading_indicator.dart';
 import 'package:kommuno/core/common/widget/toast_manager.dart';
@@ -46,6 +47,7 @@ class LoginCubit extends Cubit<LoginState> {
       } else {
         hideKeyboard();
         AppLoadingIndicator.showLoadingIndicator();
+
         final res = await _authRepo.loginUser(
           loginRequestModel: LoginRequestModel(
           password: password,
@@ -55,10 +57,36 @@ class LoginCubit extends Cubit<LoginState> {
         if (res.isSuccess) {
 
           await UserLoginInfoManager.setLoginUserInfo(userInfo: res.data);
-          emit(state.copyWith(isUserLoginSuccess: true));
+          final user = UserLoginInfoManager.userLoginInfoModel!;
+
+// Call Ready-To-Take-Call API
+await _authRepo.updateReadyToTakeCall(
+  agentId: user.userId,
+);
+AliveService().start(
+    username: user.username,
+    role: user.role,
+  );
+          // emit(state.copyWith(isUserLoginSuccess: true));
         } else {
           FToastManager().showToast(message: res.message);
         }
+
+         final aliveRes = await _authRepo.checkIsAlive(
+      username: username,
+    );
+
+    if (aliveRes.status == 1 &&
+        aliveRes.message.toLowerCase() == "already login") {
+      AppLoadingIndicator.dismissLoadingIndicator();
+
+      FToastManager().showToast(
+        message: "Agent already logged in",
+      );
+      return; 
+    }
+                    emit(state.copyWith(isUserLoginSuccess: true));
+
       }
     } on AppDioException catch (e) {
       FToastManager().showToast(message: e.message);

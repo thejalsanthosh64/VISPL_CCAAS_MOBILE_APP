@@ -45,6 +45,7 @@ class _LoginScreenState extends StatelessWidget {
               ),
             ),
           ),
+          
           child: _buildLoginDialog(),
         ),
       ),
@@ -69,9 +70,21 @@ class _LoginScreenState extends StatelessWidget {
       builder: (context, state) {
         return AuthContainer(
           containerBody: [
-            Text(
-              AppLocalizations.of(context)!.pleaseLogin,
-              style: AppTextStyle.black25,
+            Row(
+              children: [
+                Text(
+                  AppLocalizations.of(context)!.pleaseLogin,
+                  style: AppTextStyle.black25,
+                ),            const SizedBox(width: AppConstant.kSized10),
+
+                             const Text(
+      "v1.0.5",
+      style: TextStyle(
+        color: Colors.black,
+        fontSize: 12,
+      ),
+    ),
+              ],
             ),
             _kSized15,
             AuthTextField(
@@ -109,7 +122,8 @@ class _LoginScreenState extends StatelessWidget {
               },
               child: Text("${AppLocalizations.of(context)!.forgotPassword}?"),
             ),
-            const SizedBox(height: AppConstant.kSized20),
+            const SizedBox(height: AppConstant.kSized5),
+
           ],
           onTapIcon: () {
             _loginCubit(context).loginUser(

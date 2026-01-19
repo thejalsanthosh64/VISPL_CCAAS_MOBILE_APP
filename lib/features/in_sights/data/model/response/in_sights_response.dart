@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-
 class InsightsResponse extends Equatable {
   const InsightsResponse({
     this.totalInCalls,
@@ -16,6 +15,14 @@ class InsightsResponse extends Equatable {
     this.noAnswer,
     this.lunchHours,
     this.inSuccess,
+
+    //  Agent Status fields
+    this.talkTime,
+    this.totalConnectedDuration,
+    this.totalRingingDuration,
+    this.wrapUpTime,
+    this.waitingTime,
+    this.holdTime,
   });
 
   final int? totalInCalls;
@@ -33,6 +40,13 @@ class InsightsResponse extends Equatable {
   final int? lunchHours;
   final double? inSuccess;
 
+  final int? talkTime;
+  final int? totalConnectedDuration;
+  final int? totalRingingDuration;
+  final int? wrapUpTime;
+  final int? waitingTime;
+  final int? holdTime;
+
   InsightsResponse copyWith({
     int? totalInCalls,
     int? avgCallDuration,
@@ -48,6 +62,14 @@ class InsightsResponse extends Equatable {
     int? noAnswer,
     int? lunchHours,
     double? inSuccess,
+
+    //  Agent Status fields
+    int? talkTime,
+    int? totalConnectedDuration,
+    int? totalRingingDuration,
+    int? wrapUpTime,
+    int? waitingTime,
+    int? holdTime,
   }) {
     return InsightsResponse(
       totalInCalls: totalInCalls ?? this.totalInCalls,
@@ -64,6 +86,15 @@ class InsightsResponse extends Equatable {
       noAnswer: noAnswer ?? this.noAnswer,
       lunchHours: lunchHours ?? this.lunchHours,
       inSuccess: inSuccess ?? this.inSuccess,
+
+      talkTime: talkTime ?? this.talkTime,
+      totalConnectedDuration:
+          totalConnectedDuration ?? this.totalConnectedDuration,
+      totalRingingDuration:
+          totalRingingDuration ?? this.totalRingingDuration,
+      wrapUpTime: wrapUpTime ?? this.wrapUpTime,
+      waitingTime: waitingTime ?? this.waitingTime,
+      holdTime: holdTime ?? this.holdTime,
     );
   }
 
@@ -83,6 +114,13 @@ class InsightsResponse extends Equatable {
       noAnswer: json["noAnswer"],
       lunchHours: json["lunchHours"],
       inSuccess: double.tryParse((json["inSuccess"] ?? '').toString()),
+
+      talkTime: json["talkTime"],
+      totalConnectedDuration: json["totalConnectedDuration"],
+      totalRingingDuration: json["totalRingingDuration"],
+      wrapUpTime: json["wrapUpTime"],
+      waitingTime: json["waitingTime"],
+      holdTime: json["holdTime"],
     );
   }
 
@@ -101,11 +139,30 @@ class InsightsResponse extends Equatable {
         "noAnswer": noAnswer,
         "lunchHours": lunchHours,
         "inSuccess": inSuccess,
+
+        "talkTime": talkTime,
+        "totalConnectedDuration": totalConnectedDuration,
+        "totalRingingDuration": totalRingingDuration,
+        "wrapUpTime": wrapUpTime,
+        "waitingTime": waitingTime,
+        "holdTime": holdTime,
       };
 
   @override
   String toString() {
-    return "$totalInCalls, $avgCallDuration, $inFailedCalls, $inSuccessCalls, $totalOutCalls, $totalCalls, $totalCallDuration, $outSuccessCalls, $outSuccess, $outFailedCalls, $officeHours, $noAnswer, $lunchHours, $inSuccess, ";
+    return """
+InsightsResponse(
+  totalInCalls: $totalInCalls,
+  avgCallDuration: $avgCallDuration,
+  totalCallDuration: $totalCallDuration,
+  talkTime: $talkTime,
+  wrapUpTime: $wrapUpTime,
+  totalRingingDuration: $totalRingingDuration,
+  waitingTime: $waitingTime,
+  holdTime: $holdTime,
+  lunchHours: $lunchHours
+)
+""";
   }
 
   @override
@@ -124,5 +181,12 @@ class InsightsResponse extends Equatable {
         noAnswer,
         lunchHours,
         inSuccess,
+
+        talkTime,
+        totalConnectedDuration,
+        totalRingingDuration,
+        wrapUpTime,
+        waitingTime,
+        holdTime,
       ];
 }

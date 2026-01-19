@@ -19,16 +19,16 @@ class _RecentCallsListState extends State<RecentCallsList>
   final Map<int, SlidableController> _slidableControllers = {};
 
   late final int _smeId;
-  late final agentNumber;
+    late final agentId;
 
+  
   RecentCallsCubit get _recentCallsCubit => context.read<RecentCallsCubit>();
 
   @override
   void initState() {
     super.initState();
     _smeId = context.read<UserDetailsCubit>().userDetailsModel.smeId;
-     agentNumber = context.read<UserDetailsCubit>().userDetailsModel.agentMobile;
-
+agentId = context.read<UserDetailsCubit>().userDetailsModel.agentId;
     _recentCallsCubit.paginationScrollController.init(loadAction: () {
       if (_recentCallsCubit.state is RecentCallsSuccessState &&
           (_recentCallsCubit.state as RecentCallsSuccessState)
@@ -37,7 +37,7 @@ class _RecentCallsListState extends State<RecentCallsList>
         return _recentCallsCubit.getRecentCalls(
           isLoading: false,
           smeId: _smeId,
-          agentNumber: agentNumber
+          agentId: agentId
           // recentCallsRequestModel:
           //     (_recentCallsCubit.state as RecentCallsSuccessState)
           //         .recentCallsRequestModel,
@@ -69,23 +69,41 @@ class _RecentCallsListState extends State<RecentCallsList>
               showButton: state.searchedRecentCallsData == null,
               text: AppLocalizations.of(context)!.noRecordFound,
               onTap: () {
+                 final state = _recentCallsCubit.state;
+  DateTimeRange? selectedRange;
+
+  if (state is RecentCallsSuccessState) {
+    selectedRange = state.selectedDate;
+  }
+
                 _recentCallsCubit.getRecentCalls(
                     smeId: _smeId,
                     isLoading: false,
                     // recentCallsRequestModel: state.recentCallsRequestModel,
-                    agentNumber: agentNumber,
-                    initialRecordValue: 1);
+                              agentId: agentId,
+
+                    initialRecordValue: 1,
+                    selectedDateRange: selectedRange,
+                    
+                    );
               },
             );
           } else {
             return RefreshIndicator(
               onRefresh: () async {
+                  final state = _recentCallsCubit.state;
+
+  DateTimeRange? selectedRange;
+  if (state is RecentCallsSuccessState) {
+    selectedRange = state.selectedDate;
+  }
+
                 _recentCallsCubit.getRecentCalls(
                     smeId: _smeId,
                     isLoading: false,
                     // recentCallsRequestModel: state.recentCallsRequestModel,
-                    agentNumber: agentNumber,
-                    initialRecordValue: 1);
+                    agentId: agentId,
+                    initialRecordValue: 1,selectedDateRange: selectedRange,);
               },
               child: SlidableAutoCloseBehavior(
                 closeWhenTapped: false,

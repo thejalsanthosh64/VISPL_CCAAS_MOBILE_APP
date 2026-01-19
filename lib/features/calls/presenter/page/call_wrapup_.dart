@@ -34,6 +34,11 @@ class _AfterCallWrapUpScreenState extends State<AfterCallWrapUpScreen> {
   String? _selectedDispositionId;
   int _rating = 0;
 
+  bool _wrapupEnabled = false;
+int _wrapupLimitSeconds = 0;
+bool _autoClosed = false;
+
+
   late Timer _timer;
   Duration displayTimer = Duration.zero;
 
@@ -41,11 +46,23 @@ class _AfterCallWrapUpScreenState extends State<AfterCallWrapUpScreen> {
   void initState() {
     super.initState();
     displayTimer = widget.duration;
+
+ final campaign = CampaignManager.campaign;
+ _wrapupEnabled = campaign?.wrapupEnabled == true;
+  _wrapupLimitSeconds = campaign?.wrapupTimeInSeconds ?? 0;
+
+  debugPrint("WrapUp Enabled: $_wrapupEnabled");
+  debugPrint("WrapUp Limit: $_wrapupLimitSeconds seconds");
+
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       setState(() {
         displayTimer += const Duration(seconds: 1);
       });
+
+    _checkAutoClose();
+
     });
+
   }
 
   @override
@@ -59,6 +76,8 @@ class _AfterCallWrapUpScreenState extends State<AfterCallWrapUpScreen> {
     String two(int n) => n.toString().padLeft(2, '0');
     return "${two(d.inMinutes)}:${two(d.inSeconds % 60)}";
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -262,8 +281,7 @@ class _AfterCallWrapUpScreenState extends State<AfterCallWrapUpScreen> {
                               },
                             );
                           }).toList(),
-                          validator: (value) =>
-                              value == null ? "Please select disposition" : null,
+                          
                           onChanged: (value) {
                             setState(() => _selectedDisposition = value);
                           },
@@ -273,7 +291,7 @@ class _AfterCallWrapUpScreenState extends State<AfterCallWrapUpScreen> {
                       const SizedBox(height: 20),
       
                       // Remark
-                      _sectionLabel("Remarks *"),
+                      _sectionLabel("Remarks"),
                       const SizedBox(height: 8),
                       Container(
                         decoration: BoxDecoration(
@@ -290,8 +308,7 @@ class _AfterCallWrapUpScreenState extends State<AfterCallWrapUpScreen> {
                         child: TextFormField(
                           controller: _remarkController,
                           maxLines: 4,
-                          validator: (v) =>
-                              v!.trim().isEmpty ? "Enter remark" : null,
+                        
                           decoration: InputDecoration(
                             hintText: "Enter your remarks here...",
                             border: OutlineInputBorder(
@@ -355,7 +372,6 @@ class _AfterCallWrapUpScreenState extends State<AfterCallWrapUpScreen> {
                 height: 50,
                 child: ElevatedButton(
                   onPressed: () async {
-                    if (!_formKey.currentState!.validate()) return;
       
                     await context.read<CallStateCubit>().saveWrapUp(
                       context: context,
@@ -404,4 +420,48 @@ class _AfterCallWrapUpScreenState extends State<AfterCallWrapUpScreen> {
       ),
     );
   }
+  void _checkAutoClose() {
+  if (_autoClosed) return;
+
+  //  Do NOT auto wrapup if waiting for customer
+  if (widget.waitingForConnection) {
+    debugPrint(" Waiting for customer → Auto wrapup paused");
+    return;
+  }
+
+  if (_wrapupEnabled &&
+      _wrapupLimitSeconds > 0 &&
+      displayTimer.inSeconds >= _wrapupLimitSeconds &&
+      _selectedDisposition == null) {
+
+    debugPrint("WrapUp time completed → Auto closing screen");
+
+    _autoClosed = true;
+    _timer.cancel();
+
+    _autoCloseWrapUp();
+  }
+}
+
+
+Future<void> _autoCloseWrapUp() async {
+  if (!mounted) return;
+
+  try {
+    await context.read<CallStateCubit>().saveWrapUp(
+      context: context,
+      dispositionName: _selectedDisposition ?? "",
+      dispositionId: _selectedDispositionId ?? "",
+      remarks: _remarkController.text.trim(),
+      rating: _rating,
+    );
+  } catch (e) {
+    debugPrint("Auto wrapup save failed: $e");
+  }
+
+  if (mounted) {
+    Navigator.pop(context);
+  }
+}
+
 }

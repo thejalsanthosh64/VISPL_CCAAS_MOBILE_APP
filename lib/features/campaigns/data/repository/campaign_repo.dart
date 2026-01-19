@@ -21,11 +21,11 @@ data: {
     }
   }
 
-  Future<CommonResponseModel> updateUserCampaign({required UpdateUserCampaignData updateUserCampaign}) async {
+  Future<CommonResponseModel> updateUserCampaign({required UpdateUserCampaignData updateUserCampaign,required int smeId}) async {
     try {
       
       final res = await _dioClient.post(
-        ApiEndpoints.updateAgentCurrentCampaign(UserLoginInfoManager.userLoginInfoModel!.userId),
+        ApiEndpoints.updateAgentCurrentCampaign(smeId),
         data: updateUserCampaign.toJson(),
       );
       
@@ -56,22 +56,7 @@ data: {
   );
   return res;
 }
-Future<CommonResponseModel> setIsAlive({
-  required String username,
-  required String role,
-}) async {
-  final body = {
-    "username": username,
-    "mode": "login",
-    "role": role,            
-    "isWebrtcUser": 0,
-  };
 
-  final res = await _dioClient.post(
-    ApiEndpoints.setIsAlive(username),
-    data: body,
-  );
-  return res;
-}
+
 
 }

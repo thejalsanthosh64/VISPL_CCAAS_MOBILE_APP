@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kommuno/core/common/repo/activity_log_repo.dart';
+import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
 import 'package:kommuno/core/utilities/call_manager/call_session.dart';
 import 'package:kommuno/core/utilities/campaign_manager.dart';
@@ -488,6 +489,25 @@ Future<void> attendedTransfer({
     final status = res.data["call_status"];
     return status == "free";
   }
+Future<void> sendSurveyIVR() async {
+  final smeId = CallSession.smeId!;
+  final sessionId = CallSession.sessionId!;
+
+  final res = await callsRepo.sendSurveyIVR(
+    smeId: smeId,
+    sessionId: sessionId,
+  );
+
+  if (res.isSuccess) {
+    FToastManager().showToast(
+      message: "Survey IVR sent successfully",
+    );
+  } else {
+    FToastManager().showToast(
+      message: "Failed to send survey IVR",
+    );
+  }
+}
 
 
 

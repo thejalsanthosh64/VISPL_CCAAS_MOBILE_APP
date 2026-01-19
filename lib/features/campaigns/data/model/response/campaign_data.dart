@@ -130,6 +130,10 @@ class CampaignData extends Equatable {
     this.dispositions,
     this.datesObject,
     this.pacingRatio,
+      this.isSurveyEnabled = false,
+  this.surveyFormId,
+    this.wrapupEnabled,
+
   });
 
   final List<VirtualNumberPool>? virtualNumberPool;
@@ -147,6 +151,10 @@ class CampaignData extends Equatable {
   final List<DispositionItem>? dispositions;
   final List<DateWindow>? datesObject;
   final String? pacingRatio;
+final bool isSurveyEnabled;
+final String? surveyFormId;
+final bool? wrapupEnabled;
+
 
   CampaignData copyWith({
     List<VirtualNumberPool>? virtualNumberPool,
@@ -162,6 +170,11 @@ class CampaignData extends Equatable {
     List<DispositionItem>? dispositions,
     List<DateWindow>? datesObject,
     String? pacingRatio,
+    final bool? isSurveyEnabled,
+final String? surveyFormId,
+final bool? wrapupEnabled
+
+    
   }) {
     return CampaignData(
       virtualNumberPool: virtualNumberPool ?? this.virtualNumberPool,
@@ -179,11 +192,18 @@ class CampaignData extends Equatable {
       dispositions: dispositions ?? this.dispositions,
       datesObject: datesObject ?? this.datesObject,
       pacingRatio: pacingRatio ?? this.pacingRatio,
+      isSurveyEnabled: isSurveyEnabled ?? this.isSurveyEnabled,
+surveyFormId: surveyFormId ?? this.surveyFormId,
+    wrapupEnabled: wrapupEnabled ?? this.wrapupEnabled,
+
     );
   }
 
   factory CampaignData.fromJson(Map<String, dynamic> json) {
     return CampaignData(
+      isSurveyEnabled: json["survey_customer_feedback_flag"] == true,
+surveyFormId: json["survey_customer_feedback_form_id"],
+
       virtualNumberPool: json["virtual_number_pool"] == null
           ? null
           : List<VirtualNumberPool>.from(json["virtual_number_pool"]
@@ -198,6 +218,7 @@ class CampaignData extends Equatable {
       /// NEWLY PARSED FIELDS
       callPriority: json["call_priority"],
       wrapupTimeInSeconds: json["wrapup_time_in_seconds"],
+      wrapupEnabled: json["wrapup_enabled"],
       ringTimeoutInSeconds: json["ring_timeout_in_seconds"],
       pacingRatio: json["pacing_ratio"],
 
@@ -228,6 +249,7 @@ class CampaignData extends Equatable {
         "pacing_ratio": pacingRatio,
         "dispositions": dispositions?.map((x) => x.toJson()).toList(),
         "dates_object": datesObject?.map((x) => x.toJson()).toList(),
+        
       };
 
   @override

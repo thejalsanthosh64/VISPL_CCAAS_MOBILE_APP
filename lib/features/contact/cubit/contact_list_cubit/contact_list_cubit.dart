@@ -10,6 +10,7 @@ import 'package:kommuno/core/common/app_keys.dart';
 import 'package:kommuno/core/common/widget/loading_indicator.dart';
 import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/core/exception/app_dio_exception.dart';
+import 'package:kommuno/core/utilities/app_methods.dart';
 import 'package:kommuno/core/utilities/debouncer.dart';
 import 'package:kommuno/core/utilities/pagination_scroll_controller.dart';
 import 'package:kommuno/core/utilities/permission_handler/permission_handler.dart';
@@ -47,36 +48,112 @@ class ContactListCubit extends Cubit<ContactListState> {
     bool isLoading = true,
   }) async {
     try {
-      if (await AppPermissionHandler.checkPermission(
-          context: context, permission: Permission.contacts)) {
-        if (isLoading) {
-          emit(ContactListLoadingState(selectedMenu: state.selectedMenu));
-        } else {
-          AppLoadingIndicator.showLoadingIndicator();
-        }
+//       final status = await Permission.contacts.status;
 
-        final contacts = await FlutterContacts.getContacts(
-            withThumbnail: true, sorted: true, withProperties: true);
-        final contactList = _groupByDevicesList(contacts: contacts);
+// if (status.isGranted) {
 
- for (var group in contactList) {
-        for (var c in group.contactDisplayDetails) {
-          final dn = c.displayName?.trim() ?? "";
-          if (dn.isNotEmpty && dn.toLowerCase() != "unknown") {
-            ContactLookup.deviceNames[
-              ContactLookup.normalize(c.number)
-            ] = dn;
-          }
-        }
+//         if (isLoading) {
+//           emit(ContactListLoadingState(selectedMenu: state.selectedMenu));
+//         } else {
+//           AppLoadingIndicator.showLoadingIndicator();
+//         }
+
+//         final contacts = await FlutterContacts.getContacts(
+//             withThumbnail: true, sorted: true, withProperties: true);
+//         final contactList = _groupByDevicesList(contacts: contacts);
+
+//  for (var group in contactList) {
+//         for (var c in group.contactDisplayDetails) {
+//           final dn = c.displayName?.trim() ?? "";
+//           if (dn.isNotEmpty && dn.toLowerCase() != "unknown") {
+//             ContactLookup.deviceNames[
+//               ContactLookup.normalize(c.number)
+//             ] = dn;
+//           }
+//         }
+//       }
+//         emit(DeviceContactListState(
+//             contactList: contactList, selectedMenu: state.selectedMenu));
+//       } else {
+//         FToastManager().showToast(
+//             message: AppLocalizations.of(AppKeys.navigatorKey.currentContext!)!
+//                 .allPermission);
+//         emit(state.parentCopyWith(selectedMenu: previousSelectedMenu));
+//       }
+
+final status = await Permission.contacts.status;
+
+PermissionStatus finalStatus = status;
+
+// 👉 If not granted, request once
+if (!status.isGranted) {
+  finalStatus = await Permission.contacts.request();
+}
+
+if (finalStatus.isGranted) {
+  // Permission allowed → Load contacts
+  if (isLoading) {
+    emit(ContactListLoadingState(selectedMenu: state.selectedMenu));
+  } else {
+    AppLoadingIndicator.showLoadingIndicator();
+  }
+
+  final contacts = await FlutterContacts.getContacts(
+    withThumbnail: true,
+    sorted: true,
+    withProperties: true,
+  );
+
+  final contactList = _groupByDevicesList(contacts: contacts);
+
+  for (var group in contactList) {
+    for (var c in group.contactDisplayDetails) {
+      final dn = c.displayName?.trim() ?? "";
+      if (dn.isNotEmpty && dn.toLowerCase() != "unknown") {
+        ContactLookup.deviceNames[
+          ContactLookup.normalize(c.number)
+        ] = dn;
       }
-        emit(DeviceContactListState(
-            contactList: contactList, selectedMenu: state.selectedMenu));
-      } else {
-        FToastManager().showToast(
-            message: AppLocalizations.of(AppKeys.navigatorKey.currentContext!)!
-                .allPermission);
-        emit(state.parentCopyWith(selectedMenu: previousSelectedMenu));
-      }
+    }
+  }
+
+  emit(DeviceContactListState(
+    contactList: contactList,
+    selectedMenu: state.selectedMenu,
+  ));
+} else {
+  final latestStatus = await Permission.contacts.status;
+
+  //  If user enabled permission in settings, load contacts
+  if (latestStatus.isGranted) {
+    return loadDeviceContacts(
+      previousSelectedMenu: previousSelectedMenu,
+      context: context,
+      isLoading: true,
+    );
+  }
+
+  final ctx = AppKeys.navigatorKey.currentContext!;
+
+  await appDialog(
+    context: ctx,
+    alertText: AppLocalizations.of(ctx)!.contactsPermissionRequired,
+    actions: (ctx) => [
+      TextButton(
+        onPressed: () async {
+          Navigator.of(ctx).pop();     
+          await openAppSettings();     
+        },
+        child: Text(AppLocalizations.of(ctx)!.ok),
+      )
+    ],
+  );
+
+  emit(state.parentCopyWith(selectedMenu: previousSelectedMenu));
+}
+
+
+
     } catch (e) {
       if (isLoading) {
         emit(ContactListErrorState(selectedMenu: state.selectedMenu));

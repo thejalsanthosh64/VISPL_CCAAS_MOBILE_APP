@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get applicationName => 'Smart Ping';
+  String get applicationName => 'Smartping';
 
   @override
   String get cancelRequest => 'Request to API server was cancelled';
@@ -535,4 +535,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get delete => 'Yes, delete it';
+
+  @override
+  String get contactsPermissionRequired =>
+      'Contacts permission is required to view phone contacts.';
+
+  @override
+  String get contactsPermissionDenied => 'Contacts permission denied.';
 }

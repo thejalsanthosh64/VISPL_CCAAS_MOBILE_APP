@@ -4,6 +4,8 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kommuno/core/common/app_keys.dart';
+import 'package:kommuno/core/common/widget/toast_manager.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:kommuno/core/utilities/permission_handler/permission_handler.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -16,6 +18,8 @@ class PermissionHandlerCubit extends Cubit<PermissionHandlerState>
   late Timer _timer;
 
   AppLifecycleState _appLifecycleState = AppLifecycleState.resumed;
+  bool _contactsPermissionRequested = false;
+
 
   PermissionHandlerCubit() : super(const PermissionHandlerInitial()) {
     WidgetsBinding.instance.addObserver(this);
@@ -69,20 +73,37 @@ class PermissionHandlerCubit extends Cubit<PermissionHandlerState>
       return;
     }
 
-    const contactsPermission = Permission.contacts;
-    final contactsStatus = await contactsPermission.status;
+    // const contactsPermission = Permission.contacts;
+    // final contactsStatus = await contactsPermission.status;
 
-    if (!contactsStatus.isGranted) {
-      if (state is! DeniedRequiredPermissionsState ||
-          (state is DeniedRequiredPermissionsState &&
-              (state as DeniedRequiredPermissionsState).permission !=
-                  contactsPermission)) {
-        _delayDuration = 2;
-        emit(const DeniedRequiredPermissionsState(
-            permission: contactsPermission));
-      }
-      return;
-    }
+    // if (!contactsStatus.isGranted) {
+    //   if (state is! DeniedRequiredPermissionsState ||
+    //       (state is DeniedRequiredPermissionsState &&
+    //           (state as DeniedRequiredPermissionsState).permission !=
+    //               contactsPermission)) {
+    //     _delayDuration = 2;
+    //     emit(const DeniedRequiredPermissionsState(
+    //         permission: contactsPermission));
+    //   }
+    //   return;
+    // }
+
+   const contactsPermission = Permission.contacts;
+final contactsStatus = await contactsPermission.status;
+
+if (contactsStatus.isDenied && !_contactsPermissionRequested) {
+  _contactsPermissionRequested = true;
+
+  final result = await contactsPermission.request();
+
+  if (!result.isGranted) {
+    FToastManager().showToast(
+      message: AppLocalizations.of(
+  AppKeys.navigatorKey.currentContext!,
+)!.contactsPermissionDenied,
+    );
+  }
+}
 
     if (AppPermissionHandler.isOpenRequiredPermission) {
       AppPermissionHandler.isOpenRequiredPermission = false;

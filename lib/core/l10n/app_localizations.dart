@@ -97,7 +97,7 @@ abstract class AppLocalizations {
   /// No description provided for @applicationName.
   ///
   /// In en, this message translates to:
-  /// **'Smart Ping'**
+  /// **'Smartping'**
   String get applicationName;
 
   /// No description provided for @cancelRequest.
@@ -1125,6 +1125,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Yes, delete it'**
   String get delete;
+
+  /// No description provided for @contactsPermissionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts permission is required to view phone contacts.'**
+  String get contactsPermissionRequired;
+
+  /// No description provided for @contactsPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts permission denied.'**
+  String get contactsPermissionDenied;
 }
 
 class _AppLocalizationsDelegate

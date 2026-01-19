@@ -817,10 +817,10 @@ Future<void> _performTransfer() async {
         final agent = selectedAgent;
         final status = agent["agent_live_status"] ?? "";
         
-        if (status.toString().toLowerCase() != "free") {
-          _showError("Agent is not available");
-          return;
-        }
+        // if (status.toString().toLowerCase() != "free") {
+        //   _showError("Agent is not available");
+        //   return;
+        // }
 
         if (widget.isConference) {
           // Conference flow
@@ -906,10 +906,10 @@ Future<void> _performTransfer() async {
 
       case 'same_queue':
         final agent = selectedSameQueueAgent!;
-        if (agent.agentLiveStatus?.toLowerCase() != "free") {
-          _showError("Agent is not available");
-          return;
-        }
+        // if (agent.agentLiveStatus?.toLowerCase() != "free") {
+        //   _showError("Agent is not available");
+        //   return;
+        // }
         await cubit.unattendedTransfer(
           smeId: smeId,
           sessionId: sessionId,

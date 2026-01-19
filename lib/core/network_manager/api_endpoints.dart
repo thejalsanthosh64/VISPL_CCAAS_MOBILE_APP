@@ -113,13 +113,13 @@ abstract class ApiEndpoints {
   static String getAgentStatusDetail(int smeId) => "/agent/$smeId/getAgentStatusDetail";
 
 
-  static String getRecentCalls(int id) => "agent/$id/todayCallHistory";
+  static String getRecentCalls(int id) => "sme/$id/getAgentMergeCalls";
 
   static String getLoginCampaigns(int id) => "sme/$id/getLoginCampaigns";
 
   // static String updateAgentCurrentCampaign(int id) => "$id/updateAgentCurrentCampaign";
 
-  static String updateAgentCurrentCampaign(int id) => "agent/$id/updateAgentCurrentCallMode";
+  static String updateAgentCurrentCampaign(int smeId) => "agent/$smeId/updateAgentCurrentCallMode";
     static String saveRating(int smeId) => "/agent/$smeId/saveRating";
 
   static String saveRatingInCrm(int smeId) => "/agent/$smeId/saveRatingInCrm";
@@ -136,6 +136,15 @@ abstract class ApiEndpoints {
     static String updateLiveCallStatus(int smeId) => "/agent/$smeId/updateLiveCallStatus";
     static String updateAgentLiveStatus(int smeId) => "/agent/$smeId/updateAgentLiveStatus";
     static String setActivityLogs(int id) => "/common/$id/setActivityLogs";
+        static String checkIsAlive(String username) => "/sme/$username/checkIsAlive";
+        static String getDispositionSummary(int smeId) =>
+    "agent/$smeId/getSummaryByDisposition";
+
+
+static String surveyEndCall(int smeId) =>
+   "/agent/$smeId/surveyEndCall";
+static String updateReadyToTakeCall(int agentId) =>
+    "/agent/$agentId/updateReadyToTakeCall";
 
 
 }

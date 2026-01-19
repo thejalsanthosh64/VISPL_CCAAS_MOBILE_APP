@@ -1,5 +1,5 @@
 {
-  "applicationName": "Smart Ping",
+  "applicationName": "Smartping",
   "cancelRequest": "Request to API server was cancelled",
   "connectionTimeout": "Connection timeout with API server",
   "receiveTimeout": "Receive timeout in connection with API server",
@@ -172,5 +172,8 @@
   "noRecordsFound" : "No records found",
   "areYouSure":"Are you sure?",
   "confirmMessage":"Once confirmed, you will not be able to revert this!",
-  "delete":"Yes, delete it"
+  "delete":"Yes, delete it",
+"contactsPermissionRequired": "Contacts permission is required to view phone contacts.",
+"contactsPermissionDenied": "Contacts permission denied."
+
  }

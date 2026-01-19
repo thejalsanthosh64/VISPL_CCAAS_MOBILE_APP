@@ -11,6 +11,7 @@ import 'package:kommuno/core/common/widget/user_details/data/model/user_details_
 import 'package:kommuno/core/exception/app_dio_exception.dart';
 import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:kommuno/core/utilities/date_utility.dart';
+import 'package:kommuno/core/utilities/user_login_info_manager/user_login_info_manager.dart';
 import 'package:kommuno/features/break/data/model/break_in_request_model.dart';
 import 'package:kommuno/features/break/data/model/break_out_request_model.dart';
 import 'package:kommuno/features/break/data/model/break_response.dart';
@@ -137,7 +138,12 @@ class BreakCubit extends Cubit<BreakState> {
       userDetailsCubit.startWaitingTimer(); 
         getBreakDetails(isLoading: false);
 
-
+final user = UserLoginInfoManager.userLoginInfoModel;
+  if (user != null) {
+    await _breakRepo.updateReadyToTakeCall(
+      agentId: user.userId,
+    );
+  }
       }
     } on AppDioException catch (e) {
       FToastManager().showToast(message: e.message);

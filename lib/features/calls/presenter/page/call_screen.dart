@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kommuno/core/common/app_theme/app_theme.dart';
 import 'package:kommuno/core/utilities/call_manager/call_session.dart';
+import 'package:kommuno/core/utilities/campaign_manager.dart';
 import 'package:kommuno/features/calls/cubit/call_cubit.dart';
 import 'package:kommuno/features/calls/presenter/widgets/bottom_sheet.dart';
 
@@ -221,7 +222,20 @@ class CallScreen extends StatelessWidget {
                           _openTransferSheet(context,
                               isAttended: true, isConference: true);
                         },
+
+                        
                       ),
+
+                      if (CampaignManager.campaign?.isSurveyEnabled == true)
+  _actionBtn(
+    icon: Icons.poll,
+    label: "Survey",
+    color: Colors.green,
+    onTap: () {
+      cubit.sendSurveyIVR();
+    },
+  ),
+
                     ],
                   ),
                 ),

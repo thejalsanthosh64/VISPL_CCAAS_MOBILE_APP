@@ -202,6 +202,7 @@ class _CampaignListState extends StatelessWidget {
                       // ],
                     ),
                     campaignData: campaign,
+                    smeId: userData.smeId
                   );
             }
           : null,

@@ -8,7 +8,6 @@ import 'package:kommuno/core/exception/app_dio_exception.dart';
 import 'package:kommuno/core/utilities/date_utility.dart';
 import 'package:kommuno/core/utilities/debouncer.dart';
 import 'package:kommuno/core/utilities/pagination_scroll_controller.dart';
-import 'package:kommuno/features/recent_calls/data/enum/recent_calls_filter_enum.dart';
 import 'package:kommuno/features/recent_calls/data/model/request/recent_calls_request_model.dart';
 import 'package:kommuno/features/recent_calls/data/model/response/recent_calls_data.dart';
 import 'package:kommuno/features/recent_calls/data/repository/recent_calls_repo.dart';
@@ -65,7 +64,8 @@ class RecentCallsCubit extends Cubit<RecentCallsState> {
 Future<bool> getRecentCalls({
   bool isLoading = true,
   required int smeId,
-  required String agentNumber,
+    required int agentId,
+
   int? initialRecordValue,
   DateTimeRange? selectedDateRange,
 }) async {
@@ -90,13 +90,24 @@ Future<bool> getRecentCalls({
       end: DateTime.now(),
     );
 
-    final requestModel = RecentCallsRequestModel(
-      agentNumber: agentNumber,
-      startDateTime: dateRange.start.toUtc().toIso8601String(),
-      endDateTime: dateRange.end.toUtc().toIso8601String(),
-      batchSize: batchSize,
-      initialRecord: initialRecord,
-    );
+    // final requestModel = RecentCallsRequestModel(
+    //   agentNumber: agentNumber,
+    //   startDateTime: dateRange.start.toUtc().toIso8601String(),
+    //   endDateTime: dateRange.end.toUtc().toIso8601String(),
+    //   batchSize: batchSize,
+    //   initialRecord: initialRecord,
+    // );
+
+final start = _startOfDay(dateRange.start).toUtc().toIso8601String();
+final end   = _endOfDay(dateRange.end).toUtc().toIso8601String();
+
+final requestModel = RecentCallsRequestModel(
+  agentId: agentId,
+  startDate: start,
+  endDate: end,
+  batchSize: batchSize,
+  initialRecord: initialRecord,
+);
 
     final res = await _recentCallsRepo.getRecentCalls(
 
@@ -218,7 +229,7 @@ Future<bool> getRecentCalls({
   //   }
   // }
 
-  void onSelectDate({DateTimeRange? selectedDate, required int smeId, required String agentNumber}) {
+  void onSelectDate({DateTimeRange? selectedDate, required int smeId, required String agentNumber,required int agentId}) {
   if (state is RecentCallsSuccessState) {
     final currentState = state as RecentCallsSuccessState;
     
@@ -236,11 +247,20 @@ Future<bool> getRecentCalls({
     
     getRecentCalls(
       smeId: smeId,
-      agentNumber: agentNumber,
       isLoading: false,
       initialRecordValue: 1,
       selectedDateRange: dateRange,
+      agentId: agentId
     );
   }
 }
+
+DateTime _startOfDay(DateTime date) {
+  return DateTime(date.year, date.month, date.day);
+}
+
+DateTime _endOfDay(DateTime date) {
+  return DateTime(date.year, date.month, date.day, 23, 59, 59, 999);
+}
+
 }

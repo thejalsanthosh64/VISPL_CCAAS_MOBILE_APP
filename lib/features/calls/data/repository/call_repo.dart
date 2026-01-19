@@ -248,6 +248,22 @@ Future<CommonResponseModel> saveRatingCrm({
 
 
 
+Future<CommonResponseModel> sendSurveyIVR({
+  required int smeId,
+  required String sessionId,
+}) async {
+  try {
+    final res = await _dioClient.post(
+      ApiEndpoints.surveyEndCall(smeId),   // create endpoint
+      data: {
+        "sessionId": sessionId,
+      },
+    );
+    return res;
+  } catch (e) {
+    rethrow;
+  }
+}
 
 
 

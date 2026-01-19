@@ -41,4 +41,22 @@ final class BreakRepo {
       rethrow;
     }
   }
+
+
+  Future<CommonResponseModel> updateReadyToTakeCall({
+  required int agentId,
+}) async {
+  try {
+    final res = await _dioClient.post(
+      ApiEndpoints.updateReadyToTakeCall(agentId),
+      data: {
+        "agent_id": agentId,
+      },
+    );
+    return res;
+  } catch (e) {
+    rethrow;
+  }
+}
+
 }

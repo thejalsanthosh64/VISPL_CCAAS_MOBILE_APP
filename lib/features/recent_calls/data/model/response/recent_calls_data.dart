@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 
 class RecentCallsData extends Equatable {
+
+  
   const RecentCallsData({
     required this.id,
     required this.smeId,
@@ -52,7 +54,7 @@ class RecentCallsData extends Equatable {
     this.crmRecordingPath,
     this.ivrRecordingPath,
     this.countryCode,
-    this.addressBook = const [],
+    this.addressBook,
     this.v,
     this.customerName,
   });
@@ -82,7 +84,7 @@ class RecentCallsData extends Equatable {
   final DateTime startDateTime;
   final DateTime endDateTime;
   final String? masterShortcode;
-  final int? patchedAgentId;
+  final String? patchedAgentId;
   final String? serverIpAddress;
   final String? shortcodeMapping;
   final String? smeIdentifier;
@@ -107,7 +109,7 @@ class RecentCallsData extends Equatable {
   final String? crmRecordingPath;
   final String? ivrRecordingPath;
   final String? countryCode;
-  final List<dynamic> addressBook;
+final AddressBookModel? addressBook;
   final int? v;
   final String? customerName;
 
@@ -137,7 +139,7 @@ class RecentCallsData extends Equatable {
     DateTime? startDateTime,
     DateTime? endDateTime,
     String? masterShortcode,
-    int? patchedAgentId,
+    String? patchedAgentId,
     String? serverIpAddress,
     String? shortcodeMapping,
     String? smeIdentifier,
@@ -162,7 +164,7 @@ class RecentCallsData extends Equatable {
     String? crmRecordingPath,
     String? ivrRecordingPath,
     String? countryCode,
-    List<dynamic>? addressBook,
+AddressBookModel? addressBook,
     int? v,
     String? customerName,
   }) {
@@ -246,9 +248,10 @@ class RecentCallsData extends Equatable {
       disconnectedBy: json["disconnected_by"],
       duration: json["duration"],
       mergeStatus: json["merge_status"],
-      insertDateTime: DateTime.parse(json["insert_date_time"] ?? "").toLocal(),
-      startDateTime: DateTime.parse(json["start_date_time"] ?? "").toLocal(),
-      endDateTime: DateTime.parse(json["end_date_time"] ?? "").toLocal(),
+      insertDateTime: DateTime.parse(json["insert_date_time"] as String).toLocal(),
+      startDateTime:DateTime.parse(json["start_date_time"] as String).toLocal(),
+
+      endDateTime:DateTime.parse(json["end_date_time"] as String).toLocal(),
       masterShortcode: json["master_shortcode"],
       patchedAgentId: json["patched_agent_id"],
       serverIpAddress: json["server_ip_address"],
@@ -275,7 +278,11 @@ class RecentCallsData extends Equatable {
       crmRecordingPath: json["crm_recording_path"],
       ivrRecordingPath: json["ivr_recording_path"],
       countryCode: json["country_code"],
-      addressBook: json["address_book"] == null ? [] : List<dynamic>.from(json["address_book"]!.map((x) => x)),
+addressBook: json["address_book"] == null
+    ? null
+    : AddressBookModel.fromJson(
+        Map<String, dynamic>.from(json["address_book"]),
+      ),
       v: json["__v"],
       customerName: /*json["customer_name"]?.toString().toLowerCase() == "no name" ? null :*/ json["customer_name"],
     );
@@ -332,7 +339,7 @@ class RecentCallsData extends Equatable {
         "crm_recording_path": crmRecordingPath,
         "ivr_recording_path": ivrRecordingPath,
         "country_code": countryCode,
-        "address_book": addressBook.map((x) => x).toList(),
+"address_book": addressBook?.toJson(),
         "__v": v,
         "customer_name": customerName,
       };
@@ -397,5 +404,62 @@ class RecentCallsData extends Equatable {
         addressBook,
         v,
         customerName,
+      ];
+}
+class AddressBookModel extends Equatable {
+  final String? customerName;
+  final String? customerNumberPrimary;
+  final int? status;
+  final int? mode;
+  final String? companyName;
+  final String? emailId;
+  final int? createdBy;
+  final String? address;
+
+  const AddressBookModel({
+    this.customerName,
+    this.customerNumberPrimary,
+    this.status,
+    this.mode,
+    this.companyName,
+    this.emailId,
+    this.createdBy,
+    this.address,
+  });
+
+  factory AddressBookModel.fromJson(Map<String, dynamic> json) {
+    return AddressBookModel(
+      customerName: json["customer_name"],
+      customerNumberPrimary: json["customer_number_primary"],
+      status: json["status"],
+      mode: json["mode"],
+      companyName: json["company_name"],
+      emailId: json["email_id"],
+      createdBy: json["created_by"],
+      address: json["address"],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        "customer_name": customerName,
+        "customer_number_primary": customerNumberPrimary,
+        "status": status,
+        "mode": mode,
+        "company_name": companyName,
+        "email_id": emailId,
+        "created_by": createdBy,
+        "address": address,
+      };
+
+  @override
+  List<Object?> get props => [
+        customerName,
+        customerNumberPrimary,
+        status,
+        mode,
+        companyName,
+        emailId,
+        createdBy,
+        address,
       ];
 }

@@ -26,10 +26,6 @@ class CampaignListCubit extends Cubit<CampaignListState> {
       final res = await _campaignRepo.getCampaigns(smeId: smeId);
       if (res.isSuccess) {
 
-     await _campaignRepo.setIsAlive(
-        username: loginInfo.username,
-        role: loginInfo.role,
-      );
 
       await _campaignRepo.updateWebrtcAgentStatus(
         smeId: smeId,

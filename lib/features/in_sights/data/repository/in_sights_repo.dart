@@ -28,4 +28,34 @@ class InSightsRepo {
       rethrow;
     }
   }
+
+Future<CommonResponseModel> getDispositionSummary({
+  required int smeId,
+  required DateTime startDate,
+  required DateTime endDate,
+}) async {
+  try {
+    // final startDateUtc =
+    //     DateUtility.getDateYMDOnly(date: DateUtils.dateOnly(startDate.toUtc()));
+    // final endDateUtc =
+    //     DateUtility.getDateYMDOnly(date: DateUtils.dateOnly(endDate.toUtc()));
+
+
+final startDateUtc = startDate.toUtc().toIso8601String();
+final endDateUtc   = endDate.toUtc().toIso8601String();
+    final res = await _dioClient.post(
+      ApiEndpoints.getDispositionSummary(smeId),
+      data: {
+        "agentId": UserLoginInfoManager.userLoginInfoModel!.userId,
+        "startDate": startDateUtc,
+        "endDate": endDateUtc,
+      },
+    );
+    return res;
+  } catch (e) {
+    rethrow;
+  }
+}
+
+
 }

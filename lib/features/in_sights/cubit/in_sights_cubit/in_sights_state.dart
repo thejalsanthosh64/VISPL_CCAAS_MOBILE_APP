@@ -24,27 +24,31 @@ final class InSightsErrorState extends InSightsState {
   @override
   List<Object> get props => [];
 }
-
 final class InSightsSuccessState extends InSightsState {
   const InSightsSuccessState({
     required this.insightsResponse,
+    required this.dispositionSummary,
     this.dateTimeRange,
     this.inSightsDateEnum,
   });
 
   final InsightsResponse insightsResponse;
 
-  final DateTimeRange? dateTimeRange;
+  final DispositionSummaryResponse dispositionSummary;
 
+  final DateTimeRange? dateTimeRange;
   final InSightsDateEnum? inSightsDateEnum;
 
   InSightsSuccessState copyWith({
     InsightsResponse? insightsResponse,
+    DispositionSummaryResponse? dispositionSummary,
     DateTimeRange? Function()? dateTimeRange,
     InSightsDateEnum? Function()? inSightsDateEnum,
   }) {
     return InSightsSuccessState(
       insightsResponse: insightsResponse ?? this.insightsResponse,
+      dispositionSummary:
+          dispositionSummary ?? this.dispositionSummary,
       dateTimeRange:
           dateTimeRange != null ? dateTimeRange() : this.dateTimeRange,
       inSightsDateEnum:
@@ -53,6 +57,10 @@ final class InSightsSuccessState extends InSightsState {
   }
 
   @override
-  List<Object?> get props =>
-      [insightsResponse, dateTimeRange, inSightsDateEnum];
+  List<Object?> get props => [
+        insightsResponse,
+        dispositionSummary,
+        dateTimeRange,
+        inSightsDateEnum,
+      ];
 }

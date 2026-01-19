@@ -8,7 +8,6 @@ import 'package:kommuno/core/common/widget/loading_indicator.dart';
 import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/core/exception/app_dio_exception.dart';
 import 'package:kommuno/core/utilities/campaign_manager.dart';
-import 'package:kommuno/core/utilities/user_login_info_manager/user_login_info_manager.dart';
 import 'package:kommuno/features/campaigns/data/model/request/update_user_campaign_data.dart';
 import 'package:kommuno/features/campaigns/data/model/response/campaign_data.dart';
 import 'package:kommuno/features/campaigns/data/repository/campaign_repo.dart';
@@ -23,12 +22,13 @@ class UpdateUserCampaignCubit extends Cubit<UpdateUserCampaignState> {
   Future<void> updateUserCampaign({
     required UpdateUserCampaignData updateCampaignData,
     required CampaignData campaignData,
+    required int smeId
   }) async {
     try {
       AppLoadingIndicator.showLoadingIndicator();
           print("📦 updateUserCampaign BODY → ${updateCampaignData.toJson()}");
 
-      final res = await _campaignRepo.updateUserCampaign(updateUserCampaign: updateCampaignData);
+      final res = await _campaignRepo.updateUserCampaign(updateUserCampaign: updateCampaignData,smeId: smeId);
       if (res.isSuccess) {
 
 

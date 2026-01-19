@@ -9,6 +9,7 @@ import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:kommuno/core/common/widget/my_app_bar.dart';
 import 'package:kommuno/core/network_manager/websocket_service.dart';
 import 'package:kommuno/core/utilities/app_methods.dart';
+import 'package:kommuno/core/utilities/campaign_manager.dart';
 import 'package:kommuno/core/utilities/logout_manager.dart';
 import 'package:kommuno/features/break/cubit/break_cubit.dart';
 import 'package:kommuno/features/break/presenter/view/break_widget.dart';
@@ -92,7 +93,7 @@ await ActivityHelperRepo().updateAgentActivityTime(
       insight.officeHours ?? 0,
     );
 
-    debugPrint("🏆 Today Office Hours Loaded: ${insight.officeHours}");
+    debugPrint(" Today Office Hours Loaded: ${insight.officeHours}");
   }
 }
 
@@ -218,6 +219,10 @@ await ActivityHelperRepo().updateAgentActivityTime(
     builder: (context, state) {
       String status = "";
       String timerText = "";
+      final campaign = CampaignManager.campaign;
+final campaignName = campaign?.campaignName ?? "-";
+final queueName = campaign?.campaignQueueName ?? "-";
+
 
       if (state is UserDetailsSuccessState) {
         status = state.agentStatus;
@@ -240,20 +245,37 @@ await ActivityHelperRepo().updateAgentActivityTime(
                   ),
                 ),
                 const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(userDetails.agentName,
-                        style: AppTextStyle.appColorNormal),
-                    Text(
-                      addByIndiaCountryCodeWithoutPlus(
-                        number: userDetails.agentMobile,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(userDetails.agentName,
+                          style: AppTextStyle.appColorNormal),
+                      Text(
+                        addByIndiaCountryCodeWithoutPlus(
+                          number: userDetails.agentMobile,
+                        ),
+                        style: AppTextStyle.appColorNormal,
                       ),
-                      style: AppTextStyle.appColorNormal,
-                    ),
-                    const SizedBox(height: 4),
-                    _buildStatus(status, timerText),
-                  ],
+                      if (campaignName.isNotEmpty)
+                        Text(
+                          "Campaign: $campaignName",maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                              style: AppTextStyle.appColorNormal,
+                  
+                        ),
+                  
+                      if (queueName.isNotEmpty)
+                        Text(
+                          "Queue: $queueName",maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                              style: AppTextStyle.appColorNormal,
+                  
+                        ),
+                      const SizedBox(height: 4),
+                      _buildStatus(status, timerText),
+                    ],
+                  ),
                 ),
               ],
             ),

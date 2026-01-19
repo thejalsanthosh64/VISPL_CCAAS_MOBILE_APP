@@ -41,6 +41,7 @@ class _RecentCallsState extends StatelessWidget {
   Widget build(BuildContext context) {
     final smeId = context.read<UserDetailsCubit>().userDetailsModel.smeId;
       final agentNumber = context.read<UserDetailsCubit>().userDetailsModel.agentMobile;
+      final agentId = context.read<UserDetailsCubit>().userDetailsModel.agentId;
 
     return HideKeyboardWidget(
       child: Scaffold(
@@ -49,12 +50,12 @@ class _RecentCallsState extends StatelessWidget {
           title: AppLocalizations.of(context)!.recentCalls,
           actions: [BreakInButton.outline()],
         ),
-        body: _buildBody(smeId: smeId,agentNumber: agentNumber),
+        body: _buildBody(smeId: smeId,agentNumber: agentNumber,agentId:agentId ),
       ),
     );
   }
 
-  Widget _buildBody({required int smeId,required String agentNumber}) {
+  Widget _buildBody({required int smeId,required int agentId,required String agentNumber}) {
 
 
     
@@ -65,7 +66,7 @@ class _RecentCallsState extends StatelessWidget {
             Duration.zero,
             () {
               if (context.mounted) {
-                _recentCallsCubit(context).getRecentCalls(smeId: smeId,agentNumber: agentNumber);
+                _recentCallsCubit(context).getRecentCalls(smeId: smeId,agentId:agentId);
               }
             },
           );
@@ -75,7 +76,7 @@ class _RecentCallsState extends StatelessWidget {
           return EmptyErrorWidget(
             text: AppLocalizations.of(context)!.somethingWentWrong,
             onTap: () {
-              _recentCallsCubit(context).getRecentCalls(smeId: smeId,agentNumber:agentNumber);
+              _recentCallsCubit(context).getRecentCalls(smeId: smeId,agentId: agentId);
             },
           );
         } else if (state is RecentCallsSuccessState) {
@@ -130,7 +131,7 @@ class _RecentCallsState extends StatelessWidget {
                     );
                     if (context.mounted && selectedDate != null) {
                       _recentCallsCubit(context).onSelectDate(
-                          selectedDate: selectedDate, smeId: smeId,agentNumber: agentNumber);
+                          selectedDate: selectedDate, smeId: smeId,agentNumber: agentNumber,agentId: agentId);
                     }
                   },
                 ),

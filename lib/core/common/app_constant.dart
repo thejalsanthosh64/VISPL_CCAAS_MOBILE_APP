@@ -3,7 +3,7 @@ import 'dart:io' show Platform;
 abstract class AppConstant {
   /// Strings
   // static const applicationName = "Kommuno";
-  static const applicationName = "Smart Ping";
+  static const applicationName = "Smartping";
   static const fontFamily = "Futura";
   static const loginDeviceType = "APP";
   static const noRouteDefined = "No route defined for";

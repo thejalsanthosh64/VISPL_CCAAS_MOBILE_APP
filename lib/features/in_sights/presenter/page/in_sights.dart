@@ -17,6 +17,8 @@ import 'package:kommuno/features/break/presenter/view/break_in_button.dart';
 import 'package:kommuno/features/in_sights/cubit/in_sights_cubit/in_sights_cubit.dart';
 import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:kommuno/features/in_sights/data/enum/in_sights_date_enum.dart';
+import 'package:kommuno/features/in_sights/data/model/response/disposition_summary_response.dart';
+import 'package:kommuno/features/in_sights/data/model/response/in_sights_response.dart';
 import 'package:kommuno/features/in_sights/presenter/widget/calls_info_container.dart';
 import 'package:kommuno/features/in_sights/presenter/widget/days_chip.dart';
 import 'package:kommuno/features/in_sights/presenter/widget/duration_info_container.dart';
@@ -73,6 +75,7 @@ class _InSightsState extends StatelessWidget {
           _kSized10,
           Expanded(child: _buildInsightsDetails(userDetails: userDetails)),
           _kSized10,
+          
         ],
       ),
     );
@@ -198,7 +201,13 @@ class _InSightsState extends StatelessWidget {
                   ),
                   _kSized20,
                   _buildDuration(context: context, state: state),
+_kSized20,
+                  _buildAgentStatusSummary(state.insightsResponse),
                   _kSized20,
+                    _buildDispositionSummary(state.dispositionSummary),
+                                      _kSized20,
+
+
                 ],
               ),
             ),
@@ -309,9 +318,126 @@ class _InSightsState extends StatelessWidget {
             ),
           )
         ],
-      )
+      ),
+      
     ];
   }
+  int _calculateWaitingTime(InsightsResponse data) {
+  final ringing = data.totalRingingDuration ?? 0;
+  final connected = data.totalConnectedDuration ?? 0;
+  final wrapUp = data.wrapUpTime ?? 0;
+  final breakTime = data.lunchHours ?? 0;
+  final hold = data.holdTime ?? 0;
+
+  // Waiting / Active Time calculation as per client logic
+  return ringing + connected + wrapUp + breakTime + hold;
+}
+
+Widget _buildAgentStatusSummary(InsightsResponse data) {
+  final int waitingTime = _calculateWaitingTime(data);
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const Divider(),
+      const SizedBox(height: 10),
+
+      const Text(
+        "Agent Status Summary",
+        style: AppTextStyle.black18,
+      ),
+
+      const SizedBox(height: 12),
+
+      Wrap(
+        alignment: WrapAlignment.center,
+        spacing: AppConstant.kSized5,
+        runSpacing: AppConstant.kSized10,
+        children: [
+          _statusCircle(
+            title: "On Call",
+            seconds: data.totalCallDuration,
+          ),
+          _statusCircle(
+            title: "On Wrapup",
+            seconds: data.wrapUpTime,
+          ),
+          _statusCircle(
+            title: "Ringing",
+            seconds: data.totalRingingDuration,
+          ),
+          _statusCircle(
+            title: "On Hold",
+            seconds: data.holdTime,
+          ),
+          _statusCircle(
+            title: "Break Time",
+            seconds: data.lunchHours,
+          ),
+          _statusCircle(
+            title: "Talk Time",
+            seconds: data.talkTime,
+          ),
+          _statusCircle(
+            title: "Waiting",
+            seconds: waitingTime,
+          ),
+        ],
+      ),
+    ],
+  );
+}
+Widget _statusCircle({
+  required String title,
+  int? seconds,
+  bool isPrimary = false,
+}) {
+  return FittedBox(
+    child: DurationInfoContainer(
+      title: title,
+      count: seconds,
+      color: isPrimary ? AppColors.appColor : null,
+    ),
+  );
+}
+
+
+Widget _buildDispositionSummary(
+    DispositionSummaryResponse dispositionSummary) {
+  if (dispositionSummary.items.isEmpty) {
+    return const SizedBox();
+  }
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const Divider(),
+      const SizedBox(height: 10),
+
+      Text(
+        "Disposition Summary",
+        style: AppTextStyle.black18,
+      ),
+
+      const SizedBox(height: 10),
+
+      Wrap(
+        alignment: WrapAlignment.center,
+        spacing: AppConstant.kSized5,
+        runSpacing: AppConstant.kSized10,
+        children: dispositionSummary.items.map((item) {
+          return FittedBox(
+            child: CallsInfoContainer(
+              title: item.name,
+              count: item.count,
+            ),
+          );
+        }).toList(),
+      ),
+    ],
+  );
+}
+
 
   Widget _buildDuration(
       {required BuildContext context, required InSightsSuccessState state}) {

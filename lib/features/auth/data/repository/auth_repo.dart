@@ -1,5 +1,6 @@
 
 import 'package:kommuno/core/common/repo/activity_log_repo.dart';
+import 'package:kommuno/core/network_manager/alive_set_service.dart';
 import 'package:kommuno/core/network_manager/common_response_model.dart';
 import 'package:kommuno/core/network_manager/dio_client.dart';
 import 'package:kommuno/core/utilities/user_login_info_manager/user_login_info_manager.dart';
@@ -72,6 +73,7 @@ final class AuthRepo {
 if(res.isSuccess){
 
 final user = UserLoginInfoManager.userLoginInfoModel!;
+AliveService().stop();
 
 await ActivityHelperRepo().setActivityLogs(
 user.smeId,
@@ -103,6 +105,36 @@ await ActivityHelperRepo().updateUserOnlineOffline(
   }
 
 
-
+Future<CommonResponseModel> checkIsAlive({
+    required String username,
+  }) async {
+    try {
+      final res = await _dioClient.post(
+        ApiEndpoints.checkIsAlive(username),
+        data: {
+          "username": username,
+          "mode": "login",
+        },
+      );
+      return res;
+    } catch (e) {
+      rethrow;
+    }
+  }
+Future<CommonResponseModel> updateReadyToTakeCall({
+  required int agentId,
+}) async {
+  try {
+    final res = await _dioClient.post(
+      ApiEndpoints.updateReadyToTakeCall(agentId),
+      data: {
+        "agent_id": agentId,
+      },
+    );
+    return res;
+  } catch (e) {
+    rethrow;
+  }
+}
 
 }
