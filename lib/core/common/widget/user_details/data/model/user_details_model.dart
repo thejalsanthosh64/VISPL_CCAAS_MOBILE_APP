@@ -53,6 +53,7 @@ class UserDetailsModel extends Equatable {
     required this.status,
     this.billingStatus,
     required this.longocdeJson,
+    required this.previewDialerPopupExpire,
   });
 
   final int? inPermissionFlag;
@@ -106,6 +107,8 @@ class UserDetailsModel extends Equatable {
   final int status;
   final int? billingStatus;
   final List<LongoCdeJsonData> longocdeJson;
+final int previewDialerPopupExpire;
+
 
   UserDetailsModel copyWith({
     int? inPermissionFlag,
@@ -159,6 +162,8 @@ class UserDetailsModel extends Equatable {
     int? status,
     int? billingStatus,
     List<LongoCdeJsonData>? longocdeJson,
+    int? previewDialerPopupExpire,
+
   }) {
     return UserDetailsModel(
       inPermissionFlag: inPermissionFlag ?? this.inPermissionFlag,
@@ -212,14 +217,17 @@ class UserDetailsModel extends Equatable {
       status: status ?? this.status,
       billingStatus: billingStatus ?? this.billingStatus,
       longocdeJson: longocdeJson ?? this.longocdeJson,
+      previewDialerPopupExpire:
+    previewDialerPopupExpire ?? this.previewDialerPopupExpire,
+
     );
   }
 
   factory UserDetailsModel.fromJson(Map<String, dynamic> json) {
     return UserDetailsModel(
       inPermissionFlag: json["inPermissionFlag"],
-      outPermissionFlag: json["outPermissionFlag"],
-      breakPermissionFlag: json["breakPermissionFlag"],
+      outPermissionFlag: json["outPermissionFlag"]??1,
+      breakPermissionFlag: json["breakPermissionFlag"]??1,
       accountSid: json["account_sid"],
       agentEmail: json["agent_email"],
       agentExtention: json["agent_extention"],
@@ -231,7 +239,7 @@ class UserDetailsModel extends Equatable {
       agentScore: json["agent_score"],
       agentRelaxTime: json["agent_relax_time"],
       allowedAgents: json["allowed_agents"],
-      alternateNumber: json["alternate_number"],
+alternateNumber: json["alternate_number"]?.toString() ?? "",
       assignFailedCalls: json["assign_failed_calls"],
       assignVoicemailCalls: json["assign_voicemail_calls"],
       balance: json["balance"],
@@ -265,10 +273,14 @@ class UserDetailsModel extends Equatable {
       roles: json["roles"],
       smeName: json["smeName"],
       userName: json["userName"],
-      status: json["status"],
+      status: json["status"]??1,
       billingStatus: json["billing_status"],
       longocdeJson:
           json["longocdejson"] == null ? [] : List<LongoCdeJsonData>.from(json["longocdejson"]!.map((x) => LongoCdeJsonData.fromJson(x))),
+          previewDialerPopupExpire: int.tryParse(
+      json["preview_dialer_popup_expire"]?.toString() ?? "7",
+    ) ?? 7,
+
     );
   }
 
@@ -384,6 +396,8 @@ class UserDetailsModel extends Equatable {
         status,
         billingStatus,
         longocdeJson,
+        previewDialerPopupExpire,
+
       ];
 }
 

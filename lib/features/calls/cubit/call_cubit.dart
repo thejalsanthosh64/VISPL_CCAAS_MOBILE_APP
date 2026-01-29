@@ -16,6 +16,7 @@ import 'package:kommuno/features/calls/data/repository/call_repo.dart';
 class CallStateCubit extends Cubit<CallState> {
  final CallsRepo callsRepo;
   final ActivityHelperRepo logRepo;
+  
 
 CallStateCubit({
     CallsRepo? callsRepo,  
@@ -507,6 +508,237 @@ Future<void> sendSurveyIVR() async {
       message: "Failed to send survey IVR",
     );
   }
+}
+
+
+Future<void> loadWhatsappTemplates() async {
+  final smeId = CallSession.smeId!;
+  final res = await callsRepo.getWhatsappTemplates(smeId);
+
+  if (res.isSuccess) {
+    final list = List<Map<String, dynamic>>.from(res.data ?? []);
+    
+    emit(state.copyWith(
+      whatsappTemplates: list,
+    ));
+
+    debugPrint("WhatsApp Templates Loaded: ${list.length}");
+  }
+}
+
+Future<void> loadSmsTemplates() async {
+  final smeId = CallSession.smeId!;
+  final res = await callsRepo.getSmsTemplates(smeId);
+
+  if (res.isSuccess) {
+    final list = List<Map<String, dynamic>>.from(res.data ?? []);
+    
+    emit(state.copyWith(
+      smsTemplates: list,
+    ));
+
+    debugPrint("SMS Templates Loaded: ${list.length}");
+  }
+}
+
+Future<void> sendSmsTemplate(Map<String, dynamic> t) async {
+  final smeId = CallSession.smeId!;
+final userCubit = UserDetailsCubit.instance;
+final agentMobile = userCubit?.userDetailsModel.agentMobile;
+
+  final body = {
+    "message": t["message"],
+    "templateId": t["id"],
+    "customerNo": state.phoneNumber,
+    "sessionId": CallSession.sessionId,
+    "callType": CallSession.callType,
+    "agentNo": agentMobile,
+    "dateTime": DateTime.now().toIso8601String(),
+    "callStatus": 22,
+    "duration": state.duration.inSeconds,
+    "agentName": CallSession.agentName,
+    "smsConfigId": t["sms_config_id"],
+    "campaignName": CampaignManager.campaign?.campaignName,
+    "type": "on_call",
+  };
+
+  final res = await callsRepo.sendSms(smeId: smeId, body: body);
+
+  final message = _extractBackendMessage(
+    res.data,
+    fallback: "SMS failed",
+  );
+
+  FToastManager().showToast(message: message);
+}
+Future<void> sendWhatsappTemplate(Map<String, dynamic> t) async {
+  final smeId = CallSession.smeId!;
+ final userCubit = UserDetailsCubit.instance;
+final agentMobile = userCubit?.userDetailsModel.agentMobile;
+  final body = {
+    "message": t["message"],
+    "templateId": t["id"],
+    "customerNo": state.phoneNumber,
+    "sessionId": CallSession.sessionId,
+    "callType": CallSession.callType,
+    "agentNo":agentMobile,
+    "dateTime": DateTime.now().toIso8601String(),
+    "callStatus": 22,
+    "duration": state.duration.inSeconds,
+    "agentName": CallSession.agentName,
+    "campaign_name": CampaignManager.campaign?.campaignName,
+    "campaign_id": CampaignManager.campaign?.id,
+    "type": "on_call",
+  };
+
+  final res = await callsRepo.sendWhatsapp(smeId: smeId, body: body);
+
+   final message = _extractBackendMessage(
+    res.data,
+    fallback: "WhatsApp failed",
+  );
+
+  FToastManager().showToast(message: message);
+}
+
+String _extractBackendMessage(dynamic data,
+    {String fallback = "Request failed"}) {
+  try {
+    if (data == null) return fallback;
+
+    if (data is Map) {
+      if (data["message"] != null) {
+        return data["message"].toString();
+      }
+
+      final inner = data["data"];
+      if (inner is Map) {
+        if (inner["message"] != null) {
+          return inner["message"].toString();
+        }
+
+        if (inner["description"] != null) {
+          return inner["description"].toString();
+        }
+
+        if (inner["success"] == true || inner["success"] == "true") {
+          return "Message sent successfully";
+        }
+      }
+
+      if (data["success"] == true || data["success"] == "true") {
+        return "Message sent successfully";
+      }
+    }
+  } catch (e) {
+    debugPrint("Message parse error: $e");
+  }
+
+  return fallback;
+}
+
+
+
+
+Future<void> updateSocketId({
+  required int smeId,
+  required int agentId,
+  required String socketId,
+}) async {
+  try {
+    debugPrint("Updating socket id → $socketId");
+
+    final res = await callsRepo.updateSocketId(
+      smeId: smeId,
+      agentId: agentId,
+      socketId: socketId,
+    );
+
+    if (res.isSuccess) {
+      debugPrint(" Socket ID updated successfully");
+    } else {
+      debugPrint("Failed to update socket id: ${res.message}");
+    }
+  } catch (e) {
+    debugPrint("updateSocketId error: $e");
+  }
+}
+
+Future<void> loadInteractionHistory({
+  required String customerNumber,
+}) async {
+  try {
+    emit(state.copyWith(isLoadingInteractions: true));
+
+    final smeId = CallSession.smeId!;
+    final agentId = CallSession.agentId!;
+
+    final payload = buildInteractionPayload(
+      agentId: agentId,
+      customerNumber: customerNumber,
+    );
+
+    final res = await callsRepo.getInteractionHistory(
+      smeId: smeId,
+      body: payload,
+    );
+
+    if (res.isSuccess) {
+      final list = List<Map<String, dynamic>>.from(res.data ?? []);
+      emit(state.copyWith(interactions: list));
+    } else {
+      emit(state.copyWith(interactions: []));
+    }
+  } catch (e) {
+    debugPrint("Interaction history error: $e");
+    emit(state.copyWith(interactions: []));
+  } finally {
+    emit(state.copyWith(isLoadingInteractions: false));
+  }
+}
+
+
+Map<String, dynamic> buildInteractionPayload({
+  required int agentId,
+  required String customerNumber,
+}) {
+  final now = DateTime.now();
+
+  // 3 months ago (start of day)
+  final threeMonthsAgo = DateTime(
+    now.year,
+    now.month - 3,
+    now.day,
+    0,
+    0,
+    0,
+    0,
+  );
+
+  // Today end time → 23:59:59.999
+  final endOfToday = DateTime(
+    now.year,
+    now.month,
+    now.day,
+    23,
+    59,
+    59,
+    999,
+  );
+
+  final normalizedNumber =
+      customerNumber.replaceAll("+91", "").trim();
+
+  return {
+    "filterList": {
+      "startDate": threeMonthsAgo.toIso8601String(),
+      "endDate": endOfToday.toIso8601String(),
+      "customer_number": normalizedNumber,
+    },
+    "batchSize": 10,
+    "initialRecord": 1,
+    "agentId": agentId,
+  };
 }
 
 

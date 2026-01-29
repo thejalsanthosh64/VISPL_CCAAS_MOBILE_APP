@@ -2,12 +2,19 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kommuno/core/common/app_keys.dart';
+import 'package:kommuno/core/common/app_routes/app_routes_manager.dart';
 import 'package:kommuno/core/common/app_theme/app_theme.dart';
 import 'package:kommuno/core/common/repo/activity_log_repo.dart';
 import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
+import 'package:kommuno/core/network_manager/alive_set_service.dart';
 import 'package:kommuno/core/utilities/call_manager/call_session.dart';
+import 'package:kommuno/core/utilities/campaign_manager.dart';
+import 'package:kommuno/core/utilities/local_storage/hive_service.dart';
+import 'package:kommuno/core/utilities/secure_storage/secure_storage.dart';
+import 'package:kommuno/core/utilities/user_login_info_manager/user_login_info_manager.dart';
 import 'package:kommuno/features/calls/cubit/call_cubit.dart';
+import 'package:kommuno/features/calls/data/repository/call_repo.dart';
 import 'package:kommuno/features/calls/presenter/page/call_screen.dart';
 import 'package:kommuno/features/calls/presenter/page/call_wrapup_.dart';
 import 'package:kommuno/features/contact/presenter/widget/contact_helper.dart';
@@ -59,9 +66,54 @@ class CallWebSocketManager {
     }
   }
 
+  static Future<void> _forceLogout() async {
+  final ctx = AppKeys.navigatorKey.currentContext;
+
+  if (ctx == null) {
+    debugPrint(" No context found for force logout");
+    return;
+  }
+
+  try {
+    // Stop sockets
+    disconnectCallSocket();
+    disconnectGlobal();
+
+    // Stop alive service if running
+    AliveService().stop();
+
+    // Clear user session
+    UserLoginInfoManager.setLoginUserInfo(userInfo: null);
+    CampaignManager.setCampaignInfo(campaign: null);
+
+    for (var key in StorageEnum.values) {
+      await SecureStorage().deleteData(key: key.name);
+    }
+
+    await HiveService.deleteAll();
+
+    // Navigate to login screen
+    AppKeys.navigatorKey.currentState!.pushNamedAndRemoveUntil(
+      AppRouteNames.loginScreen,
+      (_) => false,
+    );
+
+    FToastManager().showToast(
+      message: "You have been logged out by admin.",
+    );
+
+  } catch (e, s) {
+    debugPrint("Force logout error: $e");
+    debugPrint("$s");
+  }
+}
+
+
 static void connectGlobal({
   required int smeId,
   required int agentId,
+    required CallStateCubit callCubit,
+
 }) {
   if (globalSocket != null) return;
 
@@ -69,18 +121,134 @@ static void connectGlobal({
     "https://testsio.smartping.ai/",
     IO.OptionBuilder()
       .setTransports(['websocket'])
+      .setPath('/socket.io/')
       .enableAutoConnect()
       .enableReconnection()
       .build(),
   );
 
   globalSocket?.onConnect((_) {
+ final user = UserLoginInfoManager.userLoginInfoModel;
+  final socketId = globalSocket?.id;
+    debugPrint(" Global socket connected. socketId=$socketId");
+
+  if (socketId != null) {
+
+    //         activeCallCubit = CallStateCubit();
+
+    // activeCallCubit?.updateSocketId(
+    //   smeId: smeId,
+    //   agentId: agentId,
+    //   socketId: socketId,
+    // );
+  activeCallCubit = callCubit;
+
+    callCubit.updateSocketId(
+        smeId: smeId,
+        agentId: agentId,
+        socketId: socketId,
+      );
+  
+  } else {
+    debugPrint("x Socket ID is null");
+  }
+
+  globalSocket?.emit("auth", {
+    "username": user?.username,
+    "id": user?.userId,
+  });
+
+
     globalSocket?.emit("join_agent_room", {
       "smeId": smeId,
       "agentId": agentId,
       "type": "agent",
     });
+
+
+   
   });
+
+  // FORCE LOGOUT EVENT
+globalSocket?.on("logout_by_Agent", (raw) {
+  debugPrint("logout_by_Agent event received: $raw");
+
+  final data = normalize(raw);
+
+  final eventUserId = data["user_id"];
+  final role = data["role"];
+
+  final loggedUser = UserLoginInfoManager.userLoginInfoModel;
+
+  if (loggedUser == null) return;
+
+  debugPrint("Event userId: $eventUserId");
+  debugPrint("Logged userId: ${loggedUser.userId}");
+
+  if (role == "agent" && eventUserId == loggedUser.userId) {
+    debugPrint("User matched → Forcing logout");
+
+    _forceLogout();
+  }
+});
+
+
+
+globalSocket?.on("logout_by_client", (raw) {
+  debugPrint("logout_by_Agent event received: $raw");
+
+  final data = normalize(raw);
+
+  final eventUserId = data["user_id"];
+  final role = data["role"];
+
+  final loggedUser = UserLoginInfoManager.userLoginInfoModel;
+
+  if (loggedUser == null) return;
+
+  debugPrint("Event userId: $eventUserId");
+  debugPrint("Logged userId: ${loggedUser.userId}");
+
+  if (role == "agent" && eventUserId == loggedUser.userId) {
+    debugPrint("User matched → Forcing logout");
+
+    _forceLogout();
+  }
+});
+
+
+// PREVIEW MANUAL POPUP
+globalSocket?.on("preview_manual_dialer_popup", (raw) {
+  final data = normalize(raw);
+  debugPrint(" preview_manual_dialer_popup: $data");
+
+  final eventAgentId = data["agentId"] ?? data["agent_id"];
+  if (eventAgentId != agentId) {
+    debugPrint(" Preview manual ignored. Expected agentId=$agentId, got=$eventAgentId");
+    return;
+  }
+
+  debugPrint(" Preview manual matched agent. Showing popup.");
+  _showPreviewDialerPopup(data, isAuto: false);
+});
+
+
+// PREVIEW AUTO POPUP
+globalSocket?.on("preview_auto_dialer_popup", (raw) {
+  final data = normalize(raw);
+  debugPrint(" preview_auto_dialer_popup: $data");
+
+  final eventAgentId = data["agentId"] ?? data["agent_id"];
+  if (eventAgentId != agentId) {
+    debugPrint(" Preview auto ignored. Expected agentId=$agentId, got=$eventAgentId");
+    return;
+  }
+
+  debugPrint(" Preview auto matched agent. Showing popup.");
+  _showPreviewDialerPopup(data, isAuto: true);
+});
+
+
 
   //  INCOMING CALL - Store phone number early
   globalSocket?.on("ringing_live_calls", (raw) async {
@@ -88,9 +256,9 @@ static void connectGlobal({
     final data = normalize(raw);
 
     if (data["agentId"] != agentId) return;
-    if ((data["callType"] ?? "").toString().toLowerCase() == "outgoing") {
-      return;
-    }
+    // if ((data["callType"] ?? "").toString().toLowerCase() == "outgoing") {
+    //   return;
+    // }
 
     final sessionId = data["sessionId"];
     if (sessionId == null || sessionId.toString().isEmpty) return;
@@ -107,6 +275,7 @@ static void connectGlobal({
     startContinuousVibration();
 
     final callCubit = CallStateCubit();
+
 
     debugPrint(" [INCOMING] Storing phone in cubit: $customerNumber");
     callCubit.setPhoneNumber(customerNumber);
@@ -156,6 +325,16 @@ static void connectGlobal({
     debugPrint(" [FOLLOW-UP] Agent ID matched. Showing popup...");
     _showReminderPopup(data);
   });
+
+  globalSocket?.onAny((event, raw) {
+  final data = normalize(raw);
+  final eventAgentId = data["agentId"] ?? data["agent_id"];
+
+  if (eventAgentId == agentId) {
+    debugPrint("[MY EVENT] $event → $data");
+  }
+});
+
 }
 
 
@@ -169,6 +348,8 @@ static Future<void> _stopWaitingTimerForCall() async {
 
   try {
     final waitingSeconds = userDetailsCubit.stopWaitingTimer();
+
+    print("waitingsec$waitingSeconds");
     final user = userDetailsCubit.userDetailsModel;
 
     await ActivityHelperRepo().updateAgentActivityTime(
@@ -421,6 +602,275 @@ static String extractCustomerName(Map<String, dynamic> e) {
 }
 
 
+static Timer? previewTimer;
+static int remainingSeconds = 7; 
+static void Function(void Function())? _previewSetState;
+
+static void _showPreviewDialerPopup(
+  Map<String, dynamic> data, {
+  required bool isAuto,
+}) {
+  final ctx = AppKeys.navigatorKey.currentContext;
+  if (ctx == null) return;
+
+  final customerNumber = data["customerNumber"] ?? "";
+  final customerName = data["customerName"] ?? "Unknown";
+  final sessionId = data["sessionId"];
+  final channelId = data["channelId"];
+  final redisKey = data["redis_key"];
+
+final userCubit = UserDetailsCubit.instance;
+final expireSeconds =
+    userCubit?.userDetailsModel.previewDialerPopupExpire ?? 7;
+
+remainingSeconds = expireSeconds;
+
+  startContinuousVibration();
+
+  // ---------------- Countdown Timer ----------------
+
+previewTimer?.cancel();
+previewTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+  remainingSeconds--;
+
+  //  Force dialog rebuild
+  if (_previewSetState != null) {
+    _previewSetState!.call(() {});
+  }
+
+  if (remainingSeconds <= 0) {
+    timer.cancel();
+    stopVibration();
+    Navigator.of(ctx, rootNavigator: true).pop();
+
+    if (isAuto) {
+      debugPrint("Auto timeout → Auto Call");
+      _sendPreviewAction(
+        isAuto: isAuto,
+        callStatus: "call",
+        sessionId: sessionId,
+        channelId: channelId,
+        redisKey: redisKey,
+      );
+    } else {
+      debugPrint(" Manual timeout → Reject");
+      _sendPreviewAction(
+        isAuto: isAuto,
+        callStatus: "reject",
+        sessionId: sessionId,
+        channelId: channelId,
+        redisKey: redisKey,
+      );
+    }
+  }
+});
+
+
+  // ---------------- UI ----------------
+
+showDialog(
+  context: ctx,
+  barrierDismissible: false,
+  builder: (_) => StatefulBuilder(
+    builder: (context, setState) {
+            _previewSetState = setState;
+
+      return Dialog(
+        backgroundColor: AppColors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              //  Title
+              const Text(
+                "Preview Dialer",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              //  Customer Name
+              Text(
+                customerName,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+
+              const SizedBox(height: 4),
+
+              // Phone Number
+              Text(
+                customerNumber,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey.shade700,
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Countdown
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  "Auto ${isAuto ? "Call" : "Reject"} in $remainingSeconds sec",
+                  style: TextStyle(
+                    color: Colors.red.shade700,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 22),
+
+              // Action Buttons
+              Row(
+                children: [
+                  //  Reject Button
+                  Expanded(
+                    child: SizedBox(
+                      height: 46,
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.red,
+                          side: const BorderSide(color: Colors.red),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text(
+                          "Reject",
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        onPressed: () {
+                          previewTimer?.cancel();
+                            _previewSetState = null;
+
+                          stopVibration();
+                          Navigator.pop(context);
+                          _sendPreviewAction(
+                              isAuto: isAuto,
+
+                            callStatus: "reject",
+                            sessionId: sessionId,
+                            channelId: channelId,
+                            redisKey: redisKey,
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(width: 12),
+
+                  // 📞 Call Button
+                  Expanded(
+                    child: SizedBox(
+                      height: 46,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text(
+                          "Call",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        onPressed: () {
+                          previewTimer?.cancel();
+                                                      _previewSetState = null;
+
+                          stopVibration();
+                          Navigator.pop(context);
+
+                          _sendPreviewAction(
+                              isAuto: isAuto,
+
+                            callStatus: "call",
+                            sessionId: sessionId,
+                            channelId: channelId,
+                            redisKey: redisKey,
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  ),
+);
+
+}
+
+static Future<void> _sendPreviewAction({
+  required bool isAuto,
+  required String callStatus,
+  required String sessionId,
+  required String channelId,
+  required String redisKey,
+}) async {
+  try {
+        // final user = UserDetailsCubit.instance!.userDetailsModel;
+
+  
+    debugPrint("🚀 Sending preview response only");
+
+// connectForCall(
+//       sessionId: sessionId,
+//       smeId: user.smeId,
+//       agentId: user.agentId,
+//       cubit: cubit,
+//     );
+
+//     debugPrint(" Call socket connected before preview response");
+   
+//     await Future.delayed(const Duration(milliseconds: 300));
+
+final body = {
+      "call_status": callStatus,
+      "session_id": sessionId,
+      "channel_id": channelId,
+      "redis_key": redisKey,
+    };
+    final repo = CallsRepo();
+
+ 
+
+       if (isAuto) {
+      await repo.sendPreviewAutoAction(body);
+    } else {
+      await repo.sendPreviewManualAction(body);
+    }
+  } catch (e) {
+    debugPrint(" Preview action failed: $e");
+  }
+}
+
 static void connectForCall({
   required String sessionId,
   required int smeId,
@@ -434,8 +884,9 @@ static void connectForCall({
 
   callSocket = IO.io(
     "https://testsio.smartping.ai/",
-    IO.OptionBuilder().setTransports(['websocket']).enableAutoConnect().build(),
+    IO.OptionBuilder().setTransports(['websocket']).setPath('/socket.io/').enableAutoConnect().build(),
   );
+
 
   callSocket?.onConnect((_) {
     callSocket?.emit("join_session", {
@@ -453,6 +904,7 @@ static void connectForCall({
   // ========================================
   //  LOCATION 1: RINGING (Outgoing)
   // ========================================
+  
   callSocket?.on("ringing_live_calls", (raw) async {
      await _stopWaitingTimerForCall();
     final e = normalize(raw);
@@ -719,6 +1171,24 @@ static void _navigateToWrapUp({
     }
     return {};
   }
+
+  static void testPreviewPopup() {
+      // activeCallCubit = CallStateCubit();
+
+  final fakeData = {
+    "customerName": "Test Customer",
+    "customerNumber": "9876543210",
+    "sessionId": "test-session-123",
+    "channelId": "test-channel-456",
+    "redis_key": "test-redis-key",
+  };
+
+  _showPreviewDialerPopup(
+    fakeData,
+    isAuto: false,   // change to false to test manual mode
+  );
+}
+
 
   // Disconnection
   static void disconnectCallSocket() {

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kommuno/core/common/app_constant.dart';
 import 'package:kommuno/core/common/app_keys.dart';
+import 'package:kommuno/core/common/repo/activity_log_repo.dart';
 import 'package:kommuno/core/network_manager/alive_set_service.dart';
 import 'package:kommuno/core/utilities/user_login_info_manager/user_login_info_manager.dart';
 import 'package:kommuno/core/common/widget/loading_indicator.dart';
@@ -57,16 +58,12 @@ class LoginCubit extends Cubit<LoginState> {
         if (res.isSuccess) {
 
           await UserLoginInfoManager.setLoginUserInfo(userInfo: res.data);
-          final user = UserLoginInfoManager.userLoginInfoModel!;
 
-// Call Ready-To-Take-Call API
-await _authRepo.updateReadyToTakeCall(
-  agentId: user.userId,
-);
-AliveService().start(
-    username: user.username,
-    role: user.role,
-  );
+// // Call Ready-To-Take-Call API
+// await _authRepo.updateReadyToTakeCall(
+//   agentId: user.userId,
+// );
+
           // emit(state.copyWith(isUserLoginSuccess: true));
         } else {
           FToastManager().showToast(message: res.message);
@@ -85,6 +82,30 @@ AliveService().start(
       );
       return; 
     }
+          final user = UserLoginInfoManager.userLoginInfoModel!;
+
+AliveService().sendLogin(
+    username: user.username,
+    role: user.role,
+  );
+    
+await ActivityHelperRepo().setActivityLogs(
+  user.smeId,
+  userRole: user.role,
+  moduleName: "auth",
+  action: "login",
+  message: "${user.username} Successfully Logged In",
+  agentId: user.userId,
+);
+
+await ActivityHelperRepo().updateAgentActivityTime(
+  smeId: user.smeId,
+  agentId: user.userId,
+  time: 0,
+  status: "Login",
+);
+
+
                     emit(state.copyWith(isUserLoginSuccess: true));
 
       }

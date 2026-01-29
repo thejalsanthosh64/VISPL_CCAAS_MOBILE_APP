@@ -2,10 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kommuno/core/common/app_theme/app_theme.dart';
 import 'package:kommuno/core/utilities/call_manager/call_session.dart';
 import 'package:kommuno/core/utilities/campaign_manager.dart';
 import 'package:kommuno/features/calls/cubit/call_cubit.dart';
+import 'package:kommuno/features/calls/cubit/call_state.dart';
+import 'package:kommuno/features/calls/presenter/widgets/interaction_history_widget.dart';
 
 
 class AfterCallWrapUpScreen extends StatefulWidget {
@@ -41,6 +44,7 @@ bool _autoClosed = false;
 
   late Timer _timer;
   Duration displayTimer = Duration.zero;
+String selectedType = "sms"; 
 
   @override
   void initState() {
@@ -77,6 +81,190 @@ bool _autoClosed = false;
     return "${two(d.inMinutes)}:${two(d.inSeconds % 60)}";
   }
 
+void _openInteractionHistorySheet(BuildContext context) {
+  final cubit = context.read<CallStateCubit>();
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: false,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (_) {
+      return BlocProvider.value(
+        value: cubit,
+        child: const InteractionHistorySheet(),
+      );
+    },
+  );
+}
+
+
+void _openTemplateSheet(
+  BuildContext context, {
+  required String type,   // "sms" | "whatsapp"
+}) {
+  final cubit = context.read<CallStateCubit>();
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: false,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (_) {
+      return BlocProvider.value(
+        value: cubit,
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.55,
+          child: BlocBuilder<CallStateCubit, CallState>(
+            builder: (context, state) {
+              final templates =
+                  type == "sms" ? state.smsTemplates : state.whatsappTemplates;
+
+              if (templates.isEmpty) {
+                return const Center(child: Text("No templates found"));
+              }
+
+              return Column(
+                children: [
+                  const SizedBox(height: 12),
+                  Text(
+                    type == "sms" ? "SMS Templates" : "WhatsApp Templates",
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const Divider(),
+
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: templates.length,
+                      itemBuilder: (_, index) {
+                        final t = templates[index];
+
+                        return ListTile(
+                          title: Text(
+                            type == "sms"
+                                ? t["template_name"]
+                                : t["name"],
+                          ),
+                          trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                          onTap: () {
+                            Navigator.pop(context);
+
+                            if (type == "sms") {
+                              //  SMS → Open editable preview
+                              _openPreviewSheet(
+                                context,
+                                template: t,
+                                type: type,
+                              );
+                            } else {
+                              //  WhatsApp → Direct send (NO preview)
+                              cubit.sendWhatsappTemplate(t);
+                            }
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+      );
+    },
+  );
+}
+void _openPreviewSheet(
+  BuildContext context, {
+  required Map<String, dynamic> template,
+  required String type,
+}) {
+  final cubit = context.read<CallStateCubit>();
+
+  final TextEditingController messageController =
+      TextEditingController(text: template["message"] ?? "");
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (sheetContext) {  // ✅ Give it a proper name
+      return BlocProvider.value(
+        value: cubit,
+        child: Padding(
+          padding: EdgeInsets.only(
+            left: 16,
+            right: 16,
+            top: 16,
+            bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 16,  
+          ),
+          child: SizedBox(
+            height: MediaQuery.of(sheetContext).size.height * 0.45,  
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Preview Message",
+                      style: Theme.of(sheetContext).textTheme.titleMedium,  
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.pop(sheetContext), 
+                    ),
+                  ],
+                ),
+                const Divider(),
+
+                Expanded(
+                  child: TextField(
+                    controller: messageController,
+                    maxLines: null,
+                    expands: true,
+                    decoration: InputDecoration(
+                      hintText: "Edit message here...",
+                      filled: true,
+                      fillColor: Colors.grey.shade100,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.all(12),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton(
+                    child: const Text("Send"),
+                    onPressed: () {
+                      final updatedTemplate = Map<String, dynamic>.from(template)
+                        ..["message"] = messageController.text.trim();
+
+                      cubit.sendSmsTemplate(updatedTemplate);
+
+                      Navigator.pop(sheetContext);  
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
 
 
   @override
@@ -101,6 +289,59 @@ bool _autoClosed = false;
           ),
           centerTitle: true,
           leading: const SizedBox(),
+          
+actions: [
+
+IconButton(
+  tooltip: "Interaction History",
+  icon: const Icon(
+    Icons.history,
+    color: Colors.white,
+    size: 22,
+  ),
+  onPressed: () async {
+    final cubit = context.read<CallStateCubit>();
+
+    await cubit.loadInteractionHistory(
+      customerNumber: cubit.state.phoneNumber,
+    );
+
+    _openInteractionHistorySheet(context);
+  },
+),
+
+  IconButton(
+    tooltip: "Send SMS",
+    icon: const FaIcon(
+  FontAwesomeIcons.message,
+  color: Colors.white, // Customize the color
+  size: 20,         // Customize the size
+)
+,
+    onPressed: () async {
+      final cubit = context.read<CallStateCubit>();
+      selectedType = "sms";
+      await cubit.loadSmsTemplates();
+      _openTemplateSheet(context, type: "sms");
+    },
+  ),
+
+  IconButton(
+    tooltip: "Send WhatsApp",
+    icon: const FaIcon(
+  FontAwesomeIcons.whatsapp,
+  color: Colors.white, // Customize the color
+  size: 21,         // Customize the size
+)
+,
+    onPressed: () async {
+      final cubit = context.read<CallStateCubit>();
+      selectedType = "whatsapp";
+      await cubit.loadWhatsappTemplates();
+      _openTemplateSheet(context, type: "whatsapp");
+    },
+  ),
+],
         ),
         body: Column(
           children: [

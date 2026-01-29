@@ -66,4 +66,33 @@ final class RecentCallsRepo {
     rethrow;
   }
 }
+
+Future<CommonResponseModel> getSmsTemplates(int smeId) {
+  return _dioClient.post(ApiEndpoints.getSmsTemplate(smeId));
+}
+
+Future<CommonResponseModel> getWhatsappTemplates(int smeId) {
+  return _dioClient.post(ApiEndpoints.getWhatsappTemplate(smeId));
+}
+
+Future<CommonResponseModel> sendSms({
+    required int smeId,
+    required Map<String, dynamic> body,
+  }) {
+    return _dioClient.post(
+      ApiEndpoints.sendEndCallSms(smeId),
+      data: body,
+    );
+  }
+
+  Future<CommonResponseModel> sendWhatsapp({
+    required int smeId,
+    required Map<String, dynamic> body,
+  }) {
+    return _dioClient.post(
+      ApiEndpoints.sendWhatsapp(smeId),
+      data: body,
+    );
+  }
+
 }

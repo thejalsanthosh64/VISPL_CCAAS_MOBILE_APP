@@ -13,18 +13,28 @@ class AliveService with WidgetsBindingObserver {
   String? _username;
   String? _role;
   bool _isRunning = false;
+  bool _isLogin =true;
 
   /// Call this once after login
-  void start({
-    required String username,
-    required String role,
-  }) {
-    _username = username;
-    _role = role;
-
-    WidgetsBinding.instance.addObserver(this);
-    _startTimer();
+void start({
+  required String username,
+  required String role,
+  required bool isLogin,
+}) {
+  //  Prevent duplicate starts
+  if (_isRunning) {
+    debugPrint("SetIsAlive already running — skipping start");
+    return;
   }
+
+  _username = username;
+  _role = role;
+  _isLogin = isLogin;
+
+  WidgetsBinding.instance.addObserver(this);
+  _startTimer();
+}
+
 
   /// Stop call on logout
   void stop() {
@@ -32,30 +42,56 @@ class AliveService with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     _username = null;
     _role = null;
+        _isLogin = true;
+
   }
 
-  // ------------------------------
-  // Internal Timer Logic
-  // ------------------------------
 
-  void _startTimer() {
-    if (_isRunning || _username == null || _role == null) return;
+void _startTimer() {
+  if (_isRunning || _username == null || _role == null) return;
 
-    debugPrint(" SetIsAlive started");
-    _isRunning = true;
+  debugPrint("SetIsAlive started");
+  _isRunning = true;
 
-    _timer = Timer.periodic(const Duration(seconds: 5), (_) async {
-      try {
-        await ActivityHelperRepo().setIsAlive(
-          username: _username!,
-          role: _role!,
-        );
-        debugPrint("SetIsAlive ping sent");
-      } catch (e) {
-        debugPrint(" SetIsAlive failed: $e");
-      }
-    });
+  // send immediately
+  _sendAlive();
+
+  //  every 5 seconds
+  _timer = Timer.periodic(const Duration(seconds: 5), (_) {
+    _sendAlive();
+  });
+}
+
+Future<void> sendLogin({
+    required String username, required String role,
+  }) async {
+    try {
+      debugPrint("Sending SetIsAlive LOGIN");
+      await ActivityHelperRepo().setIsAlive(
+        username: username,
+        mode: role,
+      );
+      debugPrint("SetIsAlive LOGIN sent");
+    } catch (e) {
+      debugPrint("SetIsAlive LOGIN failed: $e");
+    }
   }
+
+Future<void> _sendAlive() async {
+  try {
+    await ActivityHelperRepo().setIsAlive(
+      username: _username!,
+      mode: "interval",
+      role: _role!,
+      isWebrtcUser: 0,
+    );
+    debugPrint("SetIsAlive INTERVAL sent");
+  } catch (e) {
+    debugPrint("SetIsAlive INTERVAL failed: $e");
+  }
+}
+
+
 
   void _stopTimer() {
     if (!_isRunning) return;
@@ -75,11 +111,6 @@ class AliveService with WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed) {
       debugPrint("📱 App resumed → Restart SetIsAlive");
       _startTimer();
-    } else if (state == AppLifecycleState.paused ||
-               state == AppLifecycleState.inactive ||
-               state == AppLifecycleState.detached) {
-      debugPrint(" App background → Stop SetIsAlive");
-      _stopTimer();
-    }
+    } 
   }
 }

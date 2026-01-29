@@ -3,11 +3,11 @@ import 'package:kommuno/core/network_manager/common_response_model.dart';
 import 'package:kommuno/core/network_manager/dio_client.dart';
 
 final class UserDetailsRepo {
-  final _dioClient = DioClient(mountPoint: ApiEndpoints.authMountPoint);
+  final _dioClient = DioClient();
 
   Future<CommonResponseModel> loadUserDetails() async {
     try {
-      final res = await _dioClient.get(
+      final res = await _dioClient.post(
           ApiEndpoints.userDetails(UserLoginInfoManager.userLoginInfoModel!.username));
       return res;
     } catch (e) {

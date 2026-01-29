@@ -110,24 +110,30 @@ final currentDate = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.d
       "currentDate":currentDate,
     });
   }
-
-
+  
 Future<void> setIsAlive({
   required String username,
-  required String role,
-  String mode = "login",
-  int isWebrtcUser = 0,
+  required String mode,     
+  String? role,           
+  int? isWebrtcUser,        
 }) async {
+
+  final Map<String, dynamic> body = {
+    "username": username,
+    "mode": mode,
+  };
+
+  if (mode == "interval") {
+    body["role"] = role;
+    body["isWebrtcUser"] = isWebrtcUser ?? 0;
+  }
+
   await _dioClient.post(
     ApiEndpoints.setIsAlive(username),
-    data: {
-      "username": username,
-      "role": role,
-      "mode": mode,
-      "isWebrtcUser": isWebrtcUser,
-    },
+    data: body,
   );
 }
+
 
 
 }

@@ -359,8 +359,13 @@ debugPrint(
 
         final ctx = AppKeys.navigatorKey.currentContext!;
         
-        final callStateCubit = CallStateCubit();
+        // final callStateCubit = CallStateCubit();
 
+
+final callStateCubit =
+    AppKeys.nestedNavigatorKey.currentContext!.read<CallStateCubit>();
+
+callStateCubit.setPhoneNumber(number);
         // Connect WebSocket
         debugPrint(' Connecting WebSocket...');
         CallWebSocketManager.connectForCall(

@@ -147,4 +147,27 @@ static String updateReadyToTakeCall(int agentId) =>
     "/agent/$agentId/updateReadyToTakeCall";
 
 
+
+static String getSmsTemplate(int smeId) =>
+    "/sme/$smeId/getSmsTemplate";
+
+static String getWhatsappTemplate(int smeId) =>
+    "/sme/$smeId/getWhatsapp";
+
+
+
+ static String sendEndCallSms(int smeId) =>
+      "/ksms/$smeId/sendEndcallSms";
+
+  static String sendWhatsapp(int smeId) =>
+      "/whatsapp/$smeId/sendWhatsapp";
+
+static const previewManualDialerResponse =
+    "/kcrm/previewManualDialerResponse";
+
+static const previewAutoDialerResponse =
+    "/kcrm/previewAutoDialerResponse";
+static String updateSocketId(int smeId) =>
+    "sme/$smeId/updateSocketId";
+
 }

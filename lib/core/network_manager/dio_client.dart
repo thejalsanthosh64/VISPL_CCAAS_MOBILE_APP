@@ -37,6 +37,9 @@ class DioClient {
     ProgressCallback? onReceiveProgress,
   }) async {
     try {
+
+      debugPrint("FULL URL => ${_dio.options.baseUrl}$url");
+
       final response = await _dio.get(
         url,
         queryParameters: queryParameters,

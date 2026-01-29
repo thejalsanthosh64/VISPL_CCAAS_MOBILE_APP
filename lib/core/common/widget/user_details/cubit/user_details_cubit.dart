@@ -130,6 +130,7 @@ void setTodayOfficeHours(int value) {
   @override
   Future<void> close() {
     stopWaitingTimer();
+    stopActiveTimer();
     return super.close();}
 
   Future<void> loadUserDetails({bool isLoading = true}) async {
@@ -141,6 +142,8 @@ void setTodayOfficeHours(int value) {
       }
       final res = await _userDetailsRepo.loadUserDetails();
       if (res.isSuccess) {
+        print(res.data);
+
         final data = List<Map<String, dynamic>>.from(res.data as List);
         if (data. isNotEmpty) {
           userDetailsModel = UserDetailsModel.fromJson(data.first);

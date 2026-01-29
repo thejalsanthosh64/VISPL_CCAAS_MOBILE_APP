@@ -8,6 +8,7 @@ import 'package:kommuno/core/common/widget/loading_indicator.dart';
 import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/core/exception/app_dio_exception.dart';
 import 'package:kommuno/core/utilities/campaign_manager.dart';
+import 'package:kommuno/features/auth/data/repository/auth_repo.dart';
 import 'package:kommuno/features/campaigns/data/model/request/update_user_campaign_data.dart';
 import 'package:kommuno/features/campaigns/data/model/response/campaign_data.dart';
 import 'package:kommuno/features/campaigns/data/repository/campaign_repo.dart';
@@ -18,6 +19,7 @@ class UpdateUserCampaignCubit extends Cubit<UpdateUserCampaignState> {
   UpdateUserCampaignCubit() : super(const UpdateUserCampaignState());
 
   final _campaignRepo = CampaignRepo();
+final _authRepo = AuthRepo();
 
   Future<void> updateUserCampaign({
     required UpdateUserCampaignData updateCampaignData,
@@ -48,4 +50,30 @@ class UpdateUserCampaignCubit extends Cubit<UpdateUserCampaignState> {
     }
     AppLoadingIndicator.dismissLoadingIndicator();
   }
+
+
+
+Future<void> postCampaignSelectionSetup({
+  required int smeId,
+  required int agentId,
+}) async {
+  try {
+    //  updateWebrtcAgentStatus
+    await _campaignRepo.updateWebrtcAgentStatus(
+      smeId: smeId,
+      agentId: agentId,
+    );
+
+    //  Ready to take call
+    await _authRepo.updateReadyToTakeCall(
+      agentId: agentId,
+    );
+
+  } catch (e) {
+    debugPrint("postCampaignSelectionSetup error: $e");
+    rethrow;
+  }
+}
+
+
 }

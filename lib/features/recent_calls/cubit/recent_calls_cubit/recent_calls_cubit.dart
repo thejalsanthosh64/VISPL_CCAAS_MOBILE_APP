@@ -255,6 +255,102 @@ final requestModel = RecentCallsRequestModel(
   }
 }
 
+
+Future<List<dynamic>> loadSmsTemplates(int smeId) async {
+  final res = await _recentCallsRepo.getSmsTemplates(smeId);
+
+  if (!res.isSuccess || res.data == null) {
+    throw Exception("Failed to load SMS templates");
+  }
+
+  return List.from(res.data);
+}
+
+Future<List<dynamic>> loadWhatsappTemplates(int smeId) async {
+  final res = await _recentCallsRepo.getWhatsappTemplates(smeId);
+
+  if (!res.isSuccess || res.data == null) {
+    throw Exception("Failed to load WhatsApp templates");
+  }
+
+  return List.from(res.data);
+}
+
+// ---------------- SEND ----------------
+
+Future<void> sendSms({
+  required int smeId,
+  required Map<String, dynamic> body,
+}) async {
+  final res = await _recentCallsRepo.sendSms(
+    smeId: smeId,
+    body: body,
+  );
+
+  final message = _extractBackendMessage(
+    res.data,
+    fallback: "SMS failed",
+  );
+
+  FToastManager().showToast(message: message);
+}
+
+Future<void> sendWhatsapp({
+  required int smeId,
+  required Map<String, dynamic> body,
+}) async {
+ final res = await _recentCallsRepo.sendWhatsapp(
+    smeId: smeId,
+    body: body,
+  );
+
+
+  final message = _extractBackendMessage(
+    res.data,
+    fallback: "WhatsApp failed",
+  );
+
+  FToastManager().showToast(message: message);
+}
+
+
+
+String _extractBackendMessage(dynamic data,
+    {String fallback = "Request failed"}) {
+  try {
+    if (data == null) return fallback;
+
+    if (data is Map) {
+      if (data["message"] != null) {
+        return data["message"].toString();
+      }
+
+      final inner = data["data"];
+      if (inner is Map) {
+        if (inner["message"] != null) {
+          return inner["message"].toString();
+        }
+
+        if (inner["description"] != null) {
+          return inner["description"].toString();
+        }
+
+        if (inner["success"] == true || inner["success"] == "true") {
+          return "Message sent successfully";
+        }
+      }
+
+      if (data["success"] == true || data["success"] == "true") {
+        return "Message sent successfully";
+      }
+    }
+  } catch (e) {
+    debugPrint("Message parse error: $e");
+  }
+
+  return fallback;
+}
+
 DateTime _startOfDay(DateTime date) {
   return DateTime(date.year, date.month, date.day);
 }

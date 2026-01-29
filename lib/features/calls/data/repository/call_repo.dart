@@ -266,5 +266,84 @@ Future<CommonResponseModel> sendSurveyIVR({
 }
 
 
+Future<CommonResponseModel> getSmsTemplates(int smeId) {
+  return _dioClient.post(ApiEndpoints.getSmsTemplate(smeId));
+}
+
+Future<CommonResponseModel> getWhatsappTemplates(int smeId) {
+  return _dioClient.post(ApiEndpoints.getWhatsappTemplate(smeId));
+}
+
+
+Future<CommonResponseModel> sendSms({
+  required int smeId,
+  required Map<String, dynamic> body,
+}) async {
+  return _dioClient.post(
+    ApiEndpoints.sendEndCallSms(smeId),
+    data: body,
+  );
+}
+
+Future<CommonResponseModel> sendWhatsapp({
+  required int smeId,
+  required Map<String, dynamic> body,
+}) async {
+  return _dioClient.post(
+    ApiEndpoints.sendWhatsapp(smeId),
+    data: body,
+  );
+}
+
+
+ Future<CommonResponseModel> sendPreviewManualAction(
+      Map<String, dynamic> body) {
+    return _dioClient.post(
+      ApiEndpoints.previewManualDialerResponse,
+      data: body,
+    );
+  }
+
+  Future<CommonResponseModel> sendPreviewAutoAction(
+      Map<String, dynamic> body) {
+    return _dioClient.post(
+      ApiEndpoints.previewAutoDialerResponse,
+      data: body,
+    );
+  }
+
+  Future<CommonResponseModel> updateSocketId({
+  required int smeId,
+  required int agentId,
+  required String socketId,
+}) async {
+  try {
+    final res = await _dioClient.post(
+      ApiEndpoints.updateSocketId(smeId),   // create endpoint
+      data: {
+        "agent_id": agentId,
+        "socket_id": socketId,
+      },
+    );
+    return res;
+  } catch (e) {
+    rethrow;
+  }
+}
+
+
+Future<CommonResponseModel> getInteractionHistory({
+  required int smeId,
+  required Map<String, dynamic> body,
+}) async {
+  return _dioClient.post(
+    ApiEndpoints.getRecentCalls(smeId),
+    data: body,
+  );
+}
+
 
 }
+
+
+

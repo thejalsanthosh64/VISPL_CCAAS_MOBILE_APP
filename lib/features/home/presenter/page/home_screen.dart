@@ -7,10 +7,12 @@ import 'package:kommuno/core/common/repo/activity_log_repo.dart';
 import 'package:kommuno/core/common/widget/app_avatar.dart';
 import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:kommuno/core/common/widget/my_app_bar.dart';
+import 'package:kommuno/core/network_manager/alive_set_service.dart';
 import 'package:kommuno/core/network_manager/websocket_service.dart';
 import 'package:kommuno/core/utilities/app_methods.dart';
 import 'package:kommuno/core/utilities/campaign_manager.dart';
 import 'package:kommuno/core/utilities/logout_manager.dart';
+import 'package:kommuno/core/utilities/user_login_info_manager/user_login_info_manager.dart';
 import 'package:kommuno/features/break/cubit/break_cubit.dart';
 import 'package:kommuno/features/break/presenter/view/break_widget.dart';
 import 'package:kommuno/features/break/presenter/view/break_in_button.dart';
@@ -18,6 +20,7 @@ import 'package:kommuno/core/common/widget/onboarding_widget/onboarding_widget.d
 import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
 import 'package:kommuno/core/common/widget/user_details/data/model/user_details_model.dart';
 import 'package:kommuno/core/utilities/extension_method.dart';
+import 'package:kommuno/features/calls/cubit/call_cubit.dart';
 import 'package:kommuno/features/contact/presenter/widget/contact_helper.dart';
 import 'package:kommuno/features/home/presenter/widget/home_button.dart';
 import 'package:kommuno/features/home/presenter/widget/home_menu_button.dart';
@@ -39,7 +42,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
 
 
-void initState() {
+@override
+  void initState() {
     super.initState();
     
     // Initialize global socket after first frame
@@ -52,6 +56,16 @@ void initState() {
   }
 
     Future<void> _initializeServices() async {
+  final userInfo = UserLoginInfoManager.userLoginInfoModel;
+
+  if (userInfo != null) {
+      AliveService().start(
+        username: userInfo.username,
+        role: userInfo.role,
+        isLogin: false,   // interval mode
+      );
+    }
+      
     final userDetails = context.read<UserDetailsCubit>().userDetailsModel;
     context.read<UserDetailsCubit>().startWaitingTimer();
     context.read<UserDetailsCubit>().startActiveTimer();
@@ -106,7 +120,7 @@ await ActivityHelperRepo().updateAgentActivityTime(
     }
 
     final userDetails = context.read<UserDetailsCubit>().userDetailsModel;
-    
+    final callCubit = context.read<CallStateCubit>();
     debugPrint(" Initializing Global WebSocket...");
     debugPrint("   SME ID: ${userDetails.smeId}");
     debugPrint("   Agent ID: ${userDetails.agentId}");
@@ -115,6 +129,7 @@ await ActivityHelperRepo().updateAgentActivityTime(
     CallWebSocketManager.connectGlobal(
       smeId: userDetails.smeId,
       agentId: userDetails.agentId,
+      callCubit: callCubit
     );
   }
 
@@ -162,6 +177,8 @@ await ActivityHelperRepo().updateAgentActivityTime(
             ),
           ),
           const HomeMenuButton(),
+         
+
         ],
       ),
       body: Padding(
@@ -226,7 +243,7 @@ final queueName = campaign?.campaignQueueName ?? "-";
 
       if (state is UserDetailsSuccessState) {
         status = state.agentStatus;
-
+print("Status$status");
         if (status == "Waiting") {
           timerText = formatSeconds(state.waitingSeconds);
         }

@@ -78,8 +78,19 @@ class _CampaignListState extends StatelessWidget {
         child: UserDetailsWidget(
           builder: (userData) {
             return BlocListener<UpdateUserCampaignCubit, UpdateUserCampaignState>(
-              listener: (context, updateUserCampaignState) {
+              listener: (context, updateUserCampaignState) async {
                 if (updateUserCampaignState.isCampaignUpdated) {
+                  final user = context.read<UserDetailsCubit>().userDetailsModel;
+    final smeId = user.smeId;
+    final agentId = user.agentId;
+
+    await context
+        .read<UpdateUserCampaignCubit>()
+        .postCampaignSelectionSetup(
+          smeId: smeId,
+          agentId: agentId,
+        );
+
                   if (isAssignCampaign) {
                     Navigator.of(context).pushNamedAndRemoveUntil(AppRouteNames.homeMiddleware, (settings) => false);
                   } else {
@@ -204,6 +215,9 @@ class _CampaignListState extends StatelessWidget {
                     campaignData: campaign,
                     smeId: userData.smeId
                   );
+
+
+
             }
           : null,
     );

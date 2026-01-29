@@ -60,6 +60,7 @@ class _LoginScreenState extends StatelessWidget {
     return BlocConsumer<LoginCubit, LoginState>(
       listener: (context, state) {
         if (state.isUserLoginSuccess) {
+          
           Navigator.of(context)
               .pushReplacementNamed(AppRouteNames.assignCampaign);
 
@@ -78,7 +79,7 @@ class _LoginScreenState extends StatelessWidget {
                 ),            const SizedBox(width: AppConstant.kSized10),
 
                              const Text(
-      "v1.0.5",
+      "v1.0.8",
       style: TextStyle(
         color: Colors.black,
         fontSize: 12,

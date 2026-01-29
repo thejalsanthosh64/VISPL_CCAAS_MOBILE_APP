@@ -26,13 +26,6 @@ class CampaignListCubit extends Cubit<CampaignListState> {
       final res = await _campaignRepo.getCampaigns(smeId: smeId);
       if (res.isSuccess) {
 
-
-      await _campaignRepo.updateWebrtcAgentStatus(
-        smeId: smeId,
-        agentId: loginInfo.userId,
-     
-      );
-
         final data = List<Map<String, dynamic>>.from(res.data as List);
         List<CampaignData> campaignList = [...data.map((e) => CampaignData.fromJson(e))];
         emit(CampaignListSuccessState(campaignList: campaignList));
@@ -55,6 +48,7 @@ class CampaignListCubit extends Cubit<CampaignListState> {
     if (state is CampaignListSuccessState) {
       final currentState = state as CampaignListSuccessState;
       emit(currentState.copyWith(selectedCampaign: () => id));
+      
     }
   }
 }

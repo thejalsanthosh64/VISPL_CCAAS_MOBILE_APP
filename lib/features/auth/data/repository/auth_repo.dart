@@ -60,8 +60,6 @@ final class AuthRepo {
     try {
 
 
-
-
       final res = await _dioClient.post(
           ApiEndpoints.logout(UserLoginInfoManager.userLoginInfoModel!.userId),
           data: {
