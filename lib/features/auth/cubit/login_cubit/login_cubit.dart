@@ -86,7 +86,6 @@ class LoginCubit extends Cubit<LoginState> {
 
 AliveService().sendLogin(
     username: user.username,
-    role: user.role,
   );
     
 await ActivityHelperRepo().setActivityLogs(

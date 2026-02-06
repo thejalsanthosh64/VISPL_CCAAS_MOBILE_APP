@@ -342,6 +342,49 @@ Future<CommonResponseModel> getInteractionHistory({
   );
 }
 
+Future<CommonResponseModel> saveCrmForm({
+  required int smeId,
+  required String sessionId,
+  required Map<String, dynamic> body,
+}) {
+  return _dioClient.post(
+    ApiEndpoints.updateCrmForm(smeId, sessionId),
+    data: body,
+  );
+}
+
+
+  //  Future<void> updateLiveCallStatusForDropCall({
+  //   required int smeId,
+  //   required int agentId,
+  //   required String sessionId,
+  //   required String status,
+  //       required int enabledWrapupTime,
+
+  // }) async {
+  //   await _dioClient.post(ApiEndpoints.updateLiveCallStatus(smeId), data: {
+  //     "agent_id": agentId,
+  //     "status": status,
+  //     "session_id": sessionId,
+  //     "wrap_up_time":  enabledWrapupTime
+  //   });
+  // }
+
+
+   Future<void> updateAgentLiveStatusForDropCall({
+    required int smeId,
+    required int agentId,
+    required String status,
+            required int enabledWrapupTime,
+
+  }) async {
+    await _dioClient.post(ApiEndpoints.updateAgentLiveStatus(smeId), data: {
+      "agent_id": agentId,
+      "status": status,
+      "wrap_up_time": enabledWrapupTime,
+    });
+  }
+
 
 }
 

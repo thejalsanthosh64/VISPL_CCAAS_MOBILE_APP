@@ -29,45 +29,93 @@ Timer? _activeTimer;
 int activeSeconds = 0;
 
   //  Start waiting timer 
-  void startWaitingTimer() {
-    stopWaitingTimer(); 
+  // void startWaitingTimer() {
+  //   stopWaitingTimer(); 
 
-    waitingSeconds = 0;
+  //   waitingSeconds = 0;
     
+  //   if (state is UserDetailsSuccessState) {
+  //     emit((state as UserDetailsSuccessState).copyWith(
+  //       agentStatus: "Waiting",
+  //       waitingSeconds: 0,
+  //     ));
+  //   }
+
+  //   _waitingTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+  //     waitingSeconds++;
+      
+  //     if (state is UserDetailsSuccessState) {
+  //       emit((state as UserDetailsSuccessState).copyWith(
+  //         agentStatus: "Waiting",
+  //         waitingSeconds: waitingSeconds,
+  //       ));
+  //     }
+  //   });
+    
+  //   debugPrint(" Started waiting timer");
+  // }
+
+  void startWaitingTimer() {
+  if (isClosed) {
+    debugPrint("⛔ UserDetailsCubit closed → skip startWaitingTimer");
+    return;
+  }
+
+  stopWaitingTimer();
+
+  waitingSeconds = 0;
+
+  if (state is UserDetailsSuccessState) {
+    emit((state as UserDetailsSuccessState).copyWith(
+      agentStatus: "Waiting",
+      waitingSeconds: 0,
+    ));
+  }
+
+  _waitingTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+    if (isClosed) return;
+
+    waitingSeconds++;
     if (state is UserDetailsSuccessState) {
       emit((state as UserDetailsSuccessState).copyWith(
         agentStatus: "Waiting",
-        waitingSeconds: 0,
+        waitingSeconds: waitingSeconds,
       ));
     }
+  });
 
-    _waitingTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      waitingSeconds++;
-      
-      if (state is UserDetailsSuccessState) {
-        emit((state as UserDetailsSuccessState).copyWith(
-          agentStatus: "Waiting",
-          waitingSeconds: waitingSeconds,
-        ));
-      }
-    });
-    
-    debugPrint(" Started waiting timer");
-  }
+  debugPrint("✅ Started waiting timer");
+}
+
 
   //  Stop timer and return total waiting seconds
-  int stopWaitingTimer() {
-    final capturedSeconds = waitingSeconds;
-      debugPrint(" stopWaitingTimer CALLED → $capturedSeconds sec");
+  // int stopWaitingTimer() {
+  //   final capturedSeconds = waitingSeconds;
+  //     debugPrint(" stopWaitingTimer CALLED → $capturedSeconds sec");
 
-    _waitingTimer?.cancel();
-    _waitingTimer = null;
-    waitingSeconds = 0; 
+  //   _waitingTimer?.cancel();
+  //   _waitingTimer = null;
+  //   waitingSeconds = 0; 
     
-    debugPrint(" Stopped waiting timer. Total: $capturedSeconds seconds");
+  //   debugPrint(" Stopped waiting timer. Total: $capturedSeconds seconds");
     
-    return capturedSeconds;
-  }
+  //   return capturedSeconds;
+  // }
+
+  int stopWaitingTimer() {
+  if (isClosed) return 0;
+
+  final capturedSeconds = waitingSeconds;
+  _waitingTimer?.cancel();
+  _waitingTimer = null;
+  waitingSeconds = 0;
+
+  debugPrint("⏹ Waiting stopped → $capturedSeconds sec");
+  return capturedSeconds;
+}
+
+
+
 
   void setActive() {
     final elapsedSeconds = stopWaitingTimer();

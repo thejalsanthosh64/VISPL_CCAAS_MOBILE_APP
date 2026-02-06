@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kommuno/core/common/app_constant.dart';
 import 'package:kommuno/core/common/repo/activity_log_repo.dart';
 import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
@@ -16,7 +17,8 @@ import 'package:kommuno/features/calls/data/repository/call_repo.dart';
 class CallStateCubit extends Cubit<CallState> {
  final CallsRepo callsRepo;
   final ActivityHelperRepo logRepo;
-  
+  static final Set<String> shownCrmSessions = {};
+
 
 CallStateCubit({
     CallsRepo? callsRepo,  
@@ -251,12 +253,50 @@ Future<void> drop({
 
   final res=await callsRepo.drop(smeId: smeId, body: body);
   if (res.isSuccess) {
-await logRepo.updateLiveCallStatus(
-      smeId: smeId,
-      agentId: agentId,
-      sessionId: sessionId,
-      status: "dropCall", 
-    );
+
+   
+final enabledWrapTime = CampaignManager.campaign?.wrapupTimeInSeconds;
+final wrapUpTime = (enabledWrapTime != null && enabledWrapTime > 0)
+    ? enabledWrapTime
+    : AppConstant.defaultWrapUpFallbackSeconds;
+
+// await callsRepo.updateAgentLiveStatusForDropCall(
+//       smeId: smeId,
+//       agentId: agentId,
+//       status: "Wrap up", 
+//       enabledWrapupTime: wrapUpTime
+//     );
+    
+
+    final wrapupEnabled = CampaignManager.campaign?.wrapupEnabled == true;
+final dispositionFilled = state.isDispositionFilled;
+final userDetailsCubit = UserDetailsCubit.instance;
+
+if (wrapupEnabled && !dispositionFilled) {
+  // show wrapup screen
+  await callsRepo.updateAgentLiveStatusForDropCall(
+    smeId: smeId,
+    agentId: agentId,
+    status: "Wrap up",
+    enabledWrapupTime: wrapUpTime,
+  );
+} else {
+
+  //  userDetailsCubit?.stopWaitingTimer() ?? 0;
+
+  // skip wrapup
+  await logRepo.updateAgentLiveStatus(
+    smeId: smeId,
+    agentId: agentId,
+    status: "Waiting",
+  );
+
+    // userDetailsCubit?.startWaitingTimer();
+
+}
+
+
+
   await logRepo.setActivityLogs(
     smeId,
                   moduleName: "call",
@@ -268,11 +308,11 @@ await logRepo.updateLiveCallStatus(
   );
   
 
-await ActivityHelperRepo().updateAgentLiveStatus(
-  smeId: smeId,
-  agentId: agentId,
-  status: CallSession.callType,
-);
+// await ActivityHelperRepo().updateAgentLiveStatus(
+//   smeId: smeId,
+//   agentId: agentId,
+//   status: CallSession.callType,
+// );
 
 
   stopTimer();
@@ -286,6 +326,8 @@ Future<void> saveWrapUp({
   required String remarks,
   required int rating,
   required BuildContext context,
+    required int wrapUpSeconds,
+
 }) async {
   final smeId = CallSession.smeId ?? 0;
   final agentId = CallSession.agentId ?? 0;
@@ -300,30 +342,43 @@ Future<void> saveWrapUp({
     "disposition_name": dispositionName,
     "agent_id": agentId,
   };
-
+ final wrapupEnabled = CampaignManager.campaign?.wrapupEnabled == true;
 await callsRepo.saveRating(smeId: smeId, body: body);
 await callsRepo.saveRatingCrm(smeId: smeId, body: body);
+
+markDispositionFilled();
+
+
+  if (wrapupEnabled) {
+ 
+  userDetailsCubit.stopWaitingTimer();
+
+  await logRepo.updateIsWrapUpTimeOver(
+      smeId: smeId,
+      agentId: agentId,
+      sessionId: sessionId,
+      wrapupTime: wrapUpSeconds,
+    );
 
   // Agent becomes free
   await logRepo.updateAgentLiveStatus(
     smeId: smeId,
     agentId: agentId, 
-    status: "free",
+    status: "Waiting",
   );
 
-  final seconds = userDetailsCubit.stopWaitingTimer();
 
 await ActivityHelperRepo().updateAgentActivityTime(
   smeId: smeId,
   agentId: agentId,
-  time: seconds,
-  status: "Waiting",
+  time: wrapUpSeconds,
+  status: "Wrap up",
 );
 
 
 userDetailsCubit.startWaitingTimer();
+  }
 
-    
 }
 
 
@@ -664,6 +719,8 @@ Future<void> updateSocketId({
   }
 }
 
+
+
 Future<void> loadInteractionHistory({
   required String customerNumber,
 }) async {
@@ -740,7 +797,47 @@ Map<String, dynamic> buildInteractionPayload({
     "agentId": agentId,
   };
 }
+Future<bool> saveCrmForm(List<Map<String, dynamic>> updatedForm) async {
+  emit(state.copyWith(isSavingCrm: true));
 
+  final smeId = CallSession.smeId!;
+  final sessionId = CallSession.sessionId!;
+
+  final res = await callsRepo.saveCrmForm(
+    smeId: smeId,
+    sessionId: sessionId,
+    body: {"form_json": updatedForm},
+  );
+
+  emit(state.copyWith(isSavingCrm: false));
+
+  if (res.isSuccess) {
+    FToastManager().showToast(message: "CRM form saved");
+    return true;
+  } else {
+    FToastManager().showToast(message: "Failed to save CRM form");
+    return false;
+  }
+}
+
+void markCrmPopupShown() {
+  debugPrint("🔒 markCrmPopupShown called");
+  debugPrint("  - Before: crmPopupShown = ${state.crmPopupShown}");
+  
+  if (state.crmPopupShown) {
+    debugPrint("⚠️ Already marked as shown - skipping");
+    return;
+  }
+  
+  emit(state.copyWith(crmPopupShown: true));
+  
+  debugPrint("  - After: crmPopupShown = ${state.crmPopupShown}");
+}
+
+
+void markDispositionFilled() {
+  emit(state.copyWith(isDispositionFilled: true));
+}
 
 
 }

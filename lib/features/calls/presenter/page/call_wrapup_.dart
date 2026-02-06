@@ -297,7 +297,7 @@ IconButton(
   icon: const Icon(
     Icons.history,
     color: Colors.white,
-    size: 22,
+    size: 24,
   ),
   onPressed: () async {
     final cubit = context.read<CallStateCubit>();
@@ -620,6 +620,8 @@ IconButton(
                           dispositionId: _selectedDispositionId ?? "",
                           remarks: _remarkController.text.trim(),
                           rating: _rating,
+                            wrapUpSeconds: displayTimer.inSeconds, 
+
                           
                         );
       
@@ -695,6 +697,8 @@ Future<void> _autoCloseWrapUp() async {
       dispositionId: _selectedDispositionId ?? "",
       remarks: _remarkController.text.trim(),
       rating: _rating,
+                                  wrapUpSeconds: displayTimer.inSeconds, 
+
     );
   } catch (e) {
     debugPrint("Auto wrapup save failed: $e");

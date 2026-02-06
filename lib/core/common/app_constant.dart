@@ -25,4 +25,6 @@ abstract class AppConstant {
   static const leadsFieldTitleWidth = 100.0;
 
   static const kTilesBottomPadding = 10.0;
+static const int defaultWrapUpFallbackSeconds = 300;
+
 }

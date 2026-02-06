@@ -10,6 +10,13 @@ final List<dynamic> smsTemplates;
   final List<dynamic> whatsappTemplates;
 final bool isLoadingInteractions;
 final List<Map<String, dynamic>> interactions;
+  final bool showCrmForm;
+  final String crmFormName;
+  final List<Map<String, dynamic>> crmFormJson;
+  final bool isSavingCrm;
+    final bool crmPopupShown; 
+final bool isDispositionFilled;
+
 
 
   const CallState({
@@ -23,6 +30,13 @@ final List<Map<String, dynamic>> interactions;
     this.whatsappTemplates = const [],
     this.isLoadingInteractions = false,
     this.interactions = const [],
+      this.showCrmForm = false,
+    this.crmFormName = "",
+    this.crmFormJson = const [],
+    this.isSavingCrm = false,
+   this.crmPopupShown= false,
+this.isDispositionFilled = false,
+
   });
 
   CallState copyWith({
@@ -36,6 +50,14 @@ final List<Map<String, dynamic>> interactions;
     List<dynamic>? whatsappTemplates,
       bool? isLoadingInteractions,
     List<Map<String, dynamic>>? interactions,
+     bool? showCrmForm,
+    String? crmFormName,
+    List<Map<String, dynamic>>? crmFormJson,
+    bool? isSavingCrm,
+        bool? crmPopupShown,
+        bool? isDispositionFilled,
+
+
   }) {
     return CallState(
       isConnected: isConnected ?? this.isConnected,
@@ -49,6 +71,14 @@ final List<Map<String, dynamic>> interactions;
       isLoadingInteractions:
           isLoadingInteractions ?? this.isLoadingInteractions,
       interactions: interactions ?? this.interactions,
+       showCrmForm: showCrmForm ?? this.showCrmForm,
+      crmFormName: crmFormName ?? this.crmFormName,
+      crmFormJson: crmFormJson ?? this.crmFormJson,
+      isSavingCrm: isSavingCrm ?? this.isSavingCrm,
+            crmPopupShown: crmPopupShown ?? this.crmPopupShown,
+            isDispositionFilled: isDispositionFilled ?? this.isDispositionFilled,
+
+
     );
   }
 @override
@@ -64,7 +94,13 @@ bool operator ==(Object other) {
       other.smsTemplates == smsTemplates &&              
       other.whatsappTemplates == whatsappTemplates &&  
       other.isLoadingInteractions == isLoadingInteractions &&
-      other.interactions == interactions;
+      other.interactions == interactions &&
+      other.showCrmForm == showCrmForm &&
+      other.crmFormName == crmFormName &&
+      other.crmFormJson == crmFormJson &&
+      other.isSavingCrm == isSavingCrm &&
+      other.crmPopupShown == crmPopupShown &&
+      other.isDispositionFilled == isDispositionFilled;
 }
 
 @override
@@ -78,7 +114,17 @@ int get hashCode {
       smsTemplates.hashCode ^                             
       whatsappTemplates.hashCode ^
       isLoadingInteractions.hashCode ^
-       interactions.hashCode           ;          
+       interactions.hashCode ^
+               showCrmForm.hashCode ^
+               crmFormName.hashCode ^
+               crmFormJson.hashCode ^
+               isSavingCrm.hashCode ^
+               crmPopupShown.hashCode ^
+               isDispositionFilled.hashCode;
+              
+
+
+
 }
 
 }

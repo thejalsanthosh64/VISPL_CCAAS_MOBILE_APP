@@ -270,6 +270,16 @@ class CallManager {
 
   static Future<void> makeNewCall({required String number}) async {
     try {
+
+
+        final campaign = CampaignManager.campaign;
+
+    if (campaign?.campaignType != "click_to_call_campaign") {
+      FToastManager().showToast(
+        message: "Please update campaign to Click to Call to make a call",
+      );
+      return;
+    }
       final userDetails = (AppKeys.nestedNavigatorKey.currentContext!
               .read<UserDetailsCubit>()
               .state as UserDetailsSuccessState)
@@ -296,7 +306,6 @@ class CallManager {
 
       AppLoadingIndicator.showLoadingIndicator();
 
-      final campaign = CampaignManager.campaign;
       final sessionId = const Uuid().v4();
       final now = DateTime.now();
 

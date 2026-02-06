@@ -66,7 +66,7 @@ abstract interface class AppRouterManager {
       case AppRouteNames.dialScreen:
         return _GeneratePageRoute(widget: const DialScreen(), settings: settings);
          case AppRouteNames.activeScreen:
-        return _GeneratePageRoute(widget: const AfterCallWrapUpScreen(callerName: "test",duration: Duration(seconds: 2),phoneNumber: "8921388124",), settings: settings);
+        return _GeneratePageRoute(widget: const AfterCallWrapUpScreen(callerName: "",duration: Duration(seconds: 5),phoneNumber: "",), settings: settings);
       case AppRouteNames.leads:
         return _GeneratePageRoute(widget: const LeadsScreen(), settings: settings);
       case AppRouteNames.leadsDetails:

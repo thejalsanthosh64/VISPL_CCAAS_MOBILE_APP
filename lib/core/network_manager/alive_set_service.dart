@@ -63,13 +63,13 @@ void _startTimer() {
 }
 
 Future<void> sendLogin({
-    required String username, required String role,
+    required String username, 
   }) async {
     try {
       debugPrint("Sending SetIsAlive LOGIN");
       await ActivityHelperRepo().setIsAlive(
         username: username,
-        mode: role,
+        mode: "login",
       );
       debugPrint("SetIsAlive LOGIN sent");
     } catch (e) {

@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kommuno/core/common/app_theme/app_theme.dart';
+import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
 import 'package:kommuno/core/utilities/call_manager/call_session.dart';
 import 'package:kommuno/core/utilities/campaign_manager.dart';
 import 'package:kommuno/features/calls/cubit/call_cubit.dart';
 import 'package:kommuno/features/calls/cubit/call_state.dart';
 import 'package:kommuno/features/calls/presenter/widgets/bottom_sheet.dart';
+import 'package:kommuno/features/calls/presenter/widgets/crm_form_widget.dart';
+import 'package:kommuno/features/calls/presenter/widgets/dispostion_widget.dart';
 import 'package:kommuno/features/calls/presenter/widgets/interaction_history_widget.dart';
 
 /// A screen that displays an active call with controls.
@@ -16,6 +19,73 @@ import 'package:kommuno/features/calls/presenter/widgets/interaction_history_wid
 
 class CallScreen extends StatelessWidget {
   const CallScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    debugPrint("🏗️ CallScreen build called");
+    
+    return BlocListener<CallStateCubit, CallState>(
+      listenWhen: (prev, curr) {
+        final shouldListen = curr.showCrmForm == true &&
+            curr.crmPopupShown == false &&
+            prev.crmPopupShown == false;
+        
+        debugPrint("🔍 listenWhen check:");
+        debugPrint("  - showCrmForm: ${curr.showCrmForm}");
+        debugPrint("  - curr.crmPopupShown: ${curr.crmPopupShown}");
+        debugPrint("  - prev.crmPopupShown: ${prev.crmPopupShown}");
+        debugPrint("  - RESULT: $shouldListen");
+        
+        return shouldListen;
+      },
+      listener: (context, state) {
+        debugPrint("🚨 CRM LISTENER TRIGGERED!");
+        debugPrint("  - showCrmForm: ${state.showCrmForm}");
+        debugPrint("  - crmPopupShown: ${state.crmPopupShown}");
+        debugPrint("  - crmFormName: ${state.crmFormName}");
+        
+        // mark popup shown BEFORE opening
+        context.read<CallStateCubit>().markCrmPopupShown();
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          debugPrint("✅ Opening CRM sheet via postFrameCallback");
+          openCrmSheet(context);
+        });
+      },
+      child: const _CallScreenBody(),
+    );
+  }
+}
+
+void openCrmSheet(BuildContext context) {
+  debugPrint("📋 openCrmSheet called");
+  final cubit = context.read<CallStateCubit>();
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.white,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (sheetContext) {
+      debugPrint("🎨 CRM sheet builder called");
+      return BlocProvider.value(
+        value: cubit,
+        child: SizedBox(
+          height: MediaQuery.of(sheetContext).size.height * 0.6,
+          child: const CrmFormSheet(),
+        ),
+      );
+    },
+  ).whenComplete(() {
+    debugPrint("🔒 CRM sheet closed");
+  });
+}
+
+
+class _CallScreenBody extends StatelessWidget {
+  const _CallScreenBody({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -44,102 +114,98 @@ class CallScreen extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(20),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Active Call",
-                        style: AppTextStyle.white18.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          CallSession.callType ?? "Outgoing",
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-
-
-               Row(
-  mainAxisSize: MainAxisSize.min,
+  crossAxisAlignment: CrossAxisAlignment.center,
   children: [
-
-IconButton(
-  tooltip: "Interaction History",
-  icon: const Icon(
-    Icons.history,
-    color: Colors.white,
-    size: 22,
-  ),
-  onPressed: () async {
-    final cubit = context.read<CallStateCubit>();
-
-    await cubit.loadInteractionHistory(
-      customerNumber: cubit.state.phoneNumber,
-    );
-
-    _openInteractionHistorySheet(context);
-  },
-),
-
-
-    IconButton(
-      tooltip: "Send SMS",
-      icon: const FaIcon(FontAwesomeIcons.message,
-          color: Colors.white, size: 20),
-      onPressed: () async {
-        final cubit = context.read<CallStateCubit>();
-        await cubit.loadSmsTemplates();
-        _openTemplateSheet(context, type: "sms");
-      },
+    // LEFT: Title
+    Text(
+      "Active Call",
+      style: AppTextStyle.white18.copyWith(
+        fontWeight: FontWeight.w600,
+      ),
     ),
 
+    const SizedBox(width: 8),
 
-    IconButton(
-      tooltip: "Send WhatsApp",
-      icon: const FaIcon(FontAwesomeIcons.whatsapp,
-          color: Colors.white, size: 21),
-      onPressed: () async {
-        final cubit = context.read<CallStateCubit>();
-        await cubit.loadWhatsappTemplates();
-        _openTemplateSheet(context, type: "whatsapp");
-      },
+    // MIDDLE: Call type chip
+    Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        CallSession.callType ?? "Outgoing",
+        style: const TextStyle(color: Colors.white, fontSize: 12),
+        textAlign: TextAlign.center,
+      ),
+    ),
+
+    const SizedBox(width: 8),
+
+    // RIGHT: Icons (CONSTRAINED)
+    Expanded(
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: Wrap(
+          spacing: 4,
+          runSpacing: 4,
+          children: [
+            IconButton(
+              tooltip: "Disposition",
+              icon: const Icon(Icons.assignment_turned_in_outlined,
+                  color: Colors.white, size: 22),
+              onPressed: () => openDispositionSheet(context),
+            ),
+
+            IconButton(
+              tooltip: "History",
+              icon: const Icon(Icons.history,
+                  color: Colors.white, size: 22),
+              onPressed: () async {
+                final cubit = context.read<CallStateCubit>();
+                await cubit.loadInteractionHistory(
+                  customerNumber: cubit.state.phoneNumber,
+                );
+                _openInteractionHistorySheet(context);
+              },
+            ),
+
+            if (state.showCrmForm)
+              IconButton(
+                tooltip: "CRM",
+                icon: const Icon(Icons.assignment_outlined,
+                    color: Colors.white, size: 22),
+                onPressed: () => openCrmSheet(context),
+              ),
+
+            IconButton(
+              tooltip: "SMS",
+              icon: const FaIcon(FontAwesomeIcons.message,
+                  color: Colors.white, size: 18),
+              onPressed: () async {
+                final cubit = context.read<CallStateCubit>();
+                await cubit.loadSmsTemplates();
+                _openTemplateSheet(context, type: "sms");
+              },
+            ),
+
+            IconButton(
+              tooltip: "WhatsApp",
+              icon: const FaIcon(FontAwesomeIcons.whatsapp,
+                  color: Colors.white, size: 20),
+              onPressed: () async {
+                final cubit = context.read<CallStateCubit>();
+                await cubit.loadWhatsappTemplates();
+                _openTemplateSheet(context, type: "whatsapp");
+              },
+            ),
+          ],
+        ),
+      ),
     ),
   ],
 ),
 
-
-//                       PopupMenuButton<String>(
-//   icon: const Icon(Icons.more_vert, color: Colors.white),
-//   onSelected: (value) {
-//     if (value == "sms") {
-//       cubit.loadSmsTemplates();
-//       _openTemplateSheet(context, type: "sms");
-      
-//     } else if (value == "whatsapp") {
-//       cubit.loadWhatsappTemplates();
-//       _openTemplateSheet(context, type: "whatsapp");
-//     }
-//   },
-//   itemBuilder: (_) => [
-//     const PopupMenuItem(value: "sms", child: Text("Send SMS")),
-//     const PopupMenuItem(value: "whatsapp", child: Text("Send WhatsApp")),
-//   ],
-// ),
-
-                    ],
-                  ),
                 ),
       
                 const Spacer(),
@@ -365,6 +431,31 @@ IconButton(
     return "${two(minutes)}:${two(seconds)}";
   }
 
+
+void openCrmSheet(BuildContext context) {
+  final cubit = context.read<CallStateCubit>();
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+      backgroundColor: Colors.white,
+
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (sheetContext) {
+      return BlocProvider.value(
+        value: cubit,
+        child: SizedBox(
+          height: MediaQuery.of(sheetContext).size.height * 0.6, 
+          child: const CrmFormSheet(),
+        ),
+      );
+    },
+  );
+}
+
+
 void _openInteractionHistorySheet(BuildContext context) {
   final cubit = context.read<CallStateCubit>();
 
@@ -382,6 +473,29 @@ void _openInteractionHistorySheet(BuildContext context) {
     },
   );
 }
+void openDispositionSheet(BuildContext context) {
+  final callCubit = context.read<CallStateCubit>();
+  final userCubit = UserDetailsCubit.instance!;
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.white,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (_) {
+      return MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: callCubit),
+          BlocProvider.value(value: userCubit),
+        ],
+        child: DispositionBottomSheet(cubit: callCubit),
+      );
+    },
+  );
+}
+
 
 void _openTemplateSheet(
   BuildContext context, {
@@ -435,7 +549,7 @@ void _openTemplateSheet(
                             Navigator.pop(context);
 
                             if (type == "sms") {
-                              // ✅ SMS → Open editable preview
+                              //  SMS → Open editable preview
                               _openPreviewSheet(
                                 context,
                                 template: t,

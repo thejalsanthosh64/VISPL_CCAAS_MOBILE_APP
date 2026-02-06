@@ -1,11 +1,17 @@
 part of 'dio_client.dart';
 
 abstract class ApiEndpoints {
-  static const String _baseUrl = "https://test.smartping.ai/v1/";
+
+static const String _baseUrl = "https://ccs.sparc.smartping.io/v1/";
+  // static const String _baseUrl = "https://test.smartping.ai/v1/";
 
   // static const String _baseUrl = "https://newdev.kommuno.com/v1/";
 
   // static const String _baseUrl = "https://dev.kommuno.com/v1/";
+
+  // static const String baseUrlWebSo = "https://testsio.smartping.ai/";
+  static const String baseUrlWebSo = "https://ccssio.smartping.io/";
+
 
   static const int _receiveTimeout = 15000;
 
@@ -34,20 +40,20 @@ abstract class ApiEndpoints {
 
   // static String updateContacts(int id) => "user/$id/updateCustomerName";
 
- static String getAllContacts(String smeId) => "/sme/$smeId/getAddressbookDetail";
-  static String addContacts(String smeId) => "/sme/$smeId/setAddressbookDetail";
-  static String updateContacts(String smeId) => "/sme/$smeId/setAddressbookDetail";
+ static String getAllContacts(String smeId) => "sme/$smeId/getAddressbookDetail";
+  static String addContacts(String smeId) => "sme/$smeId/setAddressbookDetail";
+  static String updateContacts(String smeId) => "sme/$smeId/setAddressbookDetail";
 
 
 
   // static String getFollowUpCall(int id) => "$id/getFollowUpCall";
-  static String getPastScheduledCalls(int id) => "/sme/$id/getPastScheduledCalls";
+  static String getPastScheduledCalls(int id) => "sme/$id/getPastScheduledCalls";
 
-  static String getTodayScheduledCalls(int id) => "/sme/$id/getTodayScheduledCalls";
+  static String getTodayScheduledCalls(int id) => "sme/$id/getTodayScheduledCalls";
 
-  static String getUpcomingScheduledCalls(int id) => "/sme/$id/getUpcomingScheduledCalls";
+  static String getUpcomingScheduledCalls(int id) => "sme/$id/getUpcomingScheduledCalls";
 
-  static String changeScheduleStatus(int smeId) => "/sme/$smeId/changeScheduleStatus";
+  static String changeScheduleStatus(int smeId) => "sme/$smeId/changeScheduleStatus";
   static String deleteFollowUp(int smeId, String followUpId) =>
     "/sme/$smeId/followup/$followUpId";
 
@@ -86,31 +92,31 @@ abstract class ApiEndpoints {
 
   static String getLongCodesForCall(int id) => "$id/getLongcodesForCall";
 
-  static const clickToCallLiveCall = "/crm/clickToCallLiveCall";
+  static const clickToCallLiveCall = "crm/clickToCallLiveCall";
 
-  static String holdCall(int smeId) => "/agent/$smeId/hold";
+  static String holdCall(int smeId) => "agent/$smeId/hold";
 
-  static String unHoldCall(int smeId) => "/agent/$smeId/unhold";
+  static String unHoldCall(int smeId) => "agent/$smeId/unhold";
 
-  static String muteCall(int smeId) => "/agent/$smeId/mute";
+  static String muteCall(int smeId) => "agent/$smeId/mute";
 
-  static String unMuteCall(int smeId) => "/agent/$smeId/unmute";
+  static String unMuteCall(int smeId) => "agent/$smeId/unmute";
 
-  static String dropCall(int smeId) => "/agent/$smeId/dropCall";
+  static String dropCall(int smeId) => "agent/$smeId/dropCall";
 
-  static String transferCall(int smeId) => "/agent/$smeId/unattended";
+  static String transferCall(int smeId) => "agent/$smeId/unattended";
 
-  static String conferenceall(int smeId) => "/agent/$smeId/attended";
-    static String getAgentStatus(int smeId) => "/sme/$smeId/getAgentStatus";
+  static String conferenceall(int smeId) => "agent/$smeId/attended";
+    static String getAgentStatus(int smeId) => "sme/$smeId/getAgentStatus";
 
-  static String getQueue(int smeId) => "/sme/$smeId/getQueue";
+  static String getQueue(int smeId) => "sme/$smeId/getQueue";
 
-  static String getTeamLeads(int smeId) => "/teamlead/$smeId/getTeamLeads";
+  static String getTeamLeads(int smeId) => "teamlead/$smeId/getTeamLeads";
 
 
-  static String getQueueAgent(int smeId) => "/agent/$smeId/getQueueAgent";
+  static String getQueueAgent(int smeId) => "agent/$smeId/getQueueAgent";
 
-  static String getAgentStatusDetail(int smeId) => "/agent/$smeId/getAgentStatusDetail";
+  static String getAgentStatusDetail(int smeId) => "agent/$smeId/getAgentStatusDetail";
 
 
   static String getRecentCalls(int id) => "sme/$id/getAgentMergeCalls";
@@ -120,54 +126,58 @@ abstract class ApiEndpoints {
   // static String updateAgentCurrentCampaign(int id) => "$id/updateAgentCurrentCampaign";
 
   static String updateAgentCurrentCampaign(int smeId) => "agent/$smeId/updateAgentCurrentCallMode";
-    static String saveRating(int smeId) => "/agent/$smeId/saveRating";
+    static String saveRating(int smeId) => "agent/$smeId/saveRating";
 
-  static String saveRatingInCrm(int smeId) => "/agent/$smeId/saveRatingInCrm";
+  static String saveRatingInCrm(int smeId) => "agent/$smeId/saveRatingInCrm";
 
-    static String setIsAlive(String username) => "/sme/$username/setIsAlive";
+    static String setIsAlive(String username) => "sme/$username/setIsAlive";
 
-  static String updateWebrtcAgentStatus(int smeId) => "/sme/$smeId/updateWebrtcAgentStatus";
-    static String nearTimeScheduleCalls(int smeId) => "/sme/$smeId/nearTimeScheduleCalls";
-    static String updateUserOnlineOffline(String username) => "/sme/$username/updateUserOnlineOffline";
+  static String updateWebrtcAgentStatus(int smeId) => "sme/$smeId/updateWebrtcAgentStatus";
+    static String nearTimeScheduleCalls(int smeId) => "sme/$smeId/nearTimeScheduleCalls";
+    static String updateUserOnlineOffline(String username) => "sme/$username/updateUserOnlineOffline";
 
 
 
-    static String updateAgentActivityTime(int smeId) => "/agent/$smeId/updateAgentActivityTime";
-    static String updateLiveCallStatus(int smeId) => "/agent/$smeId/updateLiveCallStatus";
-    static String updateAgentLiveStatus(int smeId) => "/agent/$smeId/updateAgentLiveStatus";
-    static String setActivityLogs(int id) => "/common/$id/setActivityLogs";
-        static String checkIsAlive(String username) => "/sme/$username/checkIsAlive";
+    static String updateAgentActivityTime(int smeId) => "agent/$smeId/updateAgentActivityTime";
+    static String updateLiveCallStatus(int smeId) => "agent/$smeId/updateLiveCallStatus";
+    static String updateAgentLiveStatus(int smeId) => "agent/$smeId/updateAgentLiveStatus";
+    static String setActivityLogs(int id) => "common/$id/setActivityLogs";
+        static String checkIsAlive(String username) => "sme/$username/checkIsAlive";
         static String getDispositionSummary(int smeId) =>
     "agent/$smeId/getSummaryByDisposition";
 
 
 static String surveyEndCall(int smeId) =>
-   "/agent/$smeId/surveyEndCall";
+   "agent/$smeId/surveyEndCall";
 static String updateReadyToTakeCall(int agentId) =>
-    "/agent/$agentId/updateReadyToTakeCall";
+    "agent/$agentId/updateReadyToTakeCall";
 
 
 
 static String getSmsTemplate(int smeId) =>
-    "/sme/$smeId/getSmsTemplate";
+    "sme/$smeId/getSmsTemplate";
 
 static String getWhatsappTemplate(int smeId) =>
-    "/sme/$smeId/getWhatsapp";
+    "sme/$smeId/getWhatsapp";
 
 
 
  static String sendEndCallSms(int smeId) =>
-      "/ksms/$smeId/sendEndcallSms";
+      "ksms/$smeId/sendEndcallSms";
 
   static String sendWhatsapp(int smeId) =>
-      "/whatsapp/$smeId/sendWhatsapp";
+      "whatsapp/$smeId/sendWhatsapp";
 
 static const previewManualDialerResponse =
-    "/kcrm/previewManualDialerResponse";
+    "kcrm/previewManualDialerResponse";
 
 static const previewAutoDialerResponse =
-    "/kcrm/previewAutoDialerResponse";
+    "kcrm/previewAutoDialerResponse";
 static String updateSocketId(int smeId) =>
     "sme/$smeId/updateSocketId";
+
+static String updateCrmForm(int smeId, String sessionId) =>
+    "sme/$smeId/calling-cdr/session/$sessionId/update-form-json";
+    static String updateIsWrapUpTimeOver(int smeId) => "agent/$smeId/updateIsWrapUpTimeOver";
 
 }

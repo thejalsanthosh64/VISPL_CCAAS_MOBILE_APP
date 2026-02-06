@@ -11,6 +11,7 @@ import 'package:kommuno/core/common/app_theme/app_theme.dart';
 import 'package:kommuno/core/common/widget/loading_indicator.dart';
 import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/core/exception/app_dio_exception.dart';
+import 'package:kommuno/core/network_manager/websocket_service.dart';
 import 'package:kommuno/core/utilities/app_methods.dart';
 import 'package:kommuno/core/utilities/campaign_manager.dart';
 import 'package:kommuno/core/utilities/local_storage/hive_service.dart';
@@ -72,22 +73,16 @@ abstract class LogoutManager {
 
     final user = UserLoginInfoManager.userLoginInfoModel!;
 
-
-await ActivityHelperRepo().updateAgentActivityTime(
-        smeId: user.smeId,
-        agentId: user.userId ,
-        time: waitingSeconds,
-        status: "Waiting",
-      );
-
       final res = await AuthRepo().logoutUser(
         username: UserLoginInfoManager.userLoginInfoModel?.username ?? "",
         mode: AppConstant.loginDeviceType,
+        waitingsec: waitingSeconds
       );
 
 
       if (res.isSuccess) {
-       
+      CallWebSocketManager.disconnectCallSocket();
+      CallWebSocketManager.disconnectGlobal();
         UserLoginInfoManager.setLoginUserInfo(userInfo: null);
         CampaignManager.setCampaignInfo(campaign: null);
         for (var key in StorageEnum.values) {

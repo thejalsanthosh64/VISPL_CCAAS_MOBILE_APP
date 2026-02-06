@@ -41,6 +41,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
+bool _socketReady = false;
 
 @override
   void initState() {
@@ -49,9 +50,20 @@ class _HomeScreenState extends State<HomeScreen> {
     // Initialize global socket after first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeGlobalSocket();
-      _initializeServices();
-          _loadTodayInsights();
 
+final campaign = CampaignManager.campaign;
+
+  // 🔍 DEBUG PRINTS
+  debugPrint("📦 Campaign loaded: ${campaign != null}");
+  debugPrint("📦 Campaign ID: ${campaign?.id}");
+  debugPrint("📦 Wrapup Enabled: ${campaign?.wrapupEnabled}");
+    debugPrint("📦 Wrapup time: ${campaign?.wrapupTimeInSeconds}");
+
+
+  if (campaign == null) {
+    debugPrint("❌ Campaign is NULL – socket init should not proceed");
+    return;
+  }
     });
   }
 
@@ -129,8 +141,17 @@ await ActivityHelperRepo().updateAgentActivityTime(
     CallWebSocketManager.connectGlobal(
       smeId: userDetails.smeId,
       agentId: userDetails.agentId,
-      callCubit: callCubit
+      callCubit: callCubit,
+      onSocketReady: () {
+  setState(() {
+    _socketReady = true;
+  });
+         _initializeServices();     
+      _loadTodayInsights(); 
+      },
+    
     );
+
   }
 
  @override
@@ -297,7 +318,10 @@ print("Status$status");
               ],
             ),
           ),
-          BreakInButton.filled(),
+            if (_socketReady)
+      BreakInButton.filled()
+    else
+      const SizedBox.shrink(),
         ],
       );
     },
@@ -348,6 +372,9 @@ String formatSeconds(int sec) {
 
   Widget _buildTimeView(
       {required BuildContext context, required UserDetailsModel userDetails}) {
+         if (!_socketReady) {
+    return const SizedBox.shrink();
+  }
     return const Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -200,7 +200,6 @@ detailRow("End Time", formatDate(item["end_date_time"])),
 
       const Divider(height: 1),
 
-      // ✅ List
       Expanded(
         child: ListView.builder(
           itemCount: state.interactions.length,

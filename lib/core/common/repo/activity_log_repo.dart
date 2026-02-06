@@ -133,6 +133,22 @@ Future<void> setIsAlive({
     data: body,
   );
 }
+Future<void> updateIsWrapUpTimeOver({
+  required int smeId,
+  required int agentId,
+  required String sessionId,
+  required int wrapupTime,
+}) async {
+  await _dioClient.post(
+    ApiEndpoints.updateIsWrapUpTimeOver(smeId),
+    data: {
+      "agent_id": agentId,
+      "session_id": sessionId,
+      "wrapup_time": wrapupTime,
+      "is_wrapup_time_over": 1,
+    },
+  );
+}
 
 
 

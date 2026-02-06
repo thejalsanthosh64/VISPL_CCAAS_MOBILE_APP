@@ -56,6 +56,9 @@ final class AuthRepo {
   Future<CommonResponseModel> logoutUser({
     required String username,
     required String mode,
+    required int waitingsec
+    
+    
   }) async {
     try {
 
@@ -94,6 +97,13 @@ await ActivityHelperRepo().updateUserOnlineOffline(
 );
 
 
+
+await ActivityHelperRepo().updateAgentActivityTime(
+        smeId: user.smeId,
+        agentId: user.userId ,
+        time: waitingsec,
+        status: "Waiting",
+      );
  }
 
       return res;
