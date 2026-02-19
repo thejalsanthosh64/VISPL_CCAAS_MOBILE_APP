@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kommuno/core/common/app_theme/app_theme.dart';
+import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
 import 'package:kommuno/core/utilities/call_manager/call_session.dart';
 import 'package:kommuno/features/calls/cubit/call_cubit.dart';
 import 'package:kommuno/features/calls/data/model/agent_queue_model.dart';
@@ -74,17 +77,34 @@ class _TransferBottomSheetState extends State<TransferBottomSheet> {
     try {
       switch (type) {
         case 'agent':
-          agents = await cubit.loadAllAgents(smeId);
+           final allAgents = await cubit.loadAllAgents(smeId);
+  agents = cubit.getWaitingAgentsOnly(allAgents);
+
           break;
         case 'team_lead':
-          teamLeads = await cubit.loadTeamLeads(smeId);
+          // teamLeads = await cubit.loadTeamLeads(smeId);
+final allTeamLeads = await cubit.loadTeamLeads(smeId);
+
+teamLeads = allTeamLeads.where((lead) {
+  return lead["agent_live_status"] == "Waiting" &&
+         lead["agent_id"] != CallSession.agentId;
+}).toList();
+
           break;
         case 'specific_queue_agent':
         case 'specific_queue':
           queues = await cubit.loadAllQueues(smeId);
           break;
         case 'same_queue':
-          sameQueueAgents = await cubit.loadSameQueueAgents();
+          // sameQueueAgents = await cubit.loadSameQueueAgents();
+final allSameQueueAgents = await cubit.loadSameQueueAgents();
+
+sameQueueAgents = allSameQueueAgents
+    .where((a) =>
+        a.agentLiveStatus == "Waiting" &&
+        a.agentId != CallSession.agentId)
+    .toList();
+
           break;
         case 'outside_number':
           // No data to load
@@ -812,7 +832,50 @@ Future<void> _performTransfer() async {
   final agentName = CallSession.agentName!;
 
   try {
+    
+ int? targetAgentId;
+
+  switch (selectedTransferType) {
+    case 'agent':
+      targetAgentId = selectedAgent?["agent_id"];
+      break;
+    case 'team_lead':
+      targetAgentId = selectedTeamLead?["agent_id"];
+      break;
+    case 'specific_queue_agent':
+      targetAgentId = selectedQueueAgent?.agentId;
+      break;
+    case 'same_queue':
+      targetAgentId = selectedSameQueueAgent?.agentId;
+      break;
+  }
+
+  if (targetAgentId != null &&
+      targetAgentId == CallSession.agentId) {
+    _showError("You cannot transfer call to yourself");
+    return;
+  }
+
+  if (selectedTransferType == 'outside_number') {
+    final userCubit = UserDetailsCubit.instance;
+    final agentMobile = userCubit?.userDetailsModel.agentMobile;
+
+    String normalize(String n) =>
+        n.replaceAll(RegExp(r'\D'), '');
+
+    final entered = normalize(externalNumber ?? "");
+    final myNumber = normalize(agentMobile ?? "");
+print("entered$entered");
+print("myNumber$myNumber");
+
+    if (entered.isNotEmpty && entered == myNumber) {
+      _showError("You cannot transfer call to your own number");
+      return;
+    }
+  }
+
     switch (selectedTransferType) {
+      
       case 'agent':
         final agent = selectedAgent;
         final status = agent["agent_live_status"] ?? "";

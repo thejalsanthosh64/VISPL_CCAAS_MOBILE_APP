@@ -7,16 +7,18 @@ import 'package:kommuno/core/common/app_constant.dart';
 import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:kommuno/core/utilities/app_methods.dart';
 import 'package:kommuno/core/utilities/local_storage/hive_service.dart';
+import 'package:kommuno/core/utilities/user_login_info_manager/user_login_info_manager.dart';
 import 'core/common/app_keys.dart';
 import 'core/common/app_theme/app_theme.dart';
 import 'core/utilities/internet_connection_manager/internet_connection_cubit.dart';
 import 'core/utilities/permission_handler/cubit/permission_handler_cubit.dart';
 import 'core/utilities/permission_handler/permission_handler.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   HiveService.initHive();
+  await UserLoginInfoManager.clearLoginUserInfo();
   runApp(const MyApp());
 }
 

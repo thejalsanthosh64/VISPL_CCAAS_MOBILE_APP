@@ -36,4 +36,12 @@ abstract interface class UserLoginInfoManager {
       rethrow;
     }
   }
+   static Future<void> clearLoginUserInfo() async {
+    try {
+      await SecureStorage().deleteData(key: StorageEnum.userLoginInfo.name);
+      _userLoginInfoModel = null;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

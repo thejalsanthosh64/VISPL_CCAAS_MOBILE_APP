@@ -1,5 +1,6 @@
 
 import 'package:kommuno/core/common/repo/activity_log_repo.dart';
+import 'package:kommuno/core/common/widget/user_details/data/model/user_details_model.dart';
 import 'package:kommuno/core/network_manager/alive_set_service.dart';
 import 'package:kommuno/core/network_manager/common_response_model.dart';
 import 'package:kommuno/core/network_manager/dio_client.dart';
@@ -144,5 +145,25 @@ Future<CommonResponseModel> updateReadyToTakeCall({
     rethrow;
   }
 }
+
+
+Future<UserDetailsModel> getTypeDetail({
+  required String username,
+}) async {
+  final dio = DioClient();
+
+  final res = await dio.post(
+    ApiEndpoints.userDetails(username),
+  );
+
+  final data = List<Map<String, dynamic>>.from(res.data as List);
+
+  if (data.isEmpty) {
+    throw Exception("User details not found");
+  }
+
+  return UserDetailsModel.fromJson(data.first);
+}
+
 
 }

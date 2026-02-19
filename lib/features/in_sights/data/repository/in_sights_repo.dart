@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:kommuno/core/network_manager/common_response_model.dart';
 import 'package:kommuno/core/network_manager/dio_client.dart';
 import 'package:kommuno/core/utilities/date_utility.dart';
@@ -13,8 +12,8 @@ class InSightsRepo {
     required int smeId,
   }) async {
     try {
-      final startDateStr = DateUtility.getDateYMDOnly(date: DateUtils.dateOnly(startDate.toUtc()));
-      final endDateStr = DateUtility.getDateYMDOnly(date: DateUtils.dateOnly(endDate.toUtc()));
+      final startDateStr = DateUtility.scheduleCallRequestDateTimeFormat(date: startDate.toUtc());
+      final endDateStr = DateUtility.scheduleCallRequestDateTimeFormat(date:endDate.toUtc());
       final res = await _dioClient.post(
         ApiEndpoints.getInsight(smeId),
         data: {
@@ -41,14 +40,14 @@ Future<CommonResponseModel> getDispositionSummary({
     //     DateUtility.getDateYMDOnly(date: DateUtils.dateOnly(endDate.toUtc()));
 
 
-final startDateUtc = startDate.toUtc().toIso8601String();
-final endDateUtc   = endDate.toUtc().toIso8601String();
+ final startDateStr = DateUtility.scheduleCallRequestDateTimeFormat(date: startDate.toUtc());
+      final endDateStr = DateUtility.scheduleCallRequestDateTimeFormat(date:endDate.toUtc());
     final res = await _dioClient.post(
       ApiEndpoints.getDispositionSummary(smeId),
       data: {
         "agentId": UserLoginInfoManager.userLoginInfoModel!.userId,
-        "startDate": startDateUtc,
-        "endDate": endDateUtc,
+        "startDate": startDateStr,
+        "endDate": endDateStr,
       },
     );
     return res;

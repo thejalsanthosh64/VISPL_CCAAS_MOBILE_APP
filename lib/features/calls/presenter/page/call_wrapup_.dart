@@ -612,24 +612,45 @@ IconButton(
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: () async {
+      //             onPressed: () async {
       
-                    await context.read<CallStateCubit>().saveWrapUp(
-                      context: context,
-                          dispositionName: _selectedDisposition ?? "",
-                          dispositionId: _selectedDispositionId ?? "",
-                          remarks: _remarkController.text.trim(),
-                          rating: _rating,
-                            wrapUpSeconds: displayTimer.inSeconds, 
+      //               widget.waitingForConnection
+      // ? null
+      // : ()async {await context.read<CallStateCubit>().saveWrapUp(
+      //                 context: context,
+      //                     dispositionName: _selectedDisposition ?? "",
+      //                     dispositionId: _selectedDispositionId ?? "",
+      //                     remarks: _remarkController.text.trim(),
+      //                     rating: _rating,
+      //                       wrapUpSeconds: displayTimer.inSeconds, 
 
                           
-                        );
+      //                   );
       
-                    if (context.mounted) {
-                      Navigator.pop(context);
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
+      //               if (context.mounted) {
+      //                 Navigator.pop(context);
+      //               }};
+      //             },
+
+      onPressed: widget.waitingForConnection
+    ? null
+    : () async {
+        await context.read<CallStateCubit>().saveWrapUp(
+          context: context,
+          dispositionName: _selectedDisposition ?? "",
+          dispositionId: _selectedDispositionId ?? "",
+          remarks: _remarkController.text.trim(),
+          rating: _rating,
+          wrapUpSeconds: displayTimer.inSeconds,
+        );
+
+        if (context.mounted) {
+          Navigator.pop(context);
+        }
+      },
+
+                  style: widget.waitingForConnection
+      ? null: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.appColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),

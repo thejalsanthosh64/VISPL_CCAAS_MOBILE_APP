@@ -279,7 +279,6 @@ _showPreviewDialerPopup(data, isAuto: true);
 
   //  INCOMING CALL - Store phone number early
   globalSocket?.on("ringing_live_calls", (raw) async {
-    await _stopWaitingTimerForCall();
     final data = normalize(raw);
 
     if (data["agentId"] != agentId) return;
@@ -289,6 +288,7 @@ _showPreviewDialerPopup(data, isAuto: true);
 
 final sessionId = data["sessionId"];
 if (sessionId == null) return;
+    await _stopWaitingTimerForCall();
 
 if (_handledRingingSessions.contains(sessionId)) {
   debugPrint(" Ringing already handled: $sessionId");
@@ -315,6 +315,10 @@ _handledRingingSessions.add(sessionId);
     debugPrint(" [INCOMING] Storing phone in cubit: $customerNumber");
     callCubit.setPhoneNumber(customerNumber);
 
+final backendType = data["callType"]?.toString().toLowerCase();
+
+final type =
+    backendType == "outgoing" ? "Outgoing" : "Incoming";
 
     CallSession.save(
       session: sessionId,
@@ -322,7 +326,7 @@ _handledRingingSessions.add(sessionId);
       sme: smeId,
       agent: agentId,
       name: customerName,
-      type: "Incoming",
+      type: type,
     );
 
     connectForCall(
@@ -1025,9 +1029,9 @@ static void connectForCall({
   // ========================================
   
   callSocket?.on("ringing_live_calls", (raw) async {
-     await _stopWaitingTimerForCall();
     final e = normalize(raw);
     if (!_matchSession(e)) return;
+     await _stopWaitingTimerForCall();
 
     startContinuousVibration();
     _startAgentAnswerDetection();
@@ -1060,7 +1064,7 @@ static void connectForCall({
     );
   });
 
-  callSocket?.on("connected_live_calls", (raw) {
+  callSocket?.on("connected_live_calls", (raw) async {
     final e = normalize(raw);
 
 
@@ -1087,7 +1091,7 @@ _handledConnectedSessions.add(sessionId);
   debugPrint("  - current crmPopupShown: ${activeCallCubit?.state.crmPopupShown}");
 final hasShownForSession = CallStateCubit.shownCrmSessions.contains(sessionId);
   debugPrint("  - hasShownForSession: $hasShownForSession");
-closePreviewPopupSafely();
+await closePreviewPopupSafely();
 
   if (crmForm != null && 
       crmForm["status"] == true && 
@@ -1168,7 +1172,7 @@ closePreviewPopupSafely();
   });
 
   //  CALL END 
-  callSocket?.on("call_ended", (raw) {
+  callSocket?.on("call_ended", (raw) async {
     final e = normalize(raw);
     if (!_matchSession(e)) return;
 final sessionId = e["sessionId"];
@@ -1201,7 +1205,7 @@ _handledCallEndedSessions.add(sessionId);
     //   duration: activeCallCubit!.state.duration,
     // );
 
-closePreviewPopupSafely();
+await closePreviewPopupSafely();
 
 
 final campaign = CampaignManager.campaign;
@@ -1253,7 +1257,7 @@ _handledClearSessions.add(sessionId);
     debugPrint(" [CLEAR_CALL] Phone: $phone");
 
     final name = phone.isNotEmpty ? ContactLookup.getName(phone) : "Unknown";
-    closePreviewPopupSafely();
+   await closePreviewPopupSafely();
   activeCallCubit?.stopTimer();
 
   final campaign = CampaignManager.campaign;
@@ -1295,6 +1299,11 @@ _handledClearSessions.add(sessionId);
               debugPrint(" Checking route: ${route.settings.name}, isFirst: ${route.isFirst}");
               return route.isFirst;
             });
+
+//             Navigator.of(ctx, rootNavigator: true).pushNamedAndRemoveUntil(
+//   AppRouteNames.homeMiddleware, // your actual home screen route
+//   (_) => false,
+// );
             
             debugPrint(" Navigation completed");
           } else {

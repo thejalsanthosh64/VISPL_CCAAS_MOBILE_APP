@@ -54,6 +54,8 @@ class UserDetailsModel extends Equatable {
     this.billingStatus,
     required this.longocdeJson,
     required this.previewDialerPopupExpire,
+    required this.permissions,
+
   });
 
   final int? inPermissionFlag;
@@ -108,6 +110,7 @@ class UserDetailsModel extends Equatable {
   final int? billingStatus;
   final List<LongoCdeJsonData> longocdeJson;
 final int previewDialerPopupExpire;
+final List<UserPermission> permissions;
 
 
   UserDetailsModel copyWith({
@@ -163,9 +166,11 @@ final int previewDialerPopupExpire;
     int? billingStatus,
     List<LongoCdeJsonData>? longocdeJson,
     int? previewDialerPopupExpire,
+  List<UserPermission>? permissions,
 
   }) {
     return UserDetailsModel(
+      permissions: permissions ??this.permissions,
       inPermissionFlag: inPermissionFlag ?? this.inPermissionFlag,
       outPermissionFlag: outPermissionFlag ?? this.outPermissionFlag,
       breakPermissionFlag: breakPermissionFlag ?? this.breakPermissionFlag,
@@ -223,120 +228,274 @@ final int previewDialerPopupExpire;
     );
   }
 
-  factory UserDetailsModel.fromJson(Map<String, dynamic> json) {
-    return UserDetailsModel(
-      inPermissionFlag: json["inPermissionFlag"],
-      outPermissionFlag: json["outPermissionFlag"]??1,
-      breakPermissionFlag: json["breakPermissionFlag"]??1,
-      accountSid: json["account_sid"],
-      agentEmail: json["agent_email"],
-      agentExtention: json["agent_extention"],
-      agentId: json["agent_id"],
-      groupId: json["group_id"],
-      agentMasking: json["agent_masking"],
-      agentMobile: json["agent_mobile"],
-      agentName: json["agentName"],
-      agentScore: json["agent_score"],
-      agentRelaxTime: json["agent_relax_time"],
-      allowedAgents: json["allowed_agents"],
-alternateNumber: json["alternate_number"]?.toString() ?? "",
-      assignFailedCalls: json["assign_failed_calls"],
-      assignVoicemailCalls: json["assign_voicemail_calls"],
-      balance: json["balance"],
-      bizAddress: json["biz_address"],
-      callBackUrl: json["call_back_url"],
-      daysFlag: json["days_flag"],
-      guiTimer: json["gui_timer"],
-      inChannels: json["in_channels"],
-      insertTime: DateTime.tryParse(json["insert_time"] ?? ""),
-      smeInCallPermission: json["sme_in_call_permission"],
-      smeOutCallPermission: json["sme_out_call_permission"],
-      inQueueChannels: json["in_queue_channels"],
-      language: json["language"],
-      masking: json["masking"],
-      longcode: json["longcode"],
-      longcodeId: json["longcode_id"],
-      outChannels: json["out_channels"],
-      recording: json["recording"],
-      recValidity: json["rec_validity"],
-      eodReportFlag: json["eod_report_flag"],
-      selectionAlgo: json["selection_algo"],
-      serviceFlag: json["service_flag"],
-      smeId: json["smeId"],
-      smeMobile: json["sme_mobile"],
-      userDetailsModelSmeName: json["sme_name"],
-      smeStatus: json["sme_status"],
-      agentStatus: json["agent_status"],
-      stickyAlgo: json["sticky_algo"],
-      stickyAgent: json["sticky_agent"],
-      stickyDays: json["sticky_days"],
-      roles: json["roles"],
-      smeName: json["smeName"],
-      userName: json["userName"],
-      status: json["status"]??1,
-      billingStatus: json["billing_status"],
-      longocdeJson:
-          json["longocdejson"] == null ? [] : List<LongoCdeJsonData>.from(json["longocdejson"]!.map((x) => LongoCdeJsonData.fromJson(x))),
-          previewDialerPopupExpire: int.tryParse(
-      json["preview_dialer_popup_expire"]?.toString() ?? "7",
-    ) ?? 7,
+//   factory UserDetailsModel.fromJson(Map<String, dynamic> json) {
+//     return UserDetailsModel(
+//       inPermissionFlag: json["inPermissionFlag"],
+//       outPermissionFlag: json["outPermissionFlag"]??1,
+//       breakPermissionFlag: json["breakPermissionFlag"]??1,
+//       accountSid: json["account_sid"],
+//       agentEmail: json["agent_email"],
+//       agentExtention: json["agent_extention"],
+//       agentId: json["agent_id"],
+//       groupId: json["group_id"],
+//       agentMasking: json["agent_masking"],
+//       agentMobile: json["agent_mobile"],
+//       agentName: json["agentName"],
+//       agentScore: json["agent_score"],
+//       agentRelaxTime: json["agent_relax_time"],
+//       allowedAgents: json["allowed_agents"],
+// alternateNumber: json["alternate_number"]?.toString() ?? "",
+//       assignFailedCalls: json["assign_failed_calls"],
+//       assignVoicemailCalls: json["assign_voicemail_calls"],
+//       balance: json["balance"],
+//       bizAddress: json["biz_address"],
+//       callBackUrl: json["call_back_url"],
+//       daysFlag: json["days_flag"],
+//       guiTimer: json["gui_timer"],
+//       inChannels: json["in_channels"],
+//       insertTime: DateTime.tryParse(json["insert_time"] ?? ""),
+//       smeInCallPermission: json["sme_in_call_permission"],
+//       smeOutCallPermission: json["sme_out_call_permission"],
+//       inQueueChannels: json["in_queue_channels"],
+//       language: json["language"],
+//       masking: json["masking"],
+//       longcode: json["longcode"],
+//       longcodeId: json["longcode_id"],
+//       outChannels: json["out_channels"],
+//       recording: json["recording"],
+//       recValidity: json["rec_validity"],
+//       eodReportFlag: json["eod_report_flag"],
+//       selectionAlgo: json["selection_algo"],
+//       serviceFlag: json["service_flag"],
+//       smeId: json["smeId"],
+//       smeMobile: json["sme_mobile"],
+//       userDetailsModelSmeName: json["sme_name"],
+//       smeStatus: json["sme_status"],
+//       agentStatus: json["agent_status"],
+//       stickyAlgo: json["sticky_algo"],
+//       stickyAgent: json["sticky_agent"],
+//       stickyDays: json["sticky_days"],
+//       roles: json["roles"],
+//       smeName: json["smeName"],
+//       userName: json["userName"],
+//       status: json["status"]??1,
+//       billingStatus: json["billing_status"],
+//       longocdeJson:
+//           json["longocdejson"] == null ? [] : List<LongoCdeJsonData>.from(json["longocdejson"]!.map((x) => LongoCdeJsonData.fromJson(x))),
+//           previewDialerPopupExpire: int.tryParse(
+//       json["preview_dialer_popup_expire"]?.toString() ?? "7",
+//     ) ?? 7,
 
-    );
-  }
+//     );
+//   }
+
+
+factory UserDetailsModel.fromJson(Map<String, dynamic> json) {
+  return UserDetailsModel(
+    permissions: json["permissions"] == null
+    ? []
+    : List<UserPermission>.from(
+        json["permissions"].map(
+          (x) => UserPermission.fromJson(x),
+        ),
+      ),
+
+    inPermissionFlag: json["agent_in_call_permission"] ?? 0,
+    outPermissionFlag: json["agent_out_call_permission"] ?? 0,
+    breakPermissionFlag: json["agent_break_permission"] ?? 0,
+
+    accountSid: json["account_sid"],
+    agentEmail: json["agent_email"] ?? "",
+    agentExtention: json["agent_extention"] ?? 0,
+    agentId: json["agent_id"] ?? 0,
+    groupId: json["group_id"],
+    agentMasking: json["agent_masking"] ?? 0,
+    agentMobile: json["agent_mobile"] ?? "",
+    agentName: json["agentName"] ?? "",
+    agentScore: json["agent_score"],
+    agentRelaxTime: json["agent_relax_time"] ?? 0,
+    allowedAgents: json["allowed_agents"] ?? 0,
+    alternateNumber: json["alternate_number"]?.toString() ?? "",
+    assignFailedCalls: json["assign_failed_calls"] ?? 0,
+    assignVoicemailCalls: json["assign_voicemail_calls"] ?? 0,
+    balance: json["balance"] ?? 0,
+
+    bizAddress: json["biz_address"],
+    callBackUrl: json["call_back_url"],
+
+    daysFlag: json["days_flag"] ?? 0,
+    guiTimer: json["gui_timer"] ?? 0,
+    inChannels: json["in_channels"] ?? 0,
+    insertTime: DateTime.tryParse(json["insert_time"] ?? ""),
+
+    smeInCallPermission: json["sme_in_call_permission"] ?? 0,
+    smeOutCallPermission: json["sme_out_call_permission"] ?? 0,
+    inQueueChannels: json["in_queue_channels"] ?? 0,
+
+    language: json["language"] ?? 1,
+    masking: json["masking"],
+    longcode: json["longcode"],
+    longcodeId: json["longcode_id"],
+    outChannels: json["out_channels"] ?? 0,
+    recording: json["recording"],
+    recValidity: json["rec_validity"] ?? 0,
+    eodReportFlag: json["eod_report_flag"] ?? 0,
+
+    selectionAlgo: json["selection_algo"],
+    serviceFlag: json["service_flag"],
+    smeId: json["smeId"] ?? 0,
+    smeMobile: json["sme_mobile"] ?? "",
+    userDetailsModelSmeName: json["sme_name"] ?? "",
+    smeStatus: json["sme_status"] ?? 0,
+    agentStatus: json["agent_status"] ?? 0,
+    stickyAlgo: json["sticky_algo"] ?? 0,
+    stickyAgent: json["sticky_agent"] ?? 0,
+    stickyDays: json["sticky_days"] ?? 0,
+    roles: json["roles"] ?? "",
+    smeName: json["smeName"] ?? "",
+    userName: json["userName"] ?? "",
+    status: json["status"] ?? 1,
+    billingStatus: json["billing_status"],
+
+    longocdeJson: json["longocdejson"] == null
+        ? []
+        : List<LongoCdeJsonData>.from(
+            json["longocdejson"].map(
+              (x) => LongoCdeJsonData.fromJson(x),
+            ),
+          ),
+
+    previewDialerPopupExpire: int.tryParse(
+          json["preview_dialer_popup_expire"]?.toString() ?? "7",
+        ) ??
+        7,
+  );
+}
+
+
+  // Map<String, dynamic> toJson() => {
+  //       "inPermissionFlag": inPermissionFlag,
+  //       "outPermissionFlag": outPermissionFlag,
+  //       "breakPermissionFlag": breakPermissionFlag,
+  //       "account_sid": accountSid,
+  //       "agent_email": agentEmail,
+  //       "agent_extention": agentExtention,
+  //       "agent_id": agentId,
+  //       "group_id": groupId,
+  //       "agent_masking": agentMasking,
+  //       "agent_mobile": agentMobile,
+  //       "agentName": agentName,
+  //       "agent_score": agentScore,
+  //       "agent_relax_time": agentRelaxTime,
+  //       "allowed_agents": allowedAgents,
+  //       "alternate_number": alternateNumber,
+  //       "assign_failed_calls": assignFailedCalls,
+  //       "assign_voicemail_calls": assignVoicemailCalls,
+  //       "balance": balance,
+  //       "biz_address": bizAddress,
+  //       "call_back_url": callBackUrl,
+  //       "days_flag": daysFlag,
+  //       "gui_timer": guiTimer,
+  //       "in_channels": inChannels,
+  //       "insert_time": insertTime?.toIso8601String(),
+  //       "sme_in_call_permission": smeInCallPermission,
+  //       "sme_out_call_permission": smeOutCallPermission,
+  //       "in_queue_channels": inQueueChannels,
+  //       "language": language,
+  //       "masking": masking,
+  //       "longcode": longcode,
+  //       "longcode_id": longcodeId,
+  //       "out_channels": outChannels,
+  //       "recording": recording,
+  //       "rec_validity": recValidity,
+  //       "eod_report_flag": eodReportFlag,
+  //       "selection_algo": selectionAlgo,
+  //       "service_flag": serviceFlag,
+  //       "smeId": smeId,
+  //       "sme_mobile": smeMobile,
+  //       "sme_name": userDetailsModelSmeName,
+  //       "sme_status": smeStatus,
+  //       "agent_status": agentStatus,
+  //       "sticky_algo": stickyAlgo,
+  //       "sticky_agent": stickyAgent,
+  //       "sticky_days": stickyDays,
+  //       "roles": roles,
+  //       "smeName": smeName,
+  //       "userName": userName,
+  //       "status": status,
+  //       "billing_status": billingStatus,
+  //       "longocdejson": longocdeJson.map((x) => x.toJson()).toList(),
+  //     };
+
 
   Map<String, dynamic> toJson() => {
-        "inPermissionFlag": inPermissionFlag,
-        "outPermissionFlag": outPermissionFlag,
-        "breakPermissionFlag": breakPermissionFlag,
-        "account_sid": accountSid,
-        "agent_email": agentEmail,
-        "agent_extention": agentExtention,
-        "agent_id": agentId,
-        "group_id": groupId,
-        "agent_masking": agentMasking,
-        "agent_mobile": agentMobile,
-        "agentName": agentName,
-        "agent_score": agentScore,
-        "agent_relax_time": agentRelaxTime,
-        "allowed_agents": allowedAgents,
-        "alternate_number": alternateNumber,
-        "assign_failed_calls": assignFailedCalls,
-        "assign_voicemail_calls": assignVoicemailCalls,
-        "balance": balance,
-        "biz_address": bizAddress,
-        "call_back_url": callBackUrl,
-        "days_flag": daysFlag,
-        "gui_timer": guiTimer,
-        "in_channels": inChannels,
-        "insert_time": insertTime?.toIso8601String(),
-        "sme_in_call_permission": smeInCallPermission,
-        "sme_out_call_permission": smeOutCallPermission,
-        "in_queue_channels": inQueueChannels,
-        "language": language,
-        "masking": masking,
-        "longcode": longcode,
-        "longcode_id": longcodeId,
-        "out_channels": outChannels,
-        "recording": recording,
-        "rec_validity": recValidity,
-        "eod_report_flag": eodReportFlag,
-        "selection_algo": selectionAlgo,
-        "service_flag": serviceFlag,
-        "smeId": smeId,
-        "sme_mobile": smeMobile,
-        "sme_name": userDetailsModelSmeName,
-        "sme_status": smeStatus,
-        "agent_status": agentStatus,
-        "sticky_algo": stickyAlgo,
-        "sticky_agent": stickyAgent,
-        "sticky_days": stickyDays,
-        "roles": roles,
-        "smeName": smeName,
-        "userName": userName,
-        "status": status,
-        "billing_status": billingStatus,
-        "longocdejson": longocdeJson.map((x) => x.toJson()).toList(),
-      };
+  "agent_in_call_permission": inPermissionFlag,
+  "agent_out_call_permission": outPermissionFlag,
+  "agent_break_permission": breakPermissionFlag,
+
+  "account_sid": accountSid,
+  "agent_email": agentEmail,
+  "agent_extention": agentExtention,
+  "agent_id": agentId,
+  "group_id": groupId,
+  "agent_masking": agentMasking,
+  "agent_mobile": agentMobile,
+  "agentName": agentName,
+  "agent_relax_time": agentRelaxTime,
+  "alternate_number": alternateNumber,
+
+  "assign_failed_calls": assignFailedCalls,
+  "assign_voicemail_calls": assignVoicemailCalls,
+
+  "smeId": smeId,
+  "sme_mobile": smeMobile,
+  "sme_name": userDetailsModelSmeName,
+  "sme_status": smeStatus,
+
+  "sme_in_call_permission": smeInCallPermission,
+  "sme_out_call_permission": smeOutCallPermission,
+
+  "days_flag": daysFlag,
+  "gui_timer": guiTimer,
+  "in_channels": inChannels,
+  "in_queue_channels": inQueueChannels,
+  "out_channels": outChannels,
+  "language": language,
+
+  "masking": masking,
+  "longcode": longcode,
+  "longcode_id": longcodeId,
+  "recording": recording,
+  "rec_validity": recValidity,
+  "eod_report_flag": eodReportFlag,
+
+  "selection_algo": selectionAlgo,
+  "service_flag": serviceFlag,
+  "roles": roles,
+  "smeName": smeName,
+  "userName": userName,
+  "status": status,
+  "billing_status": billingStatus,
+
+  "biz_address": bizAddress,
+  "call_back_url": callBackUrl,
+
+  "longocdejson": longocdeJson.map((x) => x.toJson()).toList(),
+
+  "preview_dialer_popup_expire": previewDialerPopupExpire,
+};
+
+bool hasPermission(String name) {
+  return permissions.any(
+    (p) => p.permissionName == name && p.isAllowed,
+  );
+}
+
+// Shortcuts
+bool get canAddContacts => hasPermission("can_add_contacts");
+bool get canViewContacts => hasPermission("can_view_contacts");
+bool get canAddFollowup => hasPermission("can_add_followup");
+bool get canViewFollowup => hasPermission("can_view_followup");
 
   @override
   String toString() {
@@ -397,9 +556,44 @@ alternateNumber: json["alternate_number"]?.toString() ?? "",
         billingStatus,
         longocdeJson,
         previewDialerPopupExpire,
+          permissions,
+
 
       ];
 }
+
+class UserPermission extends Equatable {
+  const UserPermission({
+    required this.id,
+    required this.module,
+    required this.permissionName,
+    required this.permissionTitle,
+    required this.status,
+  });
+
+  final int id;
+  final String module;
+  final String permissionName;
+  final String permissionTitle;
+  final int status;
+
+  bool get isAllowed => status == 1;
+
+  factory UserPermission.fromJson(Map<String, dynamic> json) {
+    return UserPermission(
+      id: json["id"],
+      module: json["module"],
+      permissionName: json["permission_name"],
+      permissionTitle: json["permission_title"],
+      status: json["status"] ?? 0,
+    );
+  }
+
+  @override
+  List<Object?> get props =>
+      [id, module, permissionName, permissionTitle, status];
+}
+
 
 class LongoCdeJsonData extends Equatable {
   const LongoCdeJsonData({

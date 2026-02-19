@@ -27,6 +27,7 @@ class DioClient {
           const Duration(seconds: ApiEndpoints._receiveTimeout)
       ..options.responseType = ResponseType.json
       ..interceptors.add(const CustomInterceptor());
+      // ..interceptors.add(const CustomInterceptor());
   }
 
   Future<CommonResponseModel> get(

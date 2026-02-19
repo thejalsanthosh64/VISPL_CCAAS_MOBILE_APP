@@ -55,57 +55,116 @@ class LoginCubit extends Cubit<LoginState> {
           username: username,
           deviceType: AppConstant.loginDeviceType,
         ));
-        if (res.isSuccess) {
 
-          await UserLoginInfoManager.setLoginUserInfo(userInfo: res.data);
+ if (!res.isSuccess) {
+      AppLoadingIndicator.dismissLoadingIndicator();
+      FToastManager().showToast(message: res.message);
+      return;
+    }
 
-// // Call Ready-To-Take-Call API
-// await _authRepo.updateReadyToTakeCall(
+      await UserLoginInfoManager.setLoginUserInfo(
+        userInfo: res.data,
+      );
+  final userDetails = await _authRepo.getTypeDetail(
+  username: username,
+);
+
+//  INACTIVE AGENT
+if (userDetails.agentStatus == 0) {
+  AppLoadingIndicator.dismissLoadingIndicator();
+
+  FToastManager().showToast(
+    message: "Account is inactive! Please contact your Admin",
+  );
+
+  return; 
+}
+
+ final aliveRes = await _authRepo.checkIsAlive(username: username);
+
+      if (aliveRes.status == 1 &&
+          aliveRes.message.toLowerCase() == "already login") {
+        AppLoadingIndicator.dismissLoadingIndicator();
+
+        FToastManager().showToast(
+          message: "Agent already logged in",
+        );
+        return;
+      }
+
+      final user = UserLoginInfoManager.userLoginInfoModel!;
+
+      AliveService().sendLogin(username: user.username);
+
+      await ActivityHelperRepo().setActivityLogs(
+        user.smeId,
+        userRole: user.role,
+        moduleName: "auth",
+        action: "login",
+        message: "${user.username} Successfully Logged In",
+        agentId: user.userId,
+      );
+
+      await ActivityHelperRepo().updateAgentActivityTime(
+        smeId: user.smeId,
+        agentId: user.userId,
+        time: 0,
+        status: "Login",
+      );
+
+      emit(state.copyWith(isUserLoginSuccess: true));
+
+//         if (res.isSuccess) {
+
+//           await UserLoginInfoManager.setLoginUserInfo(userInfo: res.data);
+
+// // // Call Ready-To-Take-Call API
+// // await _authRepo.updateReadyToTakeCall(
+// //   agentId: user.userId,
+// // );
+
+//           // emit(state.copyWith(isUserLoginSuccess: true));
+//         } else {
+//           FToastManager().showToast(message: res.message);
+//         }
+
+//          final aliveRes = await _authRepo.checkIsAlive(
+//       username: username,
+//     );
+
+//     if (aliveRes.status == 1 &&
+//         aliveRes.message.toLowerCase() == "already login") {
+//       AppLoadingIndicator.dismissLoadingIndicator();
+
+//       FToastManager().showToast(
+//         message: "Agent already logged in",
+//       );
+//       return; 
+//     }
+//           final user = UserLoginInfoManager.userLoginInfoModel!;
+
+// AliveService().sendLogin(
+//     username: user.username,
+//   );
+    
+// await ActivityHelperRepo().setActivityLogs(
+//   user.smeId,
+//   userRole: user.role,
+//   moduleName: "auth",
+//   action: "login",
+//   message: "${user.username} Successfully Logged In",
 //   agentId: user.userId,
 // );
 
-          // emit(state.copyWith(isUserLoginSuccess: true));
-        } else {
-          FToastManager().showToast(message: res.message);
-        }
-
-         final aliveRes = await _authRepo.checkIsAlive(
-      username: username,
-    );
-
-    if (aliveRes.status == 1 &&
-        aliveRes.message.toLowerCase() == "already login") {
-      AppLoadingIndicator.dismissLoadingIndicator();
-
-      FToastManager().showToast(
-        message: "Agent already logged in",
-      );
-      return; 
-    }
-          final user = UserLoginInfoManager.userLoginInfoModel!;
-
-AliveService().sendLogin(
-    username: user.username,
-  );
-    
-await ActivityHelperRepo().setActivityLogs(
-  user.smeId,
-  userRole: user.role,
-  moduleName: "auth",
-  action: "login",
-  message: "${user.username} Successfully Logged In",
-  agentId: user.userId,
-);
-
-await ActivityHelperRepo().updateAgentActivityTime(
-  smeId: user.smeId,
-  agentId: user.userId,
-  time: 0,
-  status: "Login",
-);
+// await ActivityHelperRepo().updateAgentActivityTime(
+//   smeId: user.smeId,
+//   agentId: user.userId,
+//   time: 0,
+//   status: "Login",
+// );
 
 
-                    emit(state.copyWith(isUserLoginSuccess: true));
+//                     emit(state.copyWith(isUserLoginSuccess: true));
 
       }
     } on AppDioException catch (e) {

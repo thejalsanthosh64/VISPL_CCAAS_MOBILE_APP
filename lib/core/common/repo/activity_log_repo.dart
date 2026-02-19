@@ -51,19 +51,7 @@ class ActivityHelperRepo {
     });
   }
 
-   Future<void> updateActivityTime({
-    required int smeId,
-    required int agentId,
-    required String status,
-    required int durationInSeconds,
-  }) async {
-    await _dioClient.post(ApiEndpoints.updateAgentActivityTime(smeId), data: {
-      "agent_id": agentId,
-      "status": status,
-      "time": durationInSeconds,
-      "currentDate": DateTime.now().toIso8601String().substring(0, 10),
-    });
-  }
+
 
     Future<void> updateUserOnlineOffline({
     required int smeId,

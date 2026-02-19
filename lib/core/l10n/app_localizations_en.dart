@@ -542,4 +542,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get contactsPermissionDenied => 'Contacts permission denied.';
+
+  @override
+  String get login => 'Login';
+
+  @override
+  String get switchCampaign => 'Switch Campaign';
+
+  @override
+  String get selfCallNotAllowed => 'You cannot call your own number';
 }

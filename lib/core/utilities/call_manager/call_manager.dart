@@ -285,6 +285,8 @@ class CallManager {
               .state as UserDetailsSuccessState)
           .userDetailsModel;
 
+
+
       if (userDetails.outPermissionFlag != 1) {
         FToastManager().showToast(
             message: AppLocalizations.of(AppKeys.navigatorKey.currentContext!)!
@@ -303,6 +305,17 @@ class CallManager {
                 .onBreakMsg);
         return;
       }
+
+      final dialed = addByIndiaCountryCodeWithoutPlus(number: number);
+final agent = addByIndiaCountryCodeWithoutPlus(number: userDetails.agentMobile);
+
+if (dialed == agent) {
+  FToastManager().showToast(
+    message: AppLocalizations.of(AppKeys.navigatorKey.currentContext!)!
+    .selfCallNotAllowed,
+  );
+  return;
+}
 
       AppLoadingIndicator.showLoadingIndicator();
 

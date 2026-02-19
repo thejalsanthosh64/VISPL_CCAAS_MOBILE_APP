@@ -1137,6 +1137,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Contacts permission denied.'**
   String get contactsPermissionDenied;
+
+  /// No description provided for @login.
+  ///
+  /// In en, this message translates to:
+  /// **'Login'**
+  String get login;
+
+  /// No description provided for @switchCampaign.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch Campaign'**
+  String get switchCampaign;
+
+  /// No description provided for @selfCallNotAllowed.
+  ///
+  /// In en, this message translates to:
+  /// **'You cannot call your own number'**
+  String get selfCallNotAllowed;
 }
 
 class _AppLocalizationsDelegate

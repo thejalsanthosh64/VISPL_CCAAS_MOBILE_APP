@@ -5,7 +5,6 @@ import 'package:kommuno/core/common/app_keys.dart';
 import 'package:kommuno/core/common/widget/loading_indicator.dart';
 import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/core/exception/app_dio_exception.dart';
-import 'package:kommuno/core/utilities/user_login_info_manager/user_login_info_manager.dart';
 import 'package:kommuno/features/in_sights/data/enum/in_sights_date_enum.dart';
 import 'package:kommuno/features/in_sights/data/model/response/disposition_summary_response.dart';
 import 'package:kommuno/features/in_sights/data/model/response/in_sights_response.dart';

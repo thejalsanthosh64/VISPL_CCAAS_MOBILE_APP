@@ -180,7 +180,7 @@ class _DispositionBottomSheetState extends State<DispositionBottomSheet> {
   }
 
   Future<void> _onSave() async {
-    await widget.cubit.saveWrapUp(
+    await widget.cubit.saveWrapUpInCall(
       context: context,
       dispositionName: _selectedDisposition ?? "",
       dispositionId: _selectedDispositionId ?? "",

@@ -80,6 +80,7 @@ class BreakInButton extends StatelessWidget {
     if (userDetails.breakPermissionFlag == 0) {
       FToastManager().showToast(
           message: AppLocalizations.of(context)!.breaksAreNotAllowed);
+          
     } else if (userDetails.status == 0) {
       FToastManager().showToast(
           message: AppLocalizations.of(context)!.youAreCurrentlyInactive);

@@ -55,37 +55,40 @@ int activeSeconds = 0;
   //   debugPrint(" Started waiting timer");
   // }
 
-  void startWaitingTimer() {
-  if (isClosed) {
-    debugPrint("⛔ UserDetailsCubit closed → skip startWaitingTimer");
-    return;
-  }
+//   void startWaitingTimer() {
+//   if (isClosed) {
+//     debugPrint("⛔ UserDetailsCubit closed → skip startWaitingTimer");
+//     return;
+//   }
 
-  stopWaitingTimer();
+//   stopWaitingTimer();
 
-  waitingSeconds = 0;
+//   waitingSeconds = 0;
 
-  if (state is UserDetailsSuccessState) {
-    emit((state as UserDetailsSuccessState).copyWith(
-      agentStatus: "Waiting",
-      waitingSeconds: 0,
-    ));
-  }
+//   if (state is UserDetailsSuccessState) {
+//     emit((state as UserDetailsSuccessState).copyWith(
+//       agentStatus: "Waiting",
+//       waitingSeconds: 0,
+//     ));
+//   }
 
-  _waitingTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-    if (isClosed) return;
+//   _waitingTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+//     if (isClosed) return;
 
-    waitingSeconds++;
-    if (state is UserDetailsSuccessState) {
-      emit((state as UserDetailsSuccessState).copyWith(
-        agentStatus: "Waiting",
-        waitingSeconds: waitingSeconds,
-      ));
-    }
-  });
+//     waitingSeconds++;
+//     if (state is UserDetailsSuccessState) {
+//       emit((state as UserDetailsSuccessState).copyWith(
+//         agentStatus: "Waiting",
+//         waitingSeconds: waitingSeconds,
+//       ));
+//     }
+//   });
 
-  debugPrint("✅ Started waiting timer");
-}
+//   debugPrint("✅ Started waiting timer");
+// }
+
+
+
 
 
   //  Stop timer and return total waiting seconds
@@ -102,33 +105,100 @@ int activeSeconds = 0;
   //   return capturedSeconds;
   // }
 
-  int stopWaitingTimer() {
-  if (isClosed) return 0;
+//   int stopWaitingTimer() {
+//   if (isClosed) return 0;
+
+//   final capturedSeconds = waitingSeconds;
+//   _waitingTimer?.cancel();
+//   _waitingTimer = null;
+//   waitingSeconds = 0;
+
+//   debugPrint("⏹ Waiting stopped → $capturedSeconds sec");
+//   return capturedSeconds;
+// }
+
+
+void startWaitingTimer() {
+  if (isClosed) return;
+
+  if (_waitingTimer != null) {
+    debugPrint(" Waiting timer already running");
+    return;
+  }
+
+  if (state is UserDetailsSuccessState) {
+    emit((state as UserDetailsSuccessState).copyWith(
+      agentStatus: "Waiting",
+      waitingSeconds: waitingSeconds,
+    ));
+  }
+
+  _waitingTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+    if (isClosed) return;
+
+    waitingSeconds++;
+    if (state is UserDetailsSuccessState) {
+      emit((state as UserDetailsSuccessState).copyWith(
+        agentStatus: "Waiting",
+        waitingSeconds: waitingSeconds,
+      ));
+    }
+  });
+
+  debugPrint("Waiting timer started");
+}
+
+
+int stopWaitingTimer() {
+   
+  if (isClosed || _waitingTimer == null) {
+    debugPrint("stopWaitingTimer ignored");
+    return waitingSeconds;
+  }
 
   final capturedSeconds = waitingSeconds;
   _waitingTimer?.cancel();
   _waitingTimer = null;
-  waitingSeconds = 0;
+    waitingSeconds = 0;
+if (state is UserDetailsSuccessState) {
+    emit((state as UserDetailsSuccessState).copyWith(
+      waitingSeconds: 0,
+    ));
+  }
 
-  debugPrint("⏹ Waiting stopped → $capturedSeconds sec");
+
+  debugPrint(" Waiting paused - $capturedSeconds sec");
   return capturedSeconds;
 }
 
 
+void setActive() {
+  final elapsedSeconds = stopWaitingTimer();
+  waitingSeconds = 0; 
 
+  debugPrint("▶ Agent Active after $elapsedSeconds sec");
 
-  void setActive() {
-    final elapsedSeconds = stopWaitingTimer();
-    
-    debugPrint(" Agent now Active. Was waiting for $elapsedSeconds seconds");
-    
-    if (state is UserDetailsSuccessState) {
-      emit((state as UserDetailsSuccessState).copyWith(
-        agentStatus: "Active",
-        waitingSeconds: 0,
-      ));
-    }
+  if (state is UserDetailsSuccessState) {
+    emit((state as UserDetailsSuccessState).copyWith(
+      agentStatus: "Active",
+      waitingSeconds: 0,
+    ));
   }
+}
+
+
+  // void setActive() {
+  //   final elapsedSeconds = stopWaitingTimer();
+    
+  //   debugPrint(" Agent now Active. Was waiting for $elapsedSeconds seconds");
+    
+  //   if (state is UserDetailsSuccessState) {
+  //     emit((state as UserDetailsSuccessState).copyWith(
+  //       agentStatus: "Active",
+  //       waitingSeconds: 0,
+  //     ));
+  //   }
+  // }
 
   //  After call restart waiting
   void backToWaiting() {

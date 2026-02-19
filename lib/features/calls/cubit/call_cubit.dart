@@ -320,6 +320,39 @@ if (wrapupEnabled && !dispositionFilled) {
 }}
 
 
+Future<void> saveWrapUpInCall({
+  required String dispositionName,
+  required String dispositionId,
+  required String remarks,
+  required int rating,
+  required BuildContext context,
+    required int wrapUpSeconds,
+
+}) async {
+  final smeId = CallSession.smeId ?? 0;
+  final agentId = CallSession.agentId ?? 0;
+  final sessionId = CallSession.sessionId ?? "";
+      final userDetailsCubit = context.read<UserDetailsCubit>();
+
+  final body = {
+    "session_id": sessionId,
+    "rate": rating,
+    "remarks": remarks,
+    "disposition_id": dispositionId,
+    "disposition_name": dispositionName,
+    "agent_id": agentId,
+  };
+ final wrapupEnabled = CampaignManager.campaign?.wrapupEnabled == true;
+await callsRepo.saveRating(smeId: smeId, body: body);
+await callsRepo.saveRatingCrm(smeId: smeId, body: body);
+
+markDispositionFilled();
+
+
+}
+
+
+
 Future<void> saveWrapUp({
   required String dispositionName,
   required String dispositionId,
@@ -501,6 +534,19 @@ Future<void> attendedTransfer({
     }
   } 
 }
+List<Map<String, dynamic>> getWaitingAgentsOnly(
+  List<dynamic> data,
+) {
+  final currentAgentId = CallSession.agentId;
+
+  return data.where((agent) {
+    return agent["status"] == 1 &&
+        agent["agent_live_status"] == "Waiting" &&
+        agent["agent_id"] != currentAgentId;
+  }).cast<Map<String, dynamic>>().toList();
+}
+
+
 
   Future<List<dynamic>> loadAllAgents(int smeId) async {
     final res = await callsRepo.getAllAgents(smeId: smeId);
