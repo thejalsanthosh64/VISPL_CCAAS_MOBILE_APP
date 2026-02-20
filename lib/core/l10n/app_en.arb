@@ -177,6 +177,7 @@
 "contactsPermissionDenied": "Contacts permission denied.",
  "login": "Login",
   "switchCampaign": "Switch Campaign",
-    "selfCallNotAllowed": "You cannot call your own number"
-
+    "selfCallNotAllowed": "You cannot call your own number",
+"pleaseEnteraValidNumber": "Please enter a valid number",
+"dialer":"Dialer"
  }

@@ -42,12 +42,12 @@ class ContactListCubit extends Cubit<ContactListState> {
     super.close();
   }
 
-  Future<void> loadDeviceContacts({
-    required int previousSelectedMenu,
-    required BuildContext context,
-    bool isLoading = true,
-  }) async {
-    try {
+  // Future<void> loadDeviceContacts({
+  //   required int previousSelectedMenu,
+  //   required BuildContext context,
+  //   bool isLoading = true,
+  // }) async {
+  //   try {
 //       final status = await Permission.contacts.status;
 
 // if (status.isGranted) {
@@ -81,88 +81,88 @@ class ContactListCubit extends Cubit<ContactListState> {
 //         emit(state.parentCopyWith(selectedMenu: previousSelectedMenu));
 //       }
 
-final status = await Permission.contacts.status;
+// final status = await Permission.contacts.status;
 
-PermissionStatus finalStatus = status;
+// PermissionStatus finalStatus = status;
 
-// 👉 If not granted, request once
-if (!status.isGranted) {
-  finalStatus = await Permission.contacts.request();
-}
+// // 👉 If not granted, request once
+// if (!status.isGranted) {
+//   finalStatus = await Permission.contacts.request();
+// }
 
-if (finalStatus.isGranted) {
-  // Permission allowed → Load contacts
-  if (isLoading) {
-    emit(ContactListLoadingState(selectedMenu: state.selectedMenu));
-  } else {
-    AppLoadingIndicator.showLoadingIndicator();
-  }
+// if (finalStatus.isGranted) {
+//   // Permission allowed → Load contacts
+//   if (isLoading) {
+//     emit(ContactListLoadingState(selectedMenu: state.selectedMenu));
+//   } else {
+//     AppLoadingIndicator.showLoadingIndicator();
+//   }
 
-  final contacts = await FlutterContacts.getContacts(
-    withThumbnail: true,
-    sorted: true,
-    withProperties: true,
-  );
+//   final contacts = await FlutterContacts.getContacts(
+//     withThumbnail: true,
+//     sorted: true,
+//     withProperties: true,
+//   );
 
-  final contactList = _groupByDevicesList(contacts: contacts);
+//   final contactList = _groupByDevicesList(contacts: contacts);
 
-  for (var group in contactList) {
-    for (var c in group.contactDisplayDetails) {
-      final dn = c.displayName?.trim() ?? "";
-      if (dn.isNotEmpty && dn.toLowerCase() != "unknown") {
-        ContactLookup.deviceNames[
-          ContactLookup.normalize(c.number)
-        ] = dn;
-      }
-    }
-  }
+//   for (var group in contactList) {
+//     for (var c in group.contactDisplayDetails) {
+//       final dn = c.displayName?.trim() ?? "";
+//       if (dn.isNotEmpty && dn.toLowerCase() != "unknown") {
+//         ContactLookup.deviceNames[
+//           ContactLookup.normalize(c.number)
+//         ] = dn;
+//       }
+//     }
+//   }
 
-  emit(DeviceContactListState(
-    contactList: contactList,
-    selectedMenu: state.selectedMenu,
-  ));
-} else {
-  final latestStatus = await Permission.contacts.status;
+//   emit(DeviceContactListState(
+//     contactList: contactList,
+//     selectedMenu: state.selectedMenu,
+//   ));
+// } else {
+//   final latestStatus = await Permission.contacts.status;
 
-  //  If user enabled permission in settings, load contacts
-  if (latestStatus.isGranted) {
-    return loadDeviceContacts(
-      previousSelectedMenu: previousSelectedMenu,
-      context: context,
-      isLoading: true,
-    );
-  }
+//   //  If user enabled permission in settings, load contacts
+//   if (latestStatus.isGranted) {
+//     return loadDeviceContacts(
+//       previousSelectedMenu: previousSelectedMenu,
+//       context: context,
+//       isLoading: true,
+//     );
+//   }
 
-  final ctx = AppKeys.navigatorKey.currentContext!;
+//   final ctx = AppKeys.navigatorKey.currentContext!;
 
-  await appDialog(
-    context: ctx,
-    alertText: AppLocalizations.of(ctx)!.contactsPermissionRequired,
-    actions: (ctx) => [
-      TextButton(
-        onPressed: () async {
-          Navigator.of(ctx).pop();     
-          await openAppSettings();     
-        },
-        child: Text(AppLocalizations.of(ctx)!.ok),
-      )
-    ],
-  );
+//   await appDialog(
+//     context: ctx,
+//     alertText: AppLocalizations.of(ctx)!.contactsPermissionRequired,
+//     actions: (ctx) => [
+//       TextButton(
+//         onPressed: () async {
+//           Navigator.of(ctx).pop();     
+//           await openAppSettings();     
+//         },
+//         child: Text(AppLocalizations.of(ctx)!.ok),
+//       )
+//     ],
+//   );
 
-  emit(state.parentCopyWith(selectedMenu: previousSelectedMenu));
-}
+//   emit(state.parentCopyWith(selectedMenu: previousSelectedMenu));
+// }
 
 
 
-    } catch (e) {
-      if (isLoading) {
-        emit(ContactListErrorState(selectedMenu: state.selectedMenu));
-      }
-    }
-    if (!isLoading) {
-      AppLoadingIndicator.dismissLoadingIndicator();
-    }
-  }
+//     } catch (e) {
+//       if (isLoading) {
+//         emit(ContactListErrorState(selectedMenu: state.selectedMenu));
+//       }
+//     }
+//     if (!isLoading) {
+//       AppLoadingIndicator.dismissLoadingIndicator();
+//     }
+//   }
 
   /// bool refers has More data
   Future<bool> loadServerContacts({
@@ -316,69 +316,70 @@ for (var group in contactList) {
     return contactList;
   }
 
-  List<DeviceContactListModel> _groupByDevicesList(
-      {required List<Contact> contacts}) {
-    final namedContact = <Contact>[];
+  // List<DeviceContactListModel> _groupByDevicesList(
+  //     {required List<Contact> contacts}) {
+  //   final namedContact = <Contact>[];
 
-    final unNamedContact = <Contact>[];
+  //   final unNamedContact = <Contact>[];
 
-    for (Contact contact in contacts) {
-      if (contact.phones.isNotEmpty) {
-        if (contact.displayName.trim().isNotEmpty &&
-            AppRegEx.checkEnglishLetter
-                .hasMatch(contact.displayName.trim()[0])) {
-          namedContact.add(contact);
-        } else {
-          unNamedContact.add(contact);
-        }
-      }
-    }
+  //   for (Contact contact in contacts) {
+  //     if (contact.phones.isNotEmpty) {
+  //       if (contact.displayName.trim().isNotEmpty &&
+  //           AppRegEx.checkEnglishLetter
+  //               .hasMatch(contact.displayName.trim()[0])) {
+  //         namedContact.add(contact);
+  //       } else {
+  //         unNamedContact.add(contact);
+  //       }
+  //     }
+  //   }
 
-    final contactList = <DeviceContactListModel>[];
+  //   final contactList = <DeviceContactListModel>[];
 
-    if (namedContact.isNotEmpty) {
-      final groupedByNamed =
-          namedContact.groupListsBy<String>((Contact contact) {
-        return contact.displayName[0].toUpperCase();
-      });
+  //   if (namedContact.isNotEmpty) {
+  //     final groupedByNamed =
+  //         namedContact.groupListsBy<String>((Contact contact) {
+  //       return contact.displayName[0].toUpperCase();
+  //     });
 
-      groupedByNamed.forEach((key, value) {
-        contactList.add(DeviceContactListModel(
-            tag: key,
-            contactDisplayDetails: value.map((e) {
-              return DeviceContactDisplayDetails(
-                  id: e.id,
-                  number: e.phones.first.number,
-                  displayName: e.displayName,
-                  thumbnail: e.thumbnail);
-            }).toList()));
-      });
-    }
-    if (unNamedContact.isNotEmpty) {
-      contactList.add(DeviceContactListModel(
-          tag: AlphabeticList.unNamedSign,
-          contactDisplayDetails: unNamedContact.map((e) {
-            return DeviceContactDisplayDetails(
-                id: e.id,
-                number: e.phones.first.number,
-                thumbnail: e.thumbnail);
-          }).toList()));
-    }
-    return contactList;
-  }
+  //     groupedByNamed.forEach((key, value) {
+  //       contactList.add(DeviceContactListModel(
+  //           tag: key,
+  //           contactDisplayDetails: value.map((e) {
+  //             return DeviceContactDisplayDetails(
+  //                 id: e.id,
+  //                 number: e.phones.first.number,
+  //                 displayName: e.displayName,
+  //                 thumbnail: e.thumbnail);
+  //           }).toList()));
+  //     });
+  //   }
+  //   if (unNamedContact.isNotEmpty) {
+  //     contactList.add(DeviceContactListModel(
+  //         tag: AlphabeticList.unNamedSign,
+  //         contactDisplayDetails: unNamedContact.map((e) {
+  //           return DeviceContactDisplayDetails(
+  //               id: e.id,
+  //               number: e.phones.first.number,
+  //               thumbnail: e.thumbnail);
+  //         }).toList()));
+  //   }
+  //   return contactList;
+  // }
 
   Future<void> searchContact({required String text}) async {
     final searchText = text.trim().toLowerCase();
-    if (state is DeviceContactListState) {
-      final currentState = state as DeviceContactListState;
-      if (searchText.isEmpty) {
-        emit(currentState.copyWith(searchList: () => null));
-      } else {
-        emit(currentState.copyWith(
-            searchList: () => _searchedDeviceList(
-                list: currentState.contactList, searchText: searchText)));
-      }
-    } else if (state is ServerContactListState) {
+    // if (state is DeviceContactListState) {
+    //   final currentState = state as DeviceContactListState;
+    //   if (searchText.isEmpty) {
+    //     emit(currentState.copyWith(searchList: () => null));
+    //   } else {
+    //     emit(currentState.copyWith(
+    //         searchList: () => _searchedDeviceList(
+    //             list: currentState.contactList, searchText: searchText)));
+    //   }
+    // } else 
+    if (state is ServerContactListState) {
       final currentState = state as ServerContactListState;
       if (searchText.isEmpty) {
         emit(currentState.copyWith(searchList: () => null));
@@ -390,28 +391,28 @@ for (var group in contactList) {
     }
   }
 
-  List<DeviceContactListModel> _searchedDeviceList({
-    required List<DeviceContactListModel> list,
-    required String searchText,
-  }) {
-    final searchedList = <DeviceContactListModel>[];
-    List<DeviceContactDisplayDetails> filteredContacts = [];
+  // List<DeviceContactListModel> _searchedDeviceList({
+  //   required List<DeviceContactListModel> list,
+  //   required String searchText,
+  // }) {
+  //   final searchedList = <DeviceContactListModel>[];
+  //   List<DeviceContactDisplayDetails> filteredContacts = [];
 
-    for (var contactList in list) {
-      filteredContacts = [...contactList.contactDisplayDetails];
-      for (var contact in contactList.contactDisplayDetails) {
-        if (!("${contact.displayName} ${contact.number}")
-            .trim()
-            .toLowerCase()
-            .contains(searchText)) {
-          filteredContacts.remove(contact);
-        }
-      }
-      searchedList
-          .add(contactList.copyWidth(contactDisplayDetails: filteredContacts));
-    }
-    return searchedList;
-  }
+  //   for (var contactList in list) {
+  //     filteredContacts = [...contactList.contactDisplayDetails];
+  //     for (var contact in contactList.contactDisplayDetails) {
+  //       if (!("${contact.displayName} ${contact.number}")
+  //           .trim()
+  //           .toLowerCase()
+  //           .contains(searchText)) {
+  //         filteredContacts.remove(contact);
+  //       }
+  //     }
+  //     searchedList
+  //         .add(contactList.copyWidth(contactDisplayDetails: filteredContacts));
+  //   }
+  //   return searchedList;
+  // }
 
   List<ServerContactListModel> _searchedServerList({
     required List<ServerContactListModel> list,
@@ -447,10 +448,10 @@ for (var group in contactList) {
       case 1:
         loadServerContacts(smeId: smeId);
         break;
-      case 2:
-        loadDeviceContacts(
-            previousSelectedMenu: previousSelectedMenu, context: context);
-        break;
+      // case 2:
+      //   loadDeviceContacts(
+      //       previousSelectedMenu: previousSelectedMenu, context: context);
+      //   break;
     }
   }
 }

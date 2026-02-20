@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kommuno/core/common/app_constant.dart';
 import 'package:kommuno/core/common/app_routes/app_routes_manager.dart';
+import 'package:kommuno/core/common/app_theme/app_theme.dart';
 import 'package:kommuno/core/common/widget/app_button.dart';
 import 'package:kommuno/core/common/widget/empty_error_widget.dart';
 import 'package:kommuno/core/common/widget/loading_indicator.dart';
@@ -16,6 +17,8 @@ import 'package:kommuno/core/common/widget/user_details/data/model/user_details_
 import 'package:kommuno/core/common/widget/user_details/user_details_widget.dart';
 import 'package:kommuno/core/utilities/app_methods.dart';
 import 'package:kommuno/core/utilities/campaign_manager.dart';
+import 'package:kommuno/core/utilities/logout_manager.dart';
+import 'package:kommuno/core/utilities/user_login_info_manager/user_login_info_manager.dart';
 import 'package:kommuno/features/campaigns/cubit/campagin_list_cubit/campaign_list_cubit.dart';
 import 'package:kommuno/features/campaigns/cubit/update_user_campaign/update_user_campaign_cubit.dart';
 import 'package:kommuno/features/campaigns/data/model/request/update_user_campaign_data.dart';
@@ -167,6 +170,21 @@ class _CampaignListState extends StatelessWidget {
                             userData: userData,
                           ),
                           _kSized5,
+                    isAssignCampaign? TextButton(
+  onPressed: () async {
+    await LogoutManager.logoutUser(context: context);
+  },
+  child: const Text(
+    "Back to Login",
+    style: TextStyle(
+      color: AppColors.appColor,
+      fontWeight: FontWeight.w600,
+    ),
+  ),
+) : const SizedBox(),
+
+
+    _kSized5,
                         ],
                       ),
                     );

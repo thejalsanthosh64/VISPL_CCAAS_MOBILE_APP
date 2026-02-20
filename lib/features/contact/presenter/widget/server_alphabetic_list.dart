@@ -18,7 +18,8 @@ import 'contact_list_tile.dart';
 import 'package:kommuno/core/l10n/app_localizations.dart';
 
 class ServerAlphabeticList extends StatefulWidget {
-  const ServerAlphabeticList({super.key});
+  const ServerAlphabeticList({super.key,this.isPickerMode = false});
+  final bool isPickerMode;
 
   @override
   State<ServerAlphabeticList> createState() => _ServerAlphabeticListState();
@@ -176,19 +177,23 @@ final Map<String, SlidableController> _slidableControllers = {};
                                   ),
                                 ],
                               ),
-                              child: ContactListTile(
-                                customerName: contact.customerName,
-                                customerNo: contact.customerNumberPrimary,
-                                trailing: [
-                                  SlidableIconButton(
-                                    slidableController:
-                                        _slidableControllers[contact.id]!,
-                                  ),
-                                ],
-                                onTapPhone: () {
-                                  CallManager.makeNewCall(
-                                      number: contact.customerNumberPrimary);
-                                },
+                              child: InkWell(
+                                onTap:widget.isPickerMode? () => Navigator.pop(context, contact): null,
+                                child: ContactListTile(
+                                  customerName: contact.customerName,
+                                  customerNo: contact.customerNumberPrimary,
+                                  
+                                  trailing: [
+                                    SlidableIconButton(
+                                      slidableController:
+                                          _slidableControllers[contact.id]!,
+                                    ),
+                                  ],
+                                  onTapPhone: () {
+                                    CallManager.makeNewCall(
+                                        number: contact.customerNumberPrimary);
+                                  },
+                                ),
                               ),
                             );
                           },

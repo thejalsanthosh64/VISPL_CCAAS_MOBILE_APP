@@ -24,6 +24,11 @@ class AddScheduleCallCubit extends Cubit<AddScheduleCallState> {
   final noteFocusNode = FocusNode();
 
   final _scheduleCallRepo = ScheduleCallRepo();
+String customerName = "";
+
+void setCustomerName(String name) {
+  customerName = name;
+}
 
   @override
   Future<void> close() async {

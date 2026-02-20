@@ -281,7 +281,7 @@ void _openPreviewSheet(
           backgroundColor: AppColors.appColor,
           elevation: 0,
           title: Text(
-            "Wrap-up Call",
+           widget.waitingForConnection? "Ringing Call ": "Wrap-up Call",
             style: AppTextStyle.whiteNormal.copyWith(
               fontSize: 18,
               fontWeight: FontWeight.w600,

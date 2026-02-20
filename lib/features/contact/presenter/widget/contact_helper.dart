@@ -7,7 +7,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 class ContactLookup {
   static Map<String, String> serverNames = {};
-  static Map<String, String> deviceNames = {};
+  // static Map<String, String> deviceNames = {};
 
 static String normalize(String number) {
   // Remove invisible RTL/LTR formatting characters
@@ -40,7 +40,7 @@ static String normalize(String number) {
     
     debugPrint(" ContactLookup.getName: Looking up '$n'");
     debugPrint(" Server names map has ${serverNames.length} entries");
-    debugPrint(" Device names map has ${deviceNames.length} entries");
+    // debugPrint(" Device names map has ${deviceNames.length} entries");
 
     // Check server names first (business contacts)
     if (serverNames.containsKey(n) && serverNames[n]!.isNotEmpty) {
@@ -49,14 +49,14 @@ static String normalize(String number) {
     }
     
     // Then check device contacts
-    if (deviceNames.containsKey(n) && deviceNames[n]!.isNotEmpty) {
-      debugPrint(" Found in device names: ${deviceNames[n]}");
-      return deviceNames[n]!;
-    }
+    // if (deviceNames.containsKey(n) && deviceNames[n]!.isNotEmpty) {
+    //   debugPrint(" Found in device names: ${deviceNames[n]}");
+    //   return deviceNames[n]!;
+    // }
 
     debugPrint(" Not found in either map. Returning 'Unknown'");
     debugPrint(" Sample server keys: ${serverNames.keys.take(5).toList()}");
-    debugPrint(" Sample device keys: ${deviceNames.keys.take(5).toList()}");
+    // debugPrint(" Sample device keys: ${deviceNames.keys.take(5).toList()}");
     
     return "Unknown";
   }
@@ -71,7 +71,7 @@ static String normalize(String number) {
     if (cleanName.isNotEmpty && cleanName.toLowerCase() != "unknown" && cleanName.toLowerCase() != "no name") {
       // Prefer server names if they exist, otherwise use device names
       if (!serverNames.containsKey(n)) {
-        deviceNames[n] = cleanName;
+        serverNames[n] = cleanName;
         debugPrint(" Added to device names: $n → $cleanName");
       }
     }
@@ -80,11 +80,11 @@ static String normalize(String number) {
   // Clear all contacts (use carefully)
   static void clearAll() {
     serverNames.clear();
-    deviceNames.clear();
+    // deviceNames.clear();
   }
 
   // Get total contact count
-  static int get totalContacts => serverNames.length + deviceNames.length;
+  static int get totalContacts => serverNames.length;
   
   // Debug: Print all contacts (use sparingly - can be verbose)
   static void printAllContacts() {
@@ -93,10 +93,10 @@ static String normalize(String number) {
     serverNames.forEach((key, value) {
       debugPrint("  $key → $value");
     });
-    debugPrint("Device names (${deviceNames.length}):");
-    deviceNames.forEach((key, value) {
-      debugPrint("  $key → $value");
-    });
+    // debugPrint("Device names (${deviceNames.length}):");
+    // deviceNames.forEach((key, value) {
+    //   debugPrint("  $key → $value");
+    // });
   }
 }
 
@@ -127,13 +127,13 @@ class ContactSync {
     try {
       // Load both in parallel for faster initialization
       await Future.wait([
-        _loadDeviceContactsSilently(context),
+        // _loadDeviceContactsSilently(context),
         _loadServerContactsSilently(smeId),
       ]);
 
       _isInitialized = true;
       debugPrint(" ContactSync: Initialization complete!");
-      debugPrint("   - Device contacts: ${ContactLookup.deviceNames.length}");
+      // debugPrint("   - Device contacts: ${ContactLookup.deviceNames.length}");
       debugPrint("   - Server contacts: ${ContactLookup.serverNames.length}");
       debugPrint("   - Total: ${ContactLookup.totalContacts}");
     } catch (e) {
@@ -144,43 +144,43 @@ class ContactSync {
   }
 
   /// Load device contacts silently without showing any UI
-  Future<void> _loadDeviceContactsSilently(BuildContext context) async {
-    try {
-      // Check permission silently (don't show dialog)
-      final hasPermission = await Permission.contacts.isGranted;
+  // Future<void> _loadDeviceContactsSilently(BuildContext context) async {
+  //   try {
+  //     // Check permission silently (don't show dialog)
+  //     final hasPermission = await Permission.contacts.isGranted;
 
-      if (!hasPermission) {
-        debugPrint(" ContactSync: No contacts permission");
-        return;
-      }
+  //     if (!hasPermission) {
+  //       debugPrint(" ContactSync: No contacts permission");
+  //       return;
+  //     }
 
-      final contacts = await FlutterContacts.getContacts(
-        withThumbnail: false, // Faster without thumbnails
-        sorted: false, // Faster without sorting
-        withProperties: true,
-      );
+  //     final contacts = await FlutterContacts.getContacts(
+  //       withThumbnail: false, // Faster without thumbnails
+  //       sorted: false, // Faster without sorting
+  //       withProperties: true,
+  //     );
 
-      debugPrint(" ContactSync: Processing ${contacts.length} device contacts...");
+  //     debugPrint(" ContactSync: Processing ${contacts.length} device contacts...");
 
-      int added = 0;
-      for (var contact in contacts) {
-        if (contact.phones.isNotEmpty) {
-          final name = contact.displayName.trim();
-          final number = contact.phones.first.number;
+  //     int added = 0;
+  //     for (var contact in contacts) {
+  //       if (contact.phones.isNotEmpty) {
+  //         final name = contact.displayName.trim();
+  //         final number = contact.phones.first.number;
 
-          if (name.isNotEmpty && name.toLowerCase() != "unknown") {
-            final normalized = ContactLookup.normalize(number);
-            ContactLookup.deviceNames[normalized] = name;
-            added++;
-          }
-        }
-      }
+  //         if (name.isNotEmpty && name.toLowerCase() != "unknown") {
+  //           final normalized = ContactLookup.normalize(number);
+  //           ContactLookup.deviceNames[normalized] = name;
+  //           added++;
+  //         }
+  //       }
+  //     }
 
-      debugPrint(" ContactSync: Added $added device contacts");
-    } catch (e) {
-      debugPrint(" ContactSync: Device contacts error: $e");
-    }
-  }
+  //     debugPrint(" ContactSync: Added $added device contacts");
+  //   } catch (e) {
+  //     debugPrint(" ContactSync: Device contacts error: $e");
+  //   }
+  // }
 
   /// Load server contacts silently without showing any UI
   Future<void> _loadServerContactsSilently(String smeId) async {
@@ -285,6 +285,6 @@ class ContactSync {
 
   /// Get stats
   String getStats() {
-    return "Device: ${ContactLookup.deviceNames.length} | Server: ${ContactLookup.serverNames.length} | Total: ${ContactLookup.totalContacts}";
+    return " Server: ${ContactLookup.serverNames.length} | Total: ${ContactLookup.totalContacts}";
   }
 }

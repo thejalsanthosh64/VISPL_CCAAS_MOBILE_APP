@@ -6,6 +6,7 @@ import 'package:kommuno/core/common/app_theme/app_theme.dart';
 import 'package:kommuno/core/common/widget/add_new_contact_button.dart';
 import 'package:kommuno/core/common/widget/app_icon_button.dart';
 import 'package:kommuno/core/common/widget/app_svg_picture.dart';
+import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
 import 'package:kommuno/core/utilities/shortcuts/widget/app_shortcut_button.dart';
 import 'package:kommuno/features/break/presenter/view/break_in_button.dart';
 import 'package:kommuno/core/common/widget/mobile_textfield.dart';
@@ -66,8 +67,42 @@ class _DialScreenState extends StatelessWidget {
                       children: [
                         _kSized10,
                         Center(
-                          child: AddNewContactButton(
-                            onAddedNewContact: (newContactDetails) {},
+                          child: Row(
+                            children: [
+                              Center(
+                                child: AddNewContactButton(
+                                  onAddedNewContact: (newContactDetails) {},
+                                ),
+                              ),
+                          
+                               const Spacer(),
+
+    Row(
+      children: [
+        Text(
+          AppLocalizations.of(context)!.dialer, 
+          style: AppTextStyle.blackNormal,
+        ),
+        const SizedBox(width: 8),
+        Switch(
+          value: state.isDialerOn,
+          onChanged: state.isUpdating
+              ? null
+              : (value) {
+                  final user = context
+                      .read<UserDetailsCubit>()
+                      .userDetailsModel;
+
+                  _dialCubit(context).toggleDialer(
+                    agentId: user.agentId,
+                    smeID: user.smeId,
+                    value: value,
+                  );
+                },
+        ),
+      ],
+    ),
+                            ],
                           ),
                         ),
                         _kSized10,

@@ -1155,6 +1155,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You cannot call your own number'**
   String get selfCallNotAllowed;
+
+  /// No description provided for @pleaseEnteraValidNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid number'**
+  String get pleaseEnteraValidNumber;
+
+  /// No description provided for @dialer.
+  ///
+  /// In en, this message translates to:
+  /// **'Dialer'**
+  String get dialer;
 }
 
 class _AppLocalizationsDelegate

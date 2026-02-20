@@ -43,7 +43,8 @@ static final Set<String> _handledConnectedSessions = {};
 static final Set<String> _handledClearSessions = {};
 static final Set<String> _handledCallEndedSessions = {};
 static final Set<String> _handledRingingSessions = {};
-
+static Timer? _recoveryTimer;
+static bool _isRecovering = false;
   static Future<void> startContinuousVibration() async {
     if (isVibrating) return;
     try {
@@ -53,7 +54,7 @@ static final Set<String> _handledRingingSessions = {};
       await Vibration.vibrate(pattern: [0, 500, 300], repeat: 0);
 
       autoStopTimer?.cancel();
-      autoStopTimer = Timer(const Duration(seconds: 30), () {
+      autoStopTimer = Timer(const Duration(seconds: 20), () {
         if (isVibrating && !agentAnswered) {
           stopVibration();
           agentAnswered = true;
@@ -136,6 +137,17 @@ static void connectGlobal({
       .enableReconnection()
       .build(),
   );
+
+globalSocket?.onReconnect((_) {
+  debugPrint("🌐 Socket reconnected → starting recovery window");
+
+  startRecoveryWindow(
+    smeId: smeId,
+    agentId: agentId,
+    userName: UserLoginInfoManager.userLoginInfoModel!.username!,
+
+  );
+});
 
   globalSocket?.onConnect((_) async {
  final user = UserLoginInfoManager.userLoginInfoModel;
@@ -235,6 +247,16 @@ globalSocket?.on("preview_manual_dialer_popup", (raw) {
   }
 
   debugPrint(" Preview manual matched agent. Showing popup.");
+
+  final campaign = CampaignManager.campaign;
+
+  if (data["campaign_name"] != campaign!.campaignName) {
+  debugPrint(
+    " Ignoring preview_auto_dialer_popup — current campaign: ${campaign.campaignName}",
+  );
+  return;
+}
+
 final sessionId = data["sessionId"];
 if (sessionId == null) return;
 
@@ -251,6 +273,8 @@ _handledPreviewSessions.add(sessionId);
 
 // PREVIEW AUTO POPUP
 globalSocket?.on("preview_auto_dialer_popup", (raw) {
+
+
   final data = normalize(raw);
   debugPrint(" preview_auto_dialer_popup: $data");
 
@@ -259,6 +283,14 @@ globalSocket?.on("preview_auto_dialer_popup", (raw) {
     debugPrint(" Preview auto ignored. Expected agentId=$agentId, got=$eventAgentId");
     return;
   }
+  final campaign = CampaignManager.campaign;
+
+  if (data["campaign_name"] != campaign!.campaignName) {
+  debugPrint(
+    " Ignoring preview_auto_dialer_popup — current campaign: ${campaign.campaignName}",
+  );
+  return;
+}
 
   debugPrint(" Preview auto matched agent. Showing popup.");
 
@@ -279,6 +311,8 @@ _showPreviewDialerPopup(data, isAuto: true);
 
   //  INCOMING CALL - Store phone number early
   globalSocket?.on("ringing_live_calls", (raw) async {
+      handleRecoveryEvent("ringing_live_calls");
+
     final data = normalize(raw);
 
     if (data["agentId"] != agentId) return;
@@ -1029,6 +1063,7 @@ static void connectForCall({
   // ========================================
   
   callSocket?.on("ringing_live_calls", (raw) async {
+    handleRecoveryEvent("ringing_live_calls");
     final e = normalize(raw);
     if (!_matchSession(e)) return;
      await _stopWaitingTimerForCall();
@@ -1065,6 +1100,8 @@ static void connectForCall({
   });
 
   callSocket?.on("connected_live_calls", (raw) async {
+      handleRecoveryEvent("connected_live_calls");
+
     final e = normalize(raw);
 
 
@@ -1146,6 +1183,8 @@ await closePreviewPopupSafely();
 
   // CALL_CONNECTED 
   callSocket?.on("call_connected", (raw) {
+      handleRecoveryEvent("call_connected");
+
     final e = normalize(raw);
     if (!_matchSession(e)) return;
 
@@ -1173,6 +1212,8 @@ await closePreviewPopupSafely();
 
   //  CALL END 
   callSocket?.on("call_ended", (raw) async {
+      handleRecoveryEvent("call_ended");
+
     final e = normalize(raw);
     if (!_matchSession(e)) return;
 final sessionId = e["sessionId"];
@@ -1229,6 +1270,8 @@ if (wrapupEnabled && !activeCallCubit!.state.isDispositionFilled) {
 
   //  NO ANSWER 
   callSocket?.on("clear_live_calls", (raw) async {
+      handleRecoveryEvent("clear_live_calls");
+
     final e = normalize(raw);
     if (!_matchSession(e)) return;
 final sessionId = e["sessionId"];
@@ -1536,4 +1579,97 @@ static void _clearSessionGuards(String? sessionId) {
     globalSocket?.dispose();
     globalSocket = null;
   }
+
+ static Future<void> moveToWaitingState({
+  required int smeId,
+  required int agentId,
+  required String userName,
+}) async {
+  debugPrint("⏱ Recovery timeout → Moving agent to Waiting");
+
+  // 1️⃣ Stop all local side effects
+  stopVibration();
+
+
+ final cubit = UserDetailsCubit.instance;
+  if (cubit == null || cubit.isClosed) {
+    debugPrint("⛔ Waiting skipped (cubit invalid)");
+    return;
+  }
+  disconnectCallSocket();
+  
+  cubit.startWaitingTimer();
+
+ final ctx = AppKeys.navigatorKey.currentContext;
+  if (ctx != null) {
+    Navigator.of(ctx, rootNavigator: true)
+        .popUntil((route) => route.isFirst);
+  }
+
+  // 3️⃣ Backend sync
+  final repo = ActivityHelperRepo();
+
+  try {
+    // 🔹 Agent live status
+    await repo.updateAgentLiveStatus(
+      smeId: smeId,
+      agentId: agentId,
+      status: "Waiting",
+    );
+
+    // 🔹 Agent activity time
+    await repo.updateAgentActivityTime(
+      smeId: smeId,
+      agentId: agentId,
+      status: "Waiting",
+      time: 0,
+    );
+
+    // 🔹 Optional: activity log (recommended for audit)
+    await repo.setActivityLogs(
+      smeId,
+      action: "waiting",
+      userRole: "agent",
+      message: "Agent moved to Waiting due to network recovery timeout",
+      agentId: agentId,
+      moduleName: "call",
+    );
+
+    
+    debugPrint("Agent successfully moved to Waiting (backend synced)");
+  } catch (e, st) {
+    debugPrint("Failed to sync Waiting state: $e");
+    debugPrintStack(stackTrace: st);
+  }
+}
+static void startRecoveryWindow({
+  required int smeId,
+  required int agentId,
+  required String userName,
+}) {
+  _isRecovering = true;
+
+  _recoveryTimer?.cancel();
+  _recoveryTimer = Timer(const Duration(seconds: 30), () async {
+    if (!_isRecovering) return;
+
+    await moveToWaitingState(
+      smeId: smeId,
+      agentId: agentId,
+      userName: userName,
+    );
+  });
+
+  debugPrint("🛠 Recovery window started (30s)");
+}
+
+static void handleRecoveryEvent(String eventName) {
+  if (!_isRecovering) return;
+
+  debugPrint(" Recovery resolved by event: $eventName");
+
+  _isRecovering = false;
+  _recoveryTimer?.cancel();
+}
+
 }

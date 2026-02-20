@@ -18,7 +18,7 @@ class PermissionHandlerCubit extends Cubit<PermissionHandlerState>
   late Timer _timer;
 
   AppLifecycleState _appLifecycleState = AppLifecycleState.resumed;
-  bool _contactsPermissionRequested = false;
+  // bool _contactsPermissionRequested = false;
 
 
   PermissionHandlerCubit() : super(const PermissionHandlerInitial()) {
@@ -88,22 +88,22 @@ class PermissionHandlerCubit extends Cubit<PermissionHandlerState>
     //   return;
     // }
 
-   const contactsPermission = Permission.contacts;
-final contactsStatus = await contactsPermission.status;
+  //  const contactsPermission = Permission.contacts;
+// final contactsStatus = await contactsPermission.status;
 
-if (contactsStatus.isDenied && !_contactsPermissionRequested) {
-  _contactsPermissionRequested = true;
+// if (contactsStatus.isDenied && !_contactsPermissionRequested) {
+//   _contactsPermissionRequested = true;
 
-  final result = await contactsPermission.request();
+//   final result = await contactsPermission.request();
 
-  if (!result.isGranted) {
-    FToastManager().showToast(
-      message: AppLocalizations.of(
-  AppKeys.navigatorKey.currentContext!,
-)!.contactsPermissionDenied,
-    );
-  }
-}
+//   if (!result.isGranted) {
+//     FToastManager().showToast(
+//       message: AppLocalizations.of(
+//   AppKeys.navigatorKey.currentContext!,
+// )!.contactsPermissionDenied,
+//     );
+//   }
+// }
 
     if (AppPermissionHandler.isOpenRequiredPermission) {
       AppPermissionHandler.isOpenRequiredPermission = false;

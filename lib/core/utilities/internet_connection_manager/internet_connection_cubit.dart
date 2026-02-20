@@ -32,43 +32,94 @@ class InternetConnectionCubit extends Cubit<InternetConnectionState> {
     _internetListen.cancel();
     super.close();
   }
+void _closeDialogIfOpen() {
+  final ctx = AppKeys.navigatorKey.currentContext;
+  if (_isInternetConnectionOpen &&
+      ctx != null &&
+      Navigator.of(ctx).canPop()) {
+    Navigator.of(ctx).pop();
+    _isInternetConnectionOpen = false;
+  }
+}
 
+  // Future<void> checkInitialConnectionState() async {
+  //   _listenConnection = true;
+  //   bool result = await InternetConnection().hasInternetAccess;
+  //   if (result) {
+  //     if (_isInternetConnectionOpen) {
+  //       _isInternetConnectionOpen = false;
+  //       Navigator.of(AppKeys.navigatorKey.currentContext!).pop();
+  //     }
+  //     emit(const InternetConnectedState());
+  //   } else {
+  //     emit(const InternetDisConnectedState());
+  //   }
+  // }
+  
   Future<void> checkInitialConnectionState() async {
-    _listenConnection = true;
-    bool result = await InternetConnection().hasInternetAccess;
-    if (result) {
-      if (_isInternetConnectionOpen) {
-        _isInternetConnectionOpen = false;
-        Navigator.of(AppKeys.navigatorKey.currentContext!).pop();
-      }
-      emit(const InternetConnectedState());
-    } else {
-      emit(const InternetDisConnectedState());
-    }
-  }
+  _listenConnection = true;
+  final result = await InternetConnection().hasInternetAccess;
 
-  Future<void> _listenConnectionState({required InternetStatus status}) async {
-    switch (status) {
-      case InternetStatus.connected:
-        if (_isInternetConnectionOpen) {
-          _isInternetConnectionOpen = false;
-          Navigator.of(AppKeys.navigatorKey.currentContext!).pop();
-        }
-        emit(const InternetConnectedState());
-        break;
-      case InternetStatus.disconnected:
-        emit(const InternetDisConnectedState());
-        break;
-    }
+  if (result) {
+    _closeDialogIfOpen();
+    emit(const InternetConnectedState());
+  } else {
+    emit(const InternetDisConnectedState());
   }
+}
 
+
+  // Future<void> _listenConnectionState({required InternetStatus status}) async {
+  //   switch (status) {
+  //     case InternetStatus.connected:
+  //       if (_isInternetConnectionOpen) {
+  //         _isInternetConnectionOpen = false;
+  //         Navigator.of(AppKeys.navigatorKey.currentContext!).pop();
+  //       }
+  //       emit(const InternetConnectedState());
+  //       break;
+  //     case InternetStatus.disconnected:
+  //       emit(const InternetDisConnectedState());
+  //       break;
+  //   }
+  // }
+
+Future<void> _listenConnectionState({required InternetStatus status}) async {
+  if (status == InternetStatus.connected) {
+    _closeDialogIfOpen();
+    emit(const InternetConnectedState());
+  } else {
+    emit(const InternetDisConnectedState());
+  }
+}
+
+  // Future<void> checkConnectionDialog() async {
+  //   if (_isInternetConnectionOpen) return; 
+  //   _isInternetConnectionOpen = true;
+  //   await appDialog(
+  //     context: AppKeys.navigatorKey.currentContext!,
+  //     alertText: AppLocalizations.of(AppKeys.navigatorKey.currentContext!)!
+  //         .checkInternetConnection,
+  //     constraints: const BoxConstraints(maxHeight: 65),
+  //   );
+  //     _isInternetConnectionOpen = false;
+
+  // }
   Future<void> checkConnectionDialog() async {
-    _isInternetConnectionOpen = true;
-    await appDialog(
-      context: AppKeys.navigatorKey.currentContext!,
-      alertText: AppLocalizations.of(AppKeys.navigatorKey.currentContext!)!
-          .checkInternetConnection,
-      constraints: const BoxConstraints(maxHeight: 65),
-    );
-  }
+  if (_isInternetConnectionOpen) return;
+
+  _isInternetConnectionOpen = true;
+
+  await appDialog(
+    context: AppKeys.navigatorKey.currentContext!,
+    alertText: AppLocalizations.of(AppKeys.navigatorKey.currentContext!)!
+        .checkInternetConnection,
+    constraints: const BoxConstraints(maxHeight: 65),
+  );
+
+  // dialog dismissed manually
+  _isInternetConnectionOpen = false;
+}
+
+  
 }

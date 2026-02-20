@@ -7,6 +7,7 @@ import 'package:kommuno/core/utilities/call_manager/call_manager.dart';
 import 'package:kommuno/core/utilities/validation.dart';
 import 'package:kommuno/features/dial/data/model/dial_data_model.dart';
 import 'package:kommuno/core/l10n/app_localizations.dart';
+import 'package:kommuno/features/dial/data/repository/dial_repo.dart';
 
 part 'dial_state.dart';
 
@@ -14,6 +15,7 @@ class DialCubit extends Cubit<DialState> {
   DialCubit() : super(const DialState());
 
   final dialController = TextEditingController();
+  final _dialRepo = DialRepo();
 
   @override
   Future<void> close() async {
@@ -23,7 +25,7 @@ class DialCubit extends Cubit<DialState> {
 
   void changeDialNo(DialDataModel dialData) {
     String dialNo = state.number;
-    if (dialNo.length < 12) {
+    if (dialNo.length < 10) {
       final cursorPosition = dialController.selection.base.offset;
       final latest = dialNo.split("");
       latest.insert(cursorPosition, dialData.dialNo);
@@ -81,7 +83,36 @@ class DialCubit extends Cubit<DialState> {
     if (AppValidation.isValidNumber(state.number)) {
       CallManager.makeNewCall(number: state.number);
     } else {
-      FToastManager().showToast(message: AppLocalizations.of(AppKeys.navigatorKey.currentContext!)!.invalidMobile);
+      FToastManager().showToast(message: AppLocalizations.of(AppKeys.navigatorKey.currentContext!)!.pleaseEnteraValidNumber);
     }
   }
+
+Future<void> toggleDialer({
+    required int agentId,
+    required bool value,
+    required int smeID
+  }) async {
+    try {
+      emit(state.copyWith(isUpdating: true));
+
+      final res = await _dialRepo.setDialerStatus(
+        agentId: agentId,
+        isOn: value,
+        smeId: smeID
+      );
+
+      if (res.isSuccess) {
+        emit(state.copyWith(
+          isDialerOn: value,
+          isUpdating: false,
+        ));
+      }
+
+      FToastManager().showToast(message: res.message);
+    } catch (e) {
+      emit(state.copyWith(isUpdating: false));
+      FToastManager().showToast(message: "Failed to update dialer status");
+    }
+  }
+
 }

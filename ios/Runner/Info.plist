@@ -46,9 +46,6 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 
-
-	<key>NSContactsUsageDescription</key>
-        <string>Reason we need access to the contact list</string>
     <key>LSApplicationQueriesSchemes</key>
        <array>
           <string>whatsapp</string>

@@ -179,5 +179,7 @@ static String updateSocketId(int smeId) =>
 static String updateCrmForm(int smeId, String sessionId) =>
     "sme/$smeId/calling-cdr/session/$sessionId/update-form-json";
     static String updateIsWrapUpTimeOver(int smeId) => "agent/$smeId/updateIsWrapUpTimeOver";
+      static String setDialerStatus(int smeID) =>
+      "agent/$smeID/setDialerStatus";
 
 }

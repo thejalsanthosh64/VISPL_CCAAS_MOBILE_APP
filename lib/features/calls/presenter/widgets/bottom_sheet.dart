@@ -83,12 +83,12 @@ class _TransferBottomSheetState extends State<TransferBottomSheet> {
           break;
         case 'team_lead':
           // teamLeads = await cubit.loadTeamLeads(smeId);
-final allTeamLeads = await cubit.loadTeamLeads(smeId);
+ agents = await cubit.loadTeamLeads(smeId);
 
-teamLeads = allTeamLeads.where((lead) {
-  return lead["agent_live_status"] == "Waiting" &&
-         lead["agent_id"] != CallSession.agentId;
-}).toList();
+// teamLeads = allTeamLeads.where((lead) {
+//   return lead["agent_live_status"] == "Waiting" &&
+//          lead["agent_id"] != CallSession.agentId;
+// }).toList();
 
           break;
         case 'specific_queue_agent':
@@ -97,13 +97,13 @@ teamLeads = allTeamLeads.where((lead) {
           break;
         case 'same_queue':
           // sameQueueAgents = await cubit.loadSameQueueAgents();
-final allSameQueueAgents = await cubit.loadSameQueueAgents();
+ agents = await cubit.loadSameQueueAgents();
 
-sameQueueAgents = allSameQueueAgents
-    .where((a) =>
-        a.agentLiveStatus == "Waiting" &&
-        a.agentId != CallSession.agentId)
-    .toList();
+// sameQueueAgents = allSameQueueAgents
+//     .where((a) =>
+//         a.agentLiveStatus == "Waiting" &&
+//         a.agentId != CallSession.agentId)
+//     .toList();
 
           break;
         case 'outside_number':

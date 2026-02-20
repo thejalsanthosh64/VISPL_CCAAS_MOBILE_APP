@@ -17,27 +17,30 @@ import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit
 import 'package:kommuno/core/common/widget/user_details/data/model/user_details_model.dart';
 import 'package:kommuno/core/utilities/call_manager/call_manager.dart';
 import 'package:kommuno/features/contact/cubit/contact_list_cubit/contact_list_cubit.dart';
-import 'package:kommuno/features/contact/presenter/widget/device_alphabetic_list.dart';
 import 'package:kommuno/features/contact/presenter/widget/server_alphabetic_list.dart';
 import 'package:kommuno/generated/assets.dart';
 
 class ContactList extends StatelessWidget {
-  const ContactList({super.key});
+  const ContactList({super.key,this.isPickerMode = false});
+
+  final bool isPickerMode;
 
   @override
   Widget build(BuildContext context) {
     final userDetails = context.read<UserDetailsCubit>().userDetailsModel;
     return BlocProvider(
       create: (context) => ContactListCubit(),
-      child: _ContactListState(userDetails: userDetails),
+      child: _ContactListState(userDetails: userDetails,        isPickerMode: isPickerMode,
+),
     );
   }
 }
 
 class _ContactListState extends StatelessWidget {
-  const _ContactListState({required this.userDetails});
+  const _ContactListState({required this.userDetails,  required this.isPickerMode,});
 
   final UserDetailsModel userDetails;
+  final bool isPickerMode;
 
   SizedBox get _kSized10 =>
       const SizedBox(height: AppConstant.kSized10, width: AppConstant.kSized10);
@@ -85,10 +88,11 @@ class _ContactListState extends StatelessWidget {
               if (state.selectedMenu == 1) {
                 _contactListCubit(context)
                     .loadServerContacts(smeId: "${userDetails.smeId}");
-              } else {
-                _contactListCubit(context).loadDeviceContacts(
-                    context: context, previousSelectedMenu: state.selectedMenu);
-              }
+              } 
+              // else {
+              //   _contactListCubit(context).loadDeviceContacts(
+              //       context: context, previousSelectedMenu: state.selectedMenu);
+              // }
             },
           );
         } else {
@@ -141,7 +145,7 @@ class _ContactListState extends StatelessWidget {
                         ),
                       ),
                       _kSized15,
-                      _buildTogglePopup(context: context, state: state),
+                      // _buildTogglePopup(context: context, state: state),
                     ],
                   ),
                 ),
@@ -164,38 +168,39 @@ class _ContactListState extends StatelessWidget {
 
   Widget _buildContactList(
       {required ContactListState state, required BuildContext context}) {
-    if (state is DeviceContactListState) {
-      final contactList =
-          state.searchList != null ? state.searchList! : state.contactList;
-      if (contactList
-          .map((e) => e.contactDisplayDetails.isEmpty)
-          .every((e) => e == true)) {
-        return EmptyErrorWidget(
-          showButton: state.searchList == null,
-          text: AppLocalizations.of(context)!.noRecordFound,
-          onTap: () {
-            _contactListCubit(context).loadDeviceContacts(
-                context: context,
-                previousSelectedMenu: state.selectedMenu,
-                isLoading: false);
-          },
-        );
-      } else {
-        return DeviceAlphabeticList(
-          onRefresh: () async {
-            _contactListCubit(context).loadDeviceContacts(
-                context: context,
-                previousSelectedMenu: state.selectedMenu,
-                isLoading: false);
-          },
-          contactList: contactList,
-          onTapPhone: (contact) {
-            _onTapPhone(number: contact.number);
-          },
-        );
-      }
-    } else if (state is ServerContactListState) {
-      return const ServerAlphabeticList();
+    // if (state is DeviceContactListState) {
+    //   final contactList =
+    //       state.searchList != null ? state.searchList! : state.contactList;
+    //   if (contactList
+    //       .map((e) => e.contactDisplayDetails.isEmpty)
+    //       .every((e) => e == true)) {
+    //     return EmptyErrorWidget(
+    //       showButton: state.searchList == null,
+    //       text: AppLocalizations.of(context)!.noRecordFound,
+    //       onTap: () {
+    //         _contactListCubit(context).loadDeviceContacts(
+    //             context: context,
+    //             previousSelectedMenu: state.selectedMenu,
+    //             isLoading: false);
+    //       },
+    //     );
+    //   } else {
+    //     return DeviceAlphabeticList(
+    //       onRefresh: () async {
+    //         _contactListCubit(context).loadDeviceContacts(
+    //             context: context,
+    //             previousSelectedMenu: state.selectedMenu,
+    //             isLoading: false);
+    //       },
+    //       contactList: contactList,
+    //       onTapPhone: (contact) {
+    //         _onTapPhone(number: contact.number);
+    //       },
+    //     );
+    //   }
+    // } else 
+    if (state is ServerContactListState) {
+      return  ServerAlphabeticList(isPickerMode: isPickerMode);
     }
     return const SizedBox();
   }
@@ -245,31 +250,47 @@ class _ContactListState extends StatelessWidget {
 
   Widget _buildTogglePopup(
       {required BuildContext context, required ContactListState state}) {
-    return PopupMenuButton<int>(
-      initialValue: state.selectedMenu,
-      onSelected: (value) {
-        _contactListCubit(context).onChangeMenuSelection(value,
-            smeId: "${userDetails.smeId}", context: context);
-      },
-      padding: EdgeInsets.zero,
-      itemBuilder: (__) {
-        return [
-          _buildMenuItem(
-              value: 1,
-              text: AppLocalizations.of(context)!.accountContacts,
-              selectedMenu: state.selectedMenu,
-              iconName: Assets.iconsAccountContacts),
-          _buildMenuItem(
-              value: 2,
-              text: AppLocalizations.of(context)!.phoneContacts,
-              selectedMenu: state.selectedMenu,
-              iconName: Assets.iconsPhoneContacts),
-        ];
-      },
-      child: const Icon(
-        Icons.menu,
-        color: AppColors.appColor,
+
+return PopupMenuButton<int>(
+  initialValue: 1,
+  itemBuilder: (__) {
+    return [
+      _buildMenuItem(
+        value: 1,
+        text: AppLocalizations.of(context)!.accountContacts,
+        selectedMenu: state.selectedMenu,
+        iconName: Assets.iconsAccountContacts,
       ),
-    );
+    ];
+  },
+);
+
+
+    // return PopupMenuButton<int>(
+    //   initialValue: state.selectedMenu,
+    //   onSelected: (value) {
+    //     _contactListCubit(context).onChangeMenuSelection(value,
+    //         smeId: "${userDetails.smeId}", context: context);
+    //   },
+    //   padding: EdgeInsets.zero,
+    //   itemBuilder: (__) {
+    //     return [
+    //       _buildMenuItem(
+    //           value: 1,
+    //           text: AppLocalizations.of(context)!.accountContacts,
+    //           selectedMenu: state.selectedMenu,
+    //           iconName: Assets.iconsAccountContacts),
+    //       _buildMenuItem(
+    //           value: 2,
+    //           text: AppLocalizations.of(context)!.phoneContacts,
+    //           selectedMenu: state.selectedMenu,
+    //           iconName: Assets.iconsPhoneContacts),
+    //     ];
+    //   },
+    //   child: const Icon(
+    //     Icons.menu,
+    //     color: AppColors.appColor,
+    //   ),
+    // );
   }
 }

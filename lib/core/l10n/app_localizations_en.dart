@@ -551,4 +551,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selfCallNotAllowed => 'You cannot call your own number';
+
+  @override
+  String get pleaseEnteraValidNumber => 'Please enter a valid number';
+
+  @override
+  String get dialer => 'Dialer';
 }

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kommuno/core/common/app_constant.dart';
 import 'package:kommuno/core/common/app_theme/app_theme.dart';
 import 'package:kommuno/core/common/widget/app_button.dart';
+import 'package:kommuno/core/common/widget/app_svg_picture.dart';
 import 'package:kommuno/core/common/widget/app_text_field.dart';
 import 'package:kommuno/core/common/widget/custom_field_deoration.dart';
 import 'package:kommuno/core/common/widget/mobile_textfield.dart';
@@ -11,7 +12,10 @@ import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit
 import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:kommuno/core/utilities/date_utility.dart';
 import 'package:kommuno/features/break/presenter/view/break_in_button.dart';
+import 'package:kommuno/features/contact/data/model/server_contact_response_model.dart';
+import 'package:kommuno/features/contact/presenter/page/contact_list.dart';
 import 'package:kommuno/features/schedule_call/cubit/add_schedule_call_cubit/add_schedule_call_cubit.dart';
+import 'package:kommuno/generated/assets.dart';
 
 class AddScheduleCall extends StatelessWidget {
   const AddScheduleCall({super.key});
@@ -94,11 +98,41 @@ class _AddScheduleCallState extends StatelessWidget {
               return Column(
                 children: [
                   _kSized20,
+                  // MobileTextField(
+                  //   readOnly: number.isNotEmpty,
+                  //   controller: _addScheduleCallCubit(context).mobileController,
+                  //   textInputAction: TextInputAction.next,
+                  // ),
+
                   MobileTextField(
-                    readOnly: number.isNotEmpty,
-                    controller: _addScheduleCallCubit(context).mobileController,
-                    textInputAction: TextInputAction.next,
-                  ),
+  readOnly: number.isNotEmpty,
+  controller: _addScheduleCallCubit(context).mobileController,
+  textInputAction: TextInputAction.next,
+  suffixIcon: IconButton(
+    icon: const AppSvgPicture(
+                              assetName: Assets.iconsContacts,
+                              color: AppColors.appColor,
+                            ),
+    onPressed: () async {
+      final selectedContact = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const ContactList(isPickerMode: true),
+        ),
+      );
+
+      if (selectedContact is ServerContactsResponseModel) {
+        _addScheduleCallCubit(context)
+            .mobileController
+            .text = selectedContact.customerNumberPrimary;
+
+        _addScheduleCallCubit(context)
+            .setCustomerName(selectedContact.customerName);
+      }
+    },
+  ),
+),
+
                   _kSized20,
                   AppTextField(
                     autofocus: false,
@@ -136,7 +170,9 @@ class _AddScheduleCallState extends StatelessWidget {
                         note:
                             _addScheduleCallCubit(context).noteController.text,
                         selectedDateTime: state.selectedDateTime,
-                        customerName: customerName,
+                        // customerName: customerName,
+
+customerName: _addScheduleCallCubit(context).customerName,
                       );
                     },
                   ),
