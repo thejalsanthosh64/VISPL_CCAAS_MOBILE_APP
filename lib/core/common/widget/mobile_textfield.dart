@@ -51,20 +51,20 @@ class MobileTextField extends StatelessWidget {
       prefixIcon: Row(
         children: [
           const SizedBox(width: AppConstant.kSized15),
-          const Icon(
+           Icon(
             Icons.phone,
             color: AppColors.appColor,
           ),
           const SizedBox(width: AppConstant.kSized10),
           Padding(
             padding: EdgeInsets.only(bottom: AppConstant.kCenterPadding),
-            child: const Text(
+            child:  Text(
               AppConstant.countryCodeWithoutPlus,
               style: TextStyle(color: AppColors.appColor),
             ),
           ),
           const SizedBox(width: AppConstant.kSized5),
-          const SizedBox(
+           SizedBox(
             height: 28,
             child: VerticalDivider(
               width: 0,

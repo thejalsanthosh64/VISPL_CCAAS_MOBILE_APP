@@ -67,6 +67,6 @@ class AppDropdown<T> extends StatelessWidget {
   InputBorder get _border {
     return OutlineInputBorder(
         borderRadius: BorderRadius.circular(20),
-        borderSide: const BorderSide(color: AppColors.appColor));
+        borderSide:  BorderSide(color: AppColors.appColor));
   }
 }

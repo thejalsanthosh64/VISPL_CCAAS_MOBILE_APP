@@ -202,9 +202,9 @@ class _InSightsState extends StatelessWidget {
                   _kSized20,
                   _buildDuration(context: context, state: state),
 _kSized20,
-                  _buildAgentStatusSummary(state.insightsResponse),
+                  _buildAgentStatusSummary(state.insightsResponse, context),
                   _kSized20,
-                    _buildDispositionSummary(state.dispositionSummary),
+                    _buildDispositionSummary(context,state.dispositionSummary),
                                       _kSized20,
 
 
@@ -333,7 +333,7 @@ _kSized20,
   return ringing + connected + wrapUp + breakTime + hold;
 }
 
-Widget _buildAgentStatusSummary(InsightsResponse data) {
+Widget _buildAgentStatusSummary(InsightsResponse data,BuildContext context) {
   final int waitingTime = _calculateWaitingTime(data);
 
   return Column(
@@ -355,78 +355,151 @@ Widget _buildAgentStatusSummary(InsightsResponse data) {
         runSpacing: AppConstant.kSized10,
         children: [
           _statusCircle(
-            title: "On Call",
-            seconds: data.totalCallDuration,
+            context,
+            "On Call",
+             data.totalCallDuration,
           ),
           _statusCircle(
-            title: "On Wrapup",
-            seconds: data.wrapUpTime,
+                        context,
+
+       "On Wrapup",
+            data.wrapUpTime,
           ),
           _statusCircle(
-            title: "Ringing",
-            seconds: data.totalRingingDuration,
+                        context,
+
+           "Ringing",
+             data.totalRingingDuration,
           ),
           _statusCircle(
-            title: "On Hold",
-            seconds: data.holdTime,
+                        context,
+
+            "On Hold",
+            data.holdTime,
           ),
           _statusCircle(
-            title: "Break Time",
-            seconds: data.lunchHours,
+                        context,
+
+          "Break Time",
+          data.lunchHours,
           ),
           _statusCircle(
-            title: "Talk Time",
-            seconds: data.talkTime,
+                        context,
+
+          "Talk Time",
+            data.talkTime,
           ),
           _statusCircle(
-            title: "Waiting",
-            seconds: waitingTime,
+                        context,
+
+            "Waiting",
+            waitingTime,
           ),
         ],
       ),
     ],
   );
 }
-Widget _statusCircle({
-  required String title,
+// Widget _statusCircle({
+//   required String title,
+//   int? seconds,
+//   bool isPrimary = false,
+// }) {
+  
+//   return FittedBox(
+//     child: DurationInfoContainer(
+//       title: title,
+//       count: seconds,
+//       color: isPrimary ? AppColors.appColor : null,
+//     ),
+//   );
+// }
+Widget _statusCircle(
+  BuildContext context,
+  String title,
   int? seconds,
-  bool isPrimary = false,
-}) {
-  return FittedBox(
+) {
+  final double width =
+      (MediaQuery.of(context).size.width -
+              (AppConstant.kBodyHorizontalPadding * 2) -
+              (AppConstant.kSized5 * 3)) /
+          4;
+
+  return SizedBox(
+    width: width,
     child: DurationInfoContainer(
       title: title,
       count: seconds,
-      color: isPrimary ? AppColors.appColor : null,
     ),
   );
 }
 
 
+// Widget _buildDispositionSummary(
+//     DispositionSummaryResponse dispositionSummary) {
+//   if (dispositionSummary.items.isEmpty) {
+//     return const SizedBox();
+//   }
+
+//   return Column(
+//     crossAxisAlignment: CrossAxisAlignment.start,
+//     children: [
+//       const Divider(),
+//       const SizedBox(height: 10),
+
+//       const Text(
+//         "Disposition Summary",
+//         style: AppTextStyle.black18,
+//       ),
+
+//       const SizedBox(height: 10),
+
+//       Wrap(
+//         alignment: WrapAlignment.center,
+//         spacing: AppConstant.kSized5,
+//         runSpacing: AppConstant.kSized10,
+//         children: dispositionSummary.items.map((item) {
+//           return FittedBox(
+//             child: CallsInfoContainer(
+//               title: item.name,
+//               count: item.count,
+//             ),
+//           );
+//         }).toList(),
+//       ),
+//     ],
+//   );
+// }
 Widget _buildDispositionSummary(
-    DispositionSummaryResponse dispositionSummary) {
+  BuildContext context,
+  DispositionSummaryResponse dispositionSummary,
+) {
   if (dispositionSummary.items.isEmpty) {
     return const SizedBox();
   }
+
+  final double itemWidth =
+      (MediaQuery.of(context).size.width -
+              (AppConstant.kBodyHorizontalPadding * 2) -
+              (AppConstant.kSized5 * 3)) /
+          4;
 
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       const Divider(),
       const SizedBox(height: 10),
-
-      Text(
+      const Text(
         "Disposition Summary",
         style: AppTextStyle.black18,
       ),
-
       const SizedBox(height: 10),
-
       Wrap(
-        alignment: WrapAlignment.center,
         spacing: AppConstant.kSized5,
         runSpacing: AppConstant.kSized10,
         children: dispositionSummary.items.map((item) {
-          return FittedBox(
+          return SizedBox(
+            width: itemWidth,
             child: CallsInfoContainer(
               title: item.name,
               count: item.count,

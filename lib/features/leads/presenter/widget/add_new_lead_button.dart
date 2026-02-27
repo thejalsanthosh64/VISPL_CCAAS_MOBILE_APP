@@ -35,7 +35,7 @@ class AddNewLeadButton extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const AppSvgPicture(
+           AppSvgPicture(
             assetName: Assets.iconsAddNew,
             color: AppColors.appColor,
           ),

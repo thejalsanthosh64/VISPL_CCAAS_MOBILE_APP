@@ -21,11 +21,11 @@ class TimeContainer extends StatelessWidget {
       children: [
         Text(
           title,
-          style: AppTextStyle.appColorNormal,
+          style: AppTextStyle.appColor16,
         ),
         const SizedBox(height: AppConstant.kSized5),
         Container(
-          width: 90,
+          width: 95,
           height: 30,
           alignment: Alignment.center,
           padding: Platform.isAndroid
@@ -37,7 +37,7 @@ class TimeContainer extends StatelessWidget {
           child: FittedBox(
             child: Text(
               time,
-              style: AppTextStyle.appColor16,
+              style: AppTextStyle.appColor23,
             ),
           ),
         ),

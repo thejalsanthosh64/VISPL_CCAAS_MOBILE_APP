@@ -55,6 +55,7 @@ class UserDetailsModel extends Equatable {
     required this.longocdeJson,
     required this.previewDialerPopupExpire,
     required this.permissions,
+    required this.autoDialerCallsStatus,
 
   });
 
@@ -111,7 +112,7 @@ class UserDetailsModel extends Equatable {
   final List<LongoCdeJsonData> longocdeJson;
 final int previewDialerPopupExpire;
 final List<UserPermission> permissions;
-
+final int autoDialerCallsStatus;
 
   UserDetailsModel copyWith({
     int? inPermissionFlag,
@@ -167,9 +168,11 @@ final List<UserPermission> permissions;
     List<LongoCdeJsonData>? longocdeJson,
     int? previewDialerPopupExpire,
   List<UserPermission>? permissions,
+  int? autoDialerCallsStatus
 
   }) {
     return UserDetailsModel(
+      
       permissions: permissions ??this.permissions,
       inPermissionFlag: inPermissionFlag ?? this.inPermissionFlag,
       outPermissionFlag: outPermissionFlag ?? this.outPermissionFlag,
@@ -224,6 +227,7 @@ final List<UserPermission> permissions;
       longocdeJson: longocdeJson ?? this.longocdeJson,
       previewDialerPopupExpire:
     previewDialerPopupExpire ?? this.previewDialerPopupExpire,
+    autoDialerCallsStatus:autoDialerCallsStatus ??this.autoDialerCallsStatus
 
     );
   }
@@ -292,6 +296,7 @@ final List<UserPermission> permissions;
 
 factory UserDetailsModel.fromJson(Map<String, dynamic> json) {
   return UserDetailsModel(
+    autoDialerCallsStatus: json["auto_dialer_calls_status"]??0,
     permissions: json["permissions"] == null
     ? []
     : List<UserPermission>.from(
@@ -429,6 +434,7 @@ factory UserDetailsModel.fromJson(Map<String, dynamic> json) {
 
 
   Map<String, dynamic> toJson() => {
+    "auto_dialer_calls_status" :autoDialerCallsStatus,
   "agent_in_call_permission": inPermissionFlag,
   "agent_out_call_permission": outPermissionFlag,
   "agent_break_permission": breakPermissionFlag,
@@ -557,6 +563,7 @@ bool get canViewFollowup => hasPermission("can_view_followup");
         longocdeJson,
         previewDialerPopupExpire,
           permissions,
+          autoDialerCallsStatus
 
 
       ];

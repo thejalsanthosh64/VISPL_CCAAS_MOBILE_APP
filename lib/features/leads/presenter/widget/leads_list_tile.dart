@@ -223,7 +223,7 @@ class LeadsListTile extends StatelessWidget {
                                   onPressed: () {
                                     _addLeadNote(context: context);
                                   },
-                                  icon: const AppSvgPicture(
+                                  icon:  AppSvgPicture(
                                     assetName: Assets.iconsEdit,
                                     color: AppColors.appColor,
                                   ),

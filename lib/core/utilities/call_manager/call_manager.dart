@@ -399,8 +399,10 @@ callStateCubit.setPhoneNumber(number);
  final contactName = ContactLookup.getName(number);
         final displayName = contactName != "Unknown" ? contactName : number;
 
-        Navigator.push(
+    Navigator.of(
   ctx,
+  rootNavigator: true,
+).push(
   MaterialPageRoute(
     builder: (_) => MultiBlocProvider(
       providers: [

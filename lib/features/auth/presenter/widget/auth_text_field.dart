@@ -64,7 +64,7 @@ class AuthTextField extends StatelessWidget {
   }
 
   UnderlineInputBorder get _border {
-    return const UnderlineInputBorder(
+    return  UnderlineInputBorder(
         borderSide: BorderSide(color: AppColors.appColor));
   }
 }

@@ -4,6 +4,7 @@ import 'package:kommuno/core/common/app_constant.dart';
 import 'package:kommuno/core/common/app_routes/app_routes_manager.dart';
 import 'package:kommuno/core/common/app_theme/app_theme.dart';
 import 'package:kommuno/core/common/widget/app_svg_picture.dart';
+import 'package:kommuno/core/utilities/validation.dart';
 import 'package:kommuno/features/auth/cubit/forget_password_cubit/forget_password_cubit.dart';
 import 'package:kommuno/features/auth/presenter/widget/auth_text_field.dart';
 import 'package:kommuno/features/auth/presenter/widget/common_forgot_password_bg.dart';
@@ -43,13 +44,26 @@ class _ForgetPasswordScreenState extends StatelessWidget {
   Widget _buildForgotDialog({required BuildContext context}) {
     return BlocListener<ForgetPasswordCubit, ForgetPasswordState>(
       listener: (__, state) {
-        if (state.forgotPasswordDetails != null) {
-          Navigator.of(context).pushNamed(AppRouteNames.otpVerifyScreen,
-              arguments: {
-                "forgotPasswordDetails": state.forgotPasswordDetails
-              });
-          _forgetPasswordCubit(context).initialState();
-        }
+    if (state.showMethodSelector) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showOtpMethodSelector(context);
+      });
+    }
+
+    if (state.navigateToOtp) {
+      Navigator.of(context).pushNamed(
+        AppRouteNames.otpVerifyScreen,
+        arguments: {
+          "email": state.email,
+          "otpMethod": state.otpMethod,
+          "sendMessageVia": state.sendMessageVia,
+          "phone": state.phone,
+          "smeId": state.smeId,
+        },
+      );
+
+      context.read<ForgetPasswordCubit>().initialState();
+    }
       },
       child: AuthContainer(
         containerBody: [
@@ -67,7 +81,7 @@ class _ForgetPasswordScreenState extends StatelessWidget {
             controller: _forgetPasswordCubit(context).userNameController,
             keyboardType: TextInputType.emailAddress,
             hintText: AppLocalizations.of(context)!.enterUsername,
-            prefixIcon: const AppSvgPicture(
+            prefixIcon:  AppSvgPicture(
               assetName: Assets.iconsEmail,
               color: AppColors.appColor,
             ),
@@ -78,7 +92,7 @@ class _ForgetPasswordScreenState extends StatelessWidget {
         ],
         onTapIcon: () {
           _forgetPasswordCubit(context).forgotPassword(
-              userName: _forgetPasswordCubit(context).userNameController.text);
+              email: _forgetPasswordCubit(context).userNameController.text);
         },
         endChildren: [
           TextButton(
@@ -103,4 +117,56 @@ class _ForgetPasswordScreenState extends StatelessWidget {
       ),
     );
   }
+void showOtpMethodSelector(BuildContext context) {
+  final cubit = context.read<ForgetPasswordCubit>();
+  final state = cubit.state;
+
+  if (state.email == null || state.phone == null) return;
+
+  showModalBottomSheet(
+    context: context,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (_) {
+      return Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Send OTP via",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+
+            ListTile(
+              leading: const Icon(Icons.email),
+              title: const Text("Email"),
+              subtitle: Text(AppValidation.maskEmail(state.email!)),
+              onTap: () {
+                Navigator.pop(context);
+                cubit.sendOtp(method: "email");
+              },
+            ),
+
+            ListTile(
+              leading: const Icon(Icons.sms),
+              title: const Text("SMS"),
+              subtitle: Text(AppValidation.maskPhone(state.phone!)),
+              onTap: () {
+                Navigator.pop(context);
+                cubit.sendOtp(method: "sms");
+              },
+            ),
+          ],
+        ),
+      );
+    },
+  ).whenComplete(() {
+    // reset flag when dismissed
+    cubit.resetMethodSelector();
+  });;
+}
 }

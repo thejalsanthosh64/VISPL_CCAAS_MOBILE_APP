@@ -109,7 +109,7 @@ class _AddScheduleCallState extends StatelessWidget {
   controller: _addScheduleCallCubit(context).mobileController,
   textInputAction: TextInputAction.next,
   suffixIcon: IconButton(
-    icon: const AppSvgPicture(
+    icon:  AppSvgPicture(
                               assetName: Assets.iconsContacts,
                               color: AppColors.appColor,
                             ),
@@ -138,7 +138,7 @@ class _AddScheduleCallState extends StatelessWidget {
                     autofocus: false,
                     controller: _addScheduleCallCubit(context).noteController,
                     focusNode: _addScheduleCallCubit(context).noteFocusNode,
-                    prefixIcon: const Icon(
+                    prefixIcon:  Icon(
                       Icons.apartment_sharp,
                       color: AppColors.appColor,
                     ),

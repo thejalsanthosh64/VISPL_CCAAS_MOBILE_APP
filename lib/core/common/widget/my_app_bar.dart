@@ -29,8 +29,8 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
                       () {
                         Navigator.of(context).pop();
                       },
-                  child: const Padding(
-                    padding: EdgeInsets.only(
+                  child:  Padding(
+                    padding: const EdgeInsets.only(
                         left: AppConstant.kBodyHorizontalPadding),
                     child: AppAvatar(
                       backgroundColor: AppColors.white,

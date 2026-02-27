@@ -39,7 +39,7 @@ class LeadsDetails extends StatelessWidget {
         children: [
           _kSized10,
           LeadsDetailsTile(
-            leading: const AppSvgPicture(
+            leading:  AppSvgPicture(
               assetName: Assets.iconsPerson,
               color: AppColors.appColor,
             ),
@@ -55,7 +55,7 @@ class LeadsDetails extends StatelessWidget {
           ),
           _kSized10,
           LeadsDetailsTile(
-            leading: const AppSvgPicture(
+            leading:  AppSvgPicture(
               assetName: Assets.iconsProduct,
               color: AppColors.appColor,
               height: 30,
@@ -66,7 +66,7 @@ class LeadsDetails extends StatelessWidget {
           ),
           _kSized10,
           LeadsDetailsTile(
-            leading: const AppSvgPicture(
+            leading:  AppSvgPicture(
               assetName: Assets.iconsEdit,
               color: AppColors.appColor,
               height: 30,
@@ -99,7 +99,7 @@ class LeadsDetails extends StatelessWidget {
           ),
           _kSized10,
           LeadsDetailsTile(
-            leading: const AppSvgPicture(
+            leading:  AppSvgPicture(
               assetName: Assets.iconsAssignedCall,
               color: AppColors.appColor,
               height: 20,

@@ -24,3 +24,23 @@ abstract class AppColors {
     Color(0xffB76DC9),
   ]);
 }
+
+// abstract class AppColors {
+//   static Color appColor = const Color(0xff623e6c); // default
+
+//   static Color secondaryColor = const Color(0xffB76DC9);
+
+//   static const white = Colors.white;
+//   static const black = Colors.black;
+//   static const grey = Color(0xff7E7E7E);
+//   static const orange = Color(0xffFF6633);
+//   static const green = Color(0xff35C677);
+//   static const whiteGrey = Color(0xffF6F6F6);
+//   static const red = Colors.redAccent;
+//   static const blue = Colors.blueAccent;
+//   static const transparent = Colors.transparent;
+
+//   static LinearGradient homeProgressGradient = LinearGradient(
+//     colors: [appColor, secondaryColor],
+//   );
+// }

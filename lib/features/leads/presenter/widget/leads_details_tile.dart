@@ -31,7 +31,7 @@ class LeadsDetailsTile extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           ...trailing,
-          const Icon(
+           Icon(
             Icons.more_vert,
             color: AppColors.appColor,
           ),

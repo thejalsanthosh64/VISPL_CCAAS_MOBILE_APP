@@ -13,7 +13,8 @@ class CallsInfoContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 80,
-      height: 80,
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
+      
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: color,
@@ -21,11 +22,15 @@ class CallsInfoContainer extends StatelessWidget {
         border: Border.all(color: AppColors.appColor),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+
+mainAxisSize: MainAxisSize.min, 
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
             title,
+             maxLines: 2,                
+            overflow: TextOverflow.ellipsis,
+             textAlign: TextAlign.center,
             style: color != null
                 ? AppTextStyle.whiteNormal
                 : AppTextStyle.appColorNormal,

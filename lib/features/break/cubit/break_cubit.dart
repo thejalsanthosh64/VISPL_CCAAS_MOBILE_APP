@@ -16,6 +16,9 @@ import 'package:kommuno/features/break/data/model/break_in_request_model.dart';
 import 'package:kommuno/features/break/data/model/break_out_request_model.dart';
 import 'package:kommuno/features/break/data/model/break_response.dart';
 import 'package:kommuno/features/break/data/repository/break_repo.dart';
+import 'package:kommuno/features/in_sights/cubit/in_sights_cubit/in_sights_cubit.dart';
+import 'package:kommuno/features/in_sights/data/enum/in_sights_date_enum.dart';
+import 'package:kommuno/features/in_sights/data/repository/in_sights_repo.dart';
 
 part 'break_state.dart';
 
@@ -144,6 +147,24 @@ final user = UserLoginInfoManager.userLoginInfoModel;
       agentId: user.userId,
     );
   }
+
+ final userDetails = userDetailsCubit.userDetailsModel;
+
+      final insightsCubit = InSightsCubit.safeInstance;
+     
+       await insightsCubit.getInSights(
+        smeId: userDetails.smeId,
+        isLoading: false,
+        inSightsDateEnum: InSightsDateEnum.today,
+      );
+
+      final insightsState = insightsCubit.state;
+      if (insightsState is InSightsSuccessState) {
+        userDetailsCubit.setTodayLunchHours(
+          insightsState.insightsResponse.lunchHours ?? 0,
+        );
+      }
+
       }
     } on AppDioException catch (e) {
       FToastManager().showToast(message: e.message);

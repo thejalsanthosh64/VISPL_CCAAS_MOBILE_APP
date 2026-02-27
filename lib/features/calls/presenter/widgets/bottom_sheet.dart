@@ -187,7 +187,7 @@ class _TransferBottomSheetState extends State<TransferBottomSheet> {
                   if (selectedTransferType != null) ...[
                     const SizedBox(height: 20),
                     if (loading)
-                      const Center(
+                       Center(
                         child: Padding(
                           padding: EdgeInsets.all(20),
                           child: CircularProgressIndicator(
@@ -759,9 +759,9 @@ Widget _buildExternalNumberField() {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                side: const BorderSide(color: AppColors.appColor),
+                side:  BorderSide(color: AppColors.appColor),
               ),
-              child: const Text(
+              child:  Text(
                 "Cancel",
                 style: TextStyle(
                   color: AppColors.appColor,

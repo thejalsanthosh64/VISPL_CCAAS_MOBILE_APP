@@ -93,7 +93,16 @@ if (userDetails.agentStatus == 0) {
       }
 
       final user = UserLoginInfoManager.userLoginInfoModel!;
+// final whiteLabelData = await _authRepo.getWhiteLabelDetails(
+//   smeId: user.smeId,
+// );
 
+// if (whiteLabelData != null) {
+//   final model = WhiteLabelModel.fromJson(whiteLabelData);
+//   AppKeys.navigatorKey.currentContext!
+//       .read<WhiteLabelCubit>()
+//       .applyWhiteLabel(model);
+// }
       AliveService().sendLogin(username: user.username);
 
       await ActivityHelperRepo().setActivityLogs(

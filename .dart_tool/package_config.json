@@ -242,6 +242,12 @@
       "languageVersion": "3.3"
     },
     {
+      "name": "dropdown_button2",
+      "rootUri": "file:///Users/macbook/.pub-cache/hosted/pub.dev/dropdown_button2-2.3.9",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
+    },
+    {
       "name": "equatable",
       "rootUri": "file:///Users/macbook/.pub-cache/hosted/pub.dev/equatable-2.0.7",
       "packageUri": "lib/",

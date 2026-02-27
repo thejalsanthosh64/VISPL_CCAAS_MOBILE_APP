@@ -34,7 +34,7 @@ class _LoginScreenState extends StatelessWidget {
           alignment: Alignment.center,
           width: double.infinity,
           height: double.infinity,
-          decoration: const BoxDecoration(
+          decoration:  const BoxDecoration(
             color: AppColors.appColor,
             image: DecorationImage(
               image: AssetImage(Assets.imagesLoginBg),
@@ -79,7 +79,7 @@ class _LoginScreenState extends StatelessWidget {
                 ),            const SizedBox(width: AppConstant.kSized10),
 
                              const Text(
-      "v1.0.12",
+      "v1.0.15",
       style: TextStyle(
         color: Colors.black,
         fontSize: 12,
@@ -91,7 +91,7 @@ class _LoginScreenState extends StatelessWidget {
             AuthTextField(
               controller: _loginCubit(context).userNameController,
               hintText: AppLocalizations.of(context)!.enterUsername,
-              prefixIcon: const AppSvgPicture(
+              prefixIcon:  const AppSvgPicture(
                 assetName: Assets.iconsEmail,
                 color: AppColors.appColor,
               ),

@@ -322,14 +322,15 @@ _showPreviewDialerPopup(data, isAuto: true);
 
 final sessionId = data["sessionId"];
 if (sessionId == null) return;
+  if (_handledRingingSessions.contains(sessionId)) {
+    debugPrint(" Ringing already handled: $sessionId");
+    return;
+  }
+  _handledRingingSessions.add(sessionId);
+
     await _stopWaitingTimerForCall();
 
-if (_handledRingingSessions.contains(sessionId)) {
-  debugPrint(" Ringing already handled: $sessionId");
-  return;
-}
 
-_handledRingingSessions.add(sessionId);
     if (sessionId == null || sessionId.toString().isEmpty) return;
 
     final customerNumber = data["customerNumber"] ?? 
@@ -343,8 +344,7 @@ _handledRingingSessions.add(sessionId);
     // start vibration
     startContinuousVibration();
 
-    final callCubit = CallStateCubit();
-
+  final callCubit = activeCallCubit ?? CallStateCubit();
 
     debugPrint(" [INCOMING] Storing phone in cubit: $customerNumber");
     callCubit.setPhoneNumber(customerNumber);
@@ -362,6 +362,7 @@ final type =
       name: customerName,
       type: type,
     );
+  if (callSocket == null) {
 
     connectForCall(
       sessionId: sessionId,
@@ -369,7 +370,7 @@ final type =
       agentId: agentId,
       cubit: callCubit,
     );
-
+  }
     stopVibration();
     agentAnswered = true;
 
@@ -582,7 +583,7 @@ static void _showReminderPopup(Map<String, dynamic> data) {
                           displayName.isNotEmpty && displayName != "Unknown"
                               ? displayName[0].toUpperCase()
                               : "?",
-                          style: const TextStyle(
+                          style:  TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: AppColors.appColor,
@@ -731,44 +732,11 @@ remainingSeconds = expireSeconds;
   // ---------------- Countdown Timer ----------------
 
 previewTimer?.cancel();
-// previewTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-//   remainingSeconds--;
 
-//   //  Force dialog rebuild
-//   if (_previewSetState != null) {
-//     _previewSetState!.call(() {});
-//   }
-
-//   if (remainingSeconds <= 0) {
-//     timer.cancel();
-//     stopVibration();
-//     Navigator.of(ctx, rootNavigator: true).pop();
-
-//     if (isAuto) {
-//       debugPrint("Auto timeout → Auto Call");
-//       _sendPreviewAction(
-//         isAuto: isAuto,
-//         callStatus: "call",
-//         sessionId: sessionId,
-//         channelId: channelId,
-//         redisKey: redisKey,
-//       );
-//     } else {
-//       debugPrint(" Manual timeout → Reject");
-//       _sendPreviewAction(
-//         isAuto: isAuto,
-//         callStatus: "reject",
-//         sessionId: sessionId,
-//         channelId: channelId,
-//         redisKey: redisKey,
-//       );
-//     }
-//   }
-// });
 
 
 previewTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-  // 🚫 Dialog already closed
+  //  Dialog already closed
   if (_previewSetState == null) {
     timer.cancel();
     return;
@@ -990,21 +958,10 @@ static Future<void> _sendPreviewAction({
   required String redisKey,
 }) async {
   try {
-        // final user = UserDetailsCubit.instance!.userDetailsModel;
 
   
     debugPrint("Sending preview response only");
 
-// connectForCall(
-//       sessionId: sessionId,
-//       smeId: user.smeId,
-//       agentId: user.agentId,
-//       cubit: cubit,
-//     );
-
-//     debugPrint(" Call socket connected before preview response");
-   
-//     await Future.delayed(const Duration(milliseconds: 300));
 
 final body = {
       "call_status": callStatus,
@@ -1032,10 +989,15 @@ static void connectForCall({
   required int agentId,
   required CallStateCubit cubit,
 }) {
+
+  if (callSocket != null) {
+    debugPrint("⚠️ connectForCall ignored — callSocket already active");
+    return;
+  }
+
   activeSessionId = sessionId;
   activeCallCubit = cubit;
   agentAnswered = false;
-
 
   callSocket = IO.io(
     ApiEndpoints.baseUrlWebSo,
@@ -1058,14 +1020,19 @@ static void connectForCall({
 
   });
 
-  // ========================================
-  //  LOCATION 1: RINGING (Outgoing)
-  // ========================================
+  //  RINGING (Outgoing)
   
   callSocket?.on("ringing_live_calls", (raw) async {
     handleRecoveryEvent("ringing_live_calls");
     final e = normalize(raw);
     if (!_matchSession(e)) return;
+ final incomingSessionId = e["sessionId"];
+  if (_handledRingingSessions.contains(incomingSessionId)) {
+    debugPrint(" callSocket ringing already handled: $incomingSessionId");
+    return;
+  }
+  _handledRingingSessions.add(incomingSessionId);
+
      await _stopWaitingTimerForCall();
 
     startContinuousVibration();
@@ -1239,12 +1206,6 @@ _handledCallEndedSessions.add(sessionId);
 
     final name = phone.isNotEmpty ? ContactLookup.getName(phone) : "Unknown";
 
-    // _navigateToWrapUp(
-    //   caller: name,
-    //   phone: phone,
-    //   cubit: activeCallCubit!,
-    //   duration: activeCallCubit!.state.duration,
-    // );
 
 await closePreviewPopupSafely();
 
@@ -1268,120 +1229,220 @@ if (wrapupEnabled && !activeCallCubit!.state.isDispositionFilled) {
     disconnectCallSocket();
   });
 
-  //  NO ANSWER 
-  callSocket?.on("clear_live_calls", (raw) async {
-      handleRecoveryEvent("clear_live_calls");
+//   //  NO ANSWER 
+//   callSocket?.on("clear_live_calls", (raw) async {
+//      if (_clearCallHandled) {
+//     debugPrint("⚠️ clear_live_calls ignored (already handled)");
+//     return;
+//   }
+//   _clearCallHandled = true;
 
-    final e = normalize(raw);
-    if (!_matchSession(e)) return;
-final sessionId = e["sessionId"];
-if (sessionId == null) return;
+//   debugPrint("🛑 clear_live_calls received");
+//       handleRecoveryEvent("clear_live_calls");
 
-if (_handledClearSessions.contains(sessionId)) {
-  debugPrint(" clear_live_calls already handled: $sessionId");
-  return;
-}
-_handledClearSessions.add(sessionId);
+//     final e = normalize(raw);
+//     if (!_matchSession(e)) return;
+// final sessionId = e["sessionId"];
+// if (sessionId == null) return;
+
+// if (_handledClearSessions.contains(sessionId)) {
+//   debugPrint(" clear_live_calls already handled: $sessionId");
+//   return;
+// }
+// _handledClearSessions.add(sessionId);
 
   
+//   try {
+
+//   CallStateCubit.shownCrmSessions.remove(activeSessionId);
+
+//     stopVibration();
+//     agentAnswered = true;
+
+//     final phone = e["customerNumber"] ?? 
+//                   e["phoneNumber"] ?? 
+//                   e["customer_number"] ?? 
+//                   activeCallCubit?.state.phoneNumber ?? 
+//                   "";
+
+//     debugPrint(" [CLEAR_CALL] Phone: $phone");
+
+//     final name = phone.isNotEmpty ? ContactLookup.getName(phone) : "Unknown";
+//    await closePreviewPopupSafely();
+//   activeCallCubit?.stopTimer();
+//   previewTimer?.cancel();
+//   answerDetectionTimer?.cancel();
+
+
+//   final campaign = CampaignManager.campaign;
+//   final wrapupEnabled = campaign?.wrapupEnabled == true;
+//   final dispositionFilled = activeCallCubit!.state.isDispositionFilled;
+// debugPrint("wrapupEnabled $wrapupEnabled");
+
+// debugPrint("dispositionFilled $dispositionFilled");
+
+//   if (wrapupEnabled && !dispositionFilled) {
+//     _navigateToWrapUp(
+//       caller: name,
+//       phone: phone,
+//       cubit: activeCallCubit!,
+//       duration: Duration.zero,
+//     );
+
+//     disconnectCallSocket();
+//    await Future.delayed(const Duration(milliseconds: 500));
+//       return; 
+      
+//        }
+ 
+    
+//     debugPrint(" Wrapup disabled/filled → Returning to main screen");
+
+//     // Disconnect socket first
+//     disconnectCallSocket();
+
+//     //  Use scheduler binding for safe navigation
+//     SchedulerBinding.instance.addPostFrameCallback((_) async {
+//       final ctx = AppKeys.navigatorKey.currentContext;
+      
+//       if (ctx != null) {
+//         debugPrint("📍 Current context found, navigating...");
+        
+//         try {
+//           // Check if we're not already on the first route
+//           if (Navigator.of(ctx, rootNavigator: true).canPop()) {
+//             // Close all screens
+//             // Navigator.of(ctx, rootNavigator: true).popUntil((route) {
+//             //   debugPrint(" Checking route: ${route.settings.name}, isFirst: ${route.isFirst}");
+//             //   return route.isFirst;
+//             // });
+
+//  final ctx = AppKeys.navigatorKey.currentContext;
+//   if (ctx != null && Navigator.of(ctx).canPop()) {
+//     Navigator.of(ctx).pop();
+//     debugPrint("✅ Call screen popped");
+//   } else {
+//     debugPrint("❌ Cannot pop (route already removed)");
+//   }
+            
+//             debugPrint(" Navigation completed");
+//           } else {
+//             debugPrint("ℹAlready on first route");
+//           }
+          
+//           // Wait for navigation animation
+//           await Future.delayed(const Duration(milliseconds: 300));
+
+//           // Start waiting timer
+//           CallWebSocketManager.safeStartWaiting();
+          
+//         } catch (e) {
+//           debugPrint(" Navigation error: $e");
+//           // Fallback: still start waiting
+//           CallWebSocketManager.safeStartWaiting();
+//         }
+//       } else {
+//         debugPrint(" No context - starting waiting anyway");
+//         CallWebSocketManager.safeStartWaiting();
+//       }
+      
+//       //  Reset flag after everything completes
+//       await Future.delayed(const Duration(milliseconds: 500));
+//     });
+    
+//   } catch (e, stackTrace) {
+//     debugPrint(" Error in clear_live_calls: $e");
+//     debugPrint("Stack trace: $stackTrace");
+    
+    
+//     disconnectCallSocket();
+//     CallWebSocketManager.safeStartWaiting();
+  
+//   }});
+
+callSocket?.on("clear_live_calls", (raw) async {
+  // 🔒 HARD SESSION GUARD
+ 
+  debugPrint(" clear_live_calls received");
+  handleRecoveryEvent("clear_live_calls");
+
+  final e = normalize(raw);
+  if (!_matchSession(e)) return;
+
+  final sessionId = e["sessionId"];
+  if (sessionId == null) return;
+
+  if (_handledClearSessions.contains(sessionId)) {
+    debugPrint("⚠️ clear_live_calls already handled: $sessionId");
+    return;
+  }
+  _handledClearSessions.add(sessionId);
+
   try {
-
-  CallStateCubit.shownCrmSessions.remove(activeSessionId);
-
+    // 🧹 STOP EVERYTHING
     stopVibration();
     agentAnswered = true;
 
-    final phone = e["customerNumber"] ?? 
-                  e["phoneNumber"] ?? 
-                  e["customer_number"] ?? 
-                  activeCallCubit?.state.phoneNumber ?? 
-                  "";
+    previewTimer?.cancel();
+    previewTimer = null;
 
-    debugPrint(" [CLEAR_CALL] Phone: $phone");
+    answerDetectionTimer?.cancel();
+    answerDetectionTimer = null;
 
-    final name = phone.isNotEmpty ? ContactLookup.getName(phone) : "Unknown";
-   await closePreviewPopupSafely();
-  activeCallCubit?.stopTimer();
+    await closePreviewPopupSafely();
+    activeCallCubit?.stopTimer();
 
-  final campaign = CampaignManager.campaign;
-  final wrapupEnabled = campaign?.wrapupEnabled == true;
-  final dispositionFilled = activeCallCubit!.state.isDispositionFilled;
+    final phone = e["customerNumber"] ??
+        e["phoneNumber"] ??
+        e["customer_number"] ??
+        activeCallCubit?.state.phoneNumber ??
+        "";
 
-  if (wrapupEnabled && !dispositionFilled) {
-    _navigateToWrapUp(
-      caller: name,
-      phone: phone,
-      cubit: activeCallCubit!,
-      duration: Duration.zero,
-    );
+    final name =
+        phone.isNotEmpty ? ContactLookup.getName(phone) : "Unknown";
 
+    debugPrint("📞 CLEAR_CALL → phone=$phone, name=$name");
+
+    final campaign = CampaignManager.campaign;
+    final wrapupEnabled = campaign?.wrapupEnabled == true;
+    final dispositionFilled =
+        activeCallCubit?.state.isDispositionFilled ?? false;
+
+    debugPrint("📝 wrapupEnabled =$wrapupEnabled, dispositionFilled=$dispositionFilled");
+
+
+    // 📝 WRAPUP FLOW
+    if (wrapupEnabled && !dispositionFilled) {
+      _navigateToWrapUp(
+        caller: name,
+        phone: phone,
+        cubit: activeCallCubit!,
+        duration: Duration.zero,
+      );
+      disconnectCallSocket();
+      return;
+    }
+
+    // 🔌 CLEAN DISCONNECT
     disconnectCallSocket();
-   await Future.delayed(const Duration(milliseconds: 500));
-      return; 
-      
-       }
- 
-    
-    debugPrint(" Wrapup disabled/filled → Returning to main screen");
+  CallSession.clear();
 
-    // Disconnect socket first
+    // 🧭 SINGLE SAFE POP
+   final nav = AppKeys.navigatorKey.currentState;
+if (nav != null && nav.canPop()) {
+  nav.pop();
+  debugPrint("✅ Root navigator popped safely");
+} else {
+  debugPrint("⛔ Root navigator has only one route – skip pop");
+}
+    await Future.delayed(const Duration(milliseconds: 300));
+CallWebSocketManager.safeStartWaiting();
+  } catch (e, st) {
+    debugPrint("❌ clear_live_calls error: $e");
+    debugPrintStack(stackTrace: st);
     disconnectCallSocket();
-
-    //  Use scheduler binding for safe navigation
-    SchedulerBinding.instance.addPostFrameCallback((_) async {
-      final ctx = AppKeys.navigatorKey.currentContext;
-      
-      if (ctx != null) {
-        debugPrint("📍 Current context found, navigating...");
-        
-        try {
-          // Check if we're not already on the first route
-          if (Navigator.of(ctx, rootNavigator: true).canPop()) {
-            // Close all screens
-            Navigator.of(ctx, rootNavigator: true).popUntil((route) {
-              debugPrint(" Checking route: ${route.settings.name}, isFirst: ${route.isFirst}");
-              return route.isFirst;
-            });
-
-//             Navigator.of(ctx, rootNavigator: true).pushNamedAndRemoveUntil(
-//   AppRouteNames.homeMiddleware, // your actual home screen route
-//   (_) => false,
-// );
-            
-            debugPrint(" Navigation completed");
-          } else {
-            debugPrint("ℹAlready on first route");
-          }
-          
-          // Wait for navigation animation
-          await Future.delayed(const Duration(milliseconds: 300));
-          
-          // Start waiting timer
-          CallWebSocketManager.safeStartWaiting();
-          
-        } catch (e) {
-          debugPrint(" Navigation error: $e");
-          // Fallback: still start waiting
-          CallWebSocketManager.safeStartWaiting();
-        }
-      } else {
-        debugPrint(" No context - starting waiting anyway");
-        CallWebSocketManager.safeStartWaiting();
-      }
-      
-      //  Reset flag after everything completes
-      await Future.delayed(const Duration(milliseconds: 500));
-    });
-    
-  } catch (e, stackTrace) {
-    debugPrint(" Error in clear_live_calls: $e");
-    debugPrint("Stack trace: $stackTrace");
-    
-    
-    disconnectCallSocket();
-    CallWebSocketManager.safeStartWaiting();
-  
-  }});
+  }
+});
 }
 
 static void safeStartWaiting() {
@@ -1597,7 +1658,8 @@ static void _clearSessionGuards(String? sessionId) {
     return;
   }
   disconnectCallSocket();
-  
+    cubit.stopWaitingTimer();
+
   cubit.startWaitingTimer();
 
  final ctx = AppKeys.navigatorKey.currentContext;

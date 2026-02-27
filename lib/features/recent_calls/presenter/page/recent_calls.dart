@@ -117,7 +117,7 @@ class _RecentCallsState extends StatelessWidget {
                   hintText: AppLocalizations.of(context)!.selectDate,
                   readOnly: true,
                   controller: _recentCallsCubit(context).dateController,
-                  prefixIcon: const Icon(
+                  prefixIcon:  Icon(
                     Icons.calendar_month,
                     color: AppColors.appColor,
                   ),

@@ -22,7 +22,18 @@ class DialScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => DialCubit(),
+      create: (context) {
+        // return DialCubit();
+
+        final cubit = DialCubit();
+
+         final user = context.read<UserDetailsCubit>().userDetailsModel;
+
+        //  UI from backend value
+        cubit.syncFromUserDetails(user);
+
+        return cubit;
+      },
       child: const _DialScreenState(),
     );
   }
@@ -81,7 +92,8 @@ class _DialScreenState extends StatelessWidget {
       children: [
         Text(
           AppLocalizations.of(context)!.dialer, 
-          style: AppTextStyle.blackNormal,
+          style: const TextStyle(color: AppColors.appColor,fontWeight: FontWeight.bold),
+
         ),
         const SizedBox(width: 8),
         Switch(
@@ -97,6 +109,7 @@ class _DialScreenState extends StatelessWidget {
                     agentId: user.agentId,
                     smeID: user.smeId,
                     value: value,
+                    context: context
                   );
                 },
         ),
@@ -122,7 +135,7 @@ class _DialScreenState extends StatelessWidget {
                               Navigator.of(context).pushNamed(AppRouteNames.contactList);
                             },
                             padding: const EdgeInsets.only(right: 10),
-                            icon: const AppSvgPicture(
+                            icon:  const AppSvgPicture(
                               assetName: Assets.iconsContacts,
                               color: AppColors.appColor,
                             ),

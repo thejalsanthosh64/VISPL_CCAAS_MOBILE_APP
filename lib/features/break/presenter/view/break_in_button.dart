@@ -141,7 +141,7 @@ class BreakInButton extends StatelessWidget {
                           ),
                         ),
                         value: _breakCubit(context).breakReasonList[index],
-                        fillColor: const WidgetStatePropertyAll<Color>(
+                        fillColor:  const WidgetStatePropertyAll<Color>(
                             AppColors.appColor),
                         groupValue: selected,
                         onChanged: (String? value) {
@@ -154,7 +154,7 @@ class BreakInButton extends StatelessWidget {
               ),
             ),
             _kSized15,
-            const Divider(height: 0, thickness: 2, color: AppColors.appColor)
+             Divider(height: 0, thickness: 2, color: AppColors.appColor)
           ],
         ),
       ),

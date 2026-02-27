@@ -64,6 +64,8 @@ void openCrmSheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
+        useSafeArea: true,         
+
     backgroundColor: Colors.white,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -72,10 +74,10 @@ void openCrmSheet(BuildContext context) {
       debugPrint("🎨 CRM sheet builder called");
       return BlocProvider.value(
         value: cubit,
-        child: SizedBox(
-          height: MediaQuery.of(sheetContext).size.height * 0.6,
+        // child: SizedBox(
+          // height: MediaQuery.of(sheetContext).size.height * 0.6,
           child: const CrmFormSheet(),
-        ),
+        // ),
       );
     },
   ).whenComplete(() {
@@ -95,6 +97,7 @@ class _CallScreenBody extends StatelessWidget {
     return PopScope(
       canPop: false,
       child: Scaffold(
+         resizeToAvoidBottomInset: false,
         backgroundColor: AppColors.appColor,
         body: SafeArea(
           child: Container(
@@ -390,9 +393,9 @@ class _CallScreenBody extends StatelessWidget {
                       agentId: CallSession.agentId!,
                       agentName: CallSession.agentName!,
                     );
-                    if (context.mounted) {
-                      Navigator.pop(context);
-                    }
+                    // if (context.mounted) {
+                    //   Navigator.pop(context);
+                    // }
                   },
                   child: Container(
                     padding: const EdgeInsets.all(22),
@@ -446,10 +449,7 @@ void openCrmSheet(BuildContext context) {
     builder: (sheetContext) {
       return BlocProvider.value(
         value: cubit,
-        child: SizedBox(
-          height: MediaQuery.of(sheetContext).size.height * 0.6, 
-          child: const CrmFormSheet(),
-        ),
+        child: const CrmFormSheet(),
       );
     },
   );

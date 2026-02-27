@@ -56,8 +56,8 @@ class ResetPasswordCubit extends Cubit<ResetPasswordState> {
       } else {
         hideKeyboard();
         AppLoadingIndicator.showLoadingIndicator();
-        final res = await _authRepo.changePassword(
-            userName: userName, newPassword: password);
+        final res = await _authRepo.changeForgotPassword(
+            email: userName, newPassword: password);
         FToastManager().showToast(message: res.message);
         if (res.isSuccess) {
           emit(state.copyWith(isPasswordChanged: true));

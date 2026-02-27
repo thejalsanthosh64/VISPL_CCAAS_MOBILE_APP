@@ -16,9 +16,9 @@ class CommonForgotPasswordBg extends StatelessWidget {
           alignment: Alignment.center,
           width: double.infinity,
           height: double.infinity,
-          decoration: const BoxDecoration(
+          decoration:  BoxDecoration(
             image: DecorationImage(
-              image: AssetImage(Assets.imagesForgotPasswordBg),
+              image: const AssetImage(Assets.imagesForgotPasswordBg),
               fit: BoxFit.cover,
               colorFilter: ColorFilter.mode(
                 AppColors.appColor,

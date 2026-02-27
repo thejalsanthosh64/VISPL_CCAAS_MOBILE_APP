@@ -7,9 +7,8 @@ import 'package:kommuno/core/common/app_theme/app_theme.dart';
 import 'package:kommuno/core/common/widget/timer_widget/timer_widget.dart';
 import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/core/utilities/app_methods.dart';
-import 'package:kommuno/features/auth/cubit/forget_password_cubit/forget_password_cubit.dart';
+import 'package:kommuno/core/utilities/validation.dart';
 import 'package:kommuno/features/auth/cubit/otp_verify_cubit/otp_verify_cubit.dart';
-import 'package:kommuno/features/auth/data/model/forgot_password_response.dart';
 import 'package:kommuno/features/auth/presenter/widget/auth_container.dart';
 import 'package:kommuno/features/auth/presenter/widget/common_forgot_password_bg.dart';
 import 'package:kommuno/core/l10n/app_localizations.dart';
@@ -21,21 +20,25 @@ class OtpVerifyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    String? userName;
-    if (args?["forgotPasswordDetails"] is ForgotPasswordResponseModel) {
-      userName = (args?["forgotPasswordDetails"] as ForgotPasswordResponseModel).username;
-    }
+    // String? userName;
+    // if (args?["forgotPasswordDetails"] is ForgotPasswordResponseModel) {
+    //   userName = (args?["forgotPasswordDetails"] as ForgotPasswordResponseModel).username;
+    // }
 
-    if (userName == null) {
-      Future.delayed(
-        const Duration(seconds: 1),
-        () {
-          if (context.mounted) {
-            FToastManager().showToast(message: AppLocalizations.of(context)!.usernameNotFound);
-            Navigator.of(context).pop();
-          }
-        },
-      );
+   final String? email = args?["email"];
+    final String otpMethod = args?["otpMethod"] ?? "email";
+    final String sendMessageVia = args?["sendMessageVia"] ?? "default";
+    final String phone = args?["phone"];
+    final int smeId = args?["smeId"];
+
+    if (email == null || phone == null || smeId == null) {
+      Future.microtask(() {
+        FToastManager().showToast(
+          message: AppLocalizations.of(context)!.usernameNotFound,
+        );
+        Navigator.of(context).pop();
+      });
+      return const SizedBox.shrink();
     }
     return PopScope(
       canPop: false,
@@ -49,19 +52,33 @@ class OtpVerifyScreen extends StatelessWidget {
       },
       child: MultiBlocProvider(
         providers: [
-          BlocProvider(create: (__) => OtpVerifyCubit()),
-          BlocProvider(create: (__) => ForgetPasswordCubit()),
+          BlocProvider(create: (__) => OtpVerifyCubit()
+    ..init(
+      otpMethod: otpMethod,
+      sendMessageVia: sendMessageVia,
+    ),),
         ],
-        child: _OtpVerifyScreenState(userName: userName ?? ''),
+        
+  child: _OtpVerifyScreenState(
+    email: email,
+    phone: phone,
+    smeId: smeId,
+  ),
       ),
     );
   }
 }
 
 class _OtpVerifyScreenState extends StatelessWidget {
-  const _OtpVerifyScreenState({required this.userName});
+  const _OtpVerifyScreenState({
+    required this.email,
+    required this.phone,
+    required this.smeId,
+  });
 
-  final String userName;
+  final String email;
+  final String phone;
+  final int smeId;
 
   @override
   Widget build(BuildContext context) {
@@ -72,38 +89,44 @@ class _OtpVerifyScreenState extends StatelessWidget {
 
   OtpVerifyCubit _otpVerifyCubit(BuildContext context) => context.read<OtpVerifyCubit>();
 
-  ForgetPasswordCubit _forgetPasswordCubit(BuildContext context) => context.read<ForgetPasswordCubit>();
 
   Widget _buildOtpVerifyDialog() {
-    return BlocListener<ForgetPasswordCubit, ForgetPasswordState>(
-      listener: (context, state) {
-        if (state.forgotPasswordDetails != null) {
-          _otpVerifyCubit(context).changeTimeCompleteStatus(false);
-          _forgetPasswordCubit(context).initialState();
-        }
-      },
-      child: BlocConsumer<OtpVerifyCubit, OtpVerifyState>(
+    
+      return BlocConsumer<OtpVerifyCubit, OtpVerifyState>(
         listener: (context, state) {
           if (state.isOtpVerified) {
-            Navigator.of(context).pushNamed(AppRouteNames.resetPasswordScreen, arguments: {"userName": userName});
+            Navigator.of(context).pushNamed(AppRouteNames.resetPasswordScreen, arguments: {"userName": email});
             _otpVerifyCubit(context).initialState();
           }
         },
         builder: (context, state) {
           return AuthContainer(
             onTapIcon: () {
-              _otpVerifyCubit(context).verifyOtp(username: userName, otp: _otpVerifyCubit(context).otpController.text);
+              _otpVerifyCubit(context).verifyOtp(username: email, otp: _otpVerifyCubit(context).otpController.text);
             },
             containerBody: [
+IconButton(
+      icon: const Icon(Icons.arrow_back),
+      onPressed: () async {
+        final goBack = await goBackAlertDialog(context: context);
+        if (goBack && context.mounted) {
+          Navigator.of(context).pop();
+        }
+      },
+    ),    const SizedBox(width: 8),
+
+
               Text(
                 AppLocalizations.of(context)!.validateOTP,
                 style: AppTextStyle.black25,
               ),
               _kSized15,
-              Text(
-                "${AppLocalizations.of(context)!.validateOTPDescription} $userName",
-                style: AppTextStyle.grey18,
-              ),
+             Text(
+  state.otpMethod == "sms"
+      ? "${AppLocalizations.of(context)!.validateOTPDescription} ${AppValidation.maskPhone(phone)}"
+      : "${AppLocalizations.of(context)!.validateOTPDescription} ${AppValidation.maskEmail(email)}",
+  style: AppTextStyle.grey18,
+),
               _kSized15,
               Center(
                 child: Pinput(
@@ -123,17 +146,21 @@ class _OtpVerifyScreenState extends StatelessWidget {
                   onComplete: () {
                     _otpVerifyCubit(context).changeTimeCompleteStatus(true);
                   },
-                  durationInSec: 600,
+                  durationInSec: 60,
                   restartTimer: !state.isTimeCompleted,
                 ),
               ),
               Center(
                 child: TextButton(
                   onPressed: state.isTimeCompleted
-                      ? () {
-                          _forgetPasswordCubit(context).forgotPassword(userName: userName);
-                        }
-                      : null,
+    ? () {
+       _otpVerifyCubit(context).resendOtp(
+          email: email,
+          phone: phone,
+          smeId: smeId,
+        );
+      }
+    : null,
                   child: Text(
                     AppLocalizations.of(context)!.resendOTP,
                     style: state.isTimeCompleted ? AppTextStyle.appColor18 : AppTextStyle.grey18,
@@ -144,7 +171,7 @@ class _OtpVerifyScreenState extends StatelessWidget {
             ],
           );
         },
-      ),
+      
     );
   }
 }

@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kommuno/core/common/app_theme/app_theme.dart';
+import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/core/utilities/call_manager/call_session.dart';
 import 'package:kommuno/core/utilities/campaign_manager.dart';
 import 'package:kommuno/features/calls/cubit/call_cubit.dart';
@@ -33,8 +35,11 @@ class _AfterCallWrapUpScreenState extends State<AfterCallWrapUpScreen> {
   final _formKey = GlobalKey<FormState>();
   final _remarkController = TextEditingController();
 
-  String? _selectedDisposition;
-  String? _selectedDispositionId;
+  // String? _selectedDisposition;
+  // String? _selectedDispositionId;
+
+  final List<String> _selectedLevels = [];
+final List<String> _selectedLevelIds = [];
   int _rating = 0;
 
   bool _wrapupEnabled = false;
@@ -272,10 +277,11 @@ void _openPreviewSheet(
     final timeText = _format(displayTimer);
     final campaign = CampaignManager.campaign;
     final dispositions = campaign?.dispositions ?? [];
-
+final bool hasDispositions = dispositions.isNotEmpty;
     return PopScope(
       canPop: false, 
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: Colors.grey.shade50,
         appBar: AppBar(
           backgroundColor: AppColors.appColor,
@@ -348,7 +354,7 @@ IconButton(
             // Header Card
             Container(
               width: double.infinity,
-              decoration: const BoxDecoration(
+              decoration:  const BoxDecoration(
                 color: AppColors.appColor,
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(30),
@@ -475,17 +481,21 @@ IconButton(
             // Form Content
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: Form(
+   padding: EdgeInsets.fromLTRB(
+      20,
+      20,
+      20,
+      MediaQuery.of(context).viewInsets.bottom + 20,
+    ),
+    keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,                child: Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 10),
       
                       // Disposition
                       _sectionLabel("Disposition *"),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 4),
                       Container(
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -498,42 +508,158 @@ IconButton(
                             ),
                           ],
                         ),
-                        child: DropdownButtonFormField<String>(
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 14,
-                            ),
-                          ),
-                          hint: const Text("Select Disposition"),
-                          value: _selectedDisposition,
-                          items: dispositions.map((d) {
-                            return DropdownMenuItem(
-                              value: d.combinedField,
-                              child: Text(d.combinedField ?? ""),
-                              onTap: () {
-                                _selectedDispositionId = d.id;
-                              },
-                            );
-                          }).toList(),
+                        child: 
+                        // DropdownButtonFormField<String>(
+                        //   decoration: InputDecoration(
+                        //     border: OutlineInputBorder(
+                        //       borderRadius: BorderRadius.circular(12),
+                        //       borderSide: BorderSide.none,
+                        //     ),
+                        //     filled: true,
+                        //     fillColor: Colors.white,
+                        //     contentPadding: const EdgeInsets.symmetric(
+                        //       horizontal: 16,
+                        //       vertical: 14,
+                        //     ),
+                        //   ),
+                        //   hint: const Text("Select Disposition"),
+                        //   value: _selectedDisposition,
+                        //   items: dispositions.map((d) {
+                        //     return DropdownMenuItem(
+                        //       value: d.combinedField,
+                        //       child: Text(d.combinedField ?? ""),
+                        //       onTap: () {
+                        //         _selectedDispositionId = d.id;
+                        //       },
+                        //     );
+                        //   }).toList(),
                           
-                          onChanged: (value) {
-                            setState(() => _selectedDisposition = value);
-                          },
-                        ),
+                        //   onChanged: (value) {
+                        //     setState(() => _selectedDisposition = value);
+                        //   },
+                        // ),
+                       hasDispositions
+      ?  DropdownButtonFormField2<String>(
+  isExpanded: true,
+  decoration: InputDecoration(
+    hintText: "Select Disposition",
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide.none,
+    ),
+    filled: true,
+    fillColor: Colors.white,
+  ),
+                  hint: Text("Select Disposition"),
+
+  value: null, // 🔥 always null so it doesn't replace
+  items: dispositions.map((d) {
+    return DropdownMenuItem<String>(
+      value: d.combinedField,
+      child: Text(
+        d.combinedField ?? "",
+      ),
+    );
+  }).toList(),
+  onChanged: (val) {
+  if (val == null) return;
+
+  // 🔒 Max 5 levels
+  if (_selectedLevels.length >= 5) {
+    FToastManager().showToast(
+      message: "You can select disposition only up to 5 levels",
+    );
+    return;
+  }
+
+  // 🚫 Prevent duplicate selection
+  if (_selectedLevels.contains(val)) {
+    FToastManager().showToast(
+      message: "This disposition is already selected",
+    );
+    return;
+  }
+
+  final selected = dispositions.firstWhere(
+    (e) => e.combinedField == val,
+  );
+
+  setState(() {
+    _selectedLevels.add(val);
+
+    if (selected.id != null) {
+      _selectedLevelIds.add(selected.id!);
+    }
+  });
+},
+  onMenuStateChange: (isOpen) {
+    if (isOpen) FocusScope.of(context).unfocus(); // ✅ keyboard fix
+  },
+):Padding(
+          padding: const EdgeInsets.all(14),
+          child: Text(
+            "No disposition available for this campaign",
+            style: TextStyle(
+              color: Colors.grey.shade600,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
                       ),
       
-                      const SizedBox(height: 20),
-      
+                      const SizedBox(height: 10),
+      if (_selectedLevels.isNotEmpty) ...[
+  const SizedBox(height: 12),
+
+  Column(
+    children: List.generate(_selectedLevels.length, (index) {
+      return Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: AppColors.appColor.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: AppColors.appColor.withOpacity(0.4),
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                _selectedLevels[index],
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+
+            GestureDetector(
+            onTap: () {
+  setState(() {
+    _selectedLevels.removeAt(index);
+    _selectedLevelIds.removeAt(index);
+  });
+},
+              child: const Icon(
+                Icons.close,
+                size: 18,
+                color: Colors.red,
+              ),
+            ),
+          ],
+        ),
+      );
+    }),
+  ),
+],                      const SizedBox(height: 10),
+
                       // Remark
                       _sectionLabel("Remarks"),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 4),
                       Container(
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -546,10 +672,11 @@ IconButton(
                             ),
                           ],
                         ),
-                        child: TextFormField(
+                        child: 
+                        TextFormField(
                           controller: _remarkController,
-                          maxLines: 4,
-                        
+  minLines: 3,
+  maxLines: 5,                        
                           decoration: InputDecoration(
                             hintText: "Enter your remarks here...",
                             border: OutlineInputBorder(
@@ -563,7 +690,7 @@ IconButton(
                         ),
                       ),
       
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 10),
       
                       // Rating
                       _sectionLabel("Rate this call"),
@@ -635,10 +762,13 @@ IconButton(
       onPressed: widget.waitingForConnection
     ? null
     : () async {
+      final dispositionName = _selectedLevels.join(", ");
+final dispositionId =
+    _selectedLevelIds.isNotEmpty ? _selectedLevelIds.last : "";
         await context.read<CallStateCubit>().saveWrapUp(
           context: context,
-          dispositionName: _selectedDisposition ?? "",
-          dispositionId: _selectedDispositionId ?? "",
+          dispositionName: dispositionName,
+  dispositionId: dispositionId,
           remarks: _remarkController.text.trim(),
           rating: _rating,
           wrapUpSeconds: displayTimer.inSeconds,
@@ -696,7 +826,7 @@ IconButton(
   if (_wrapupEnabled &&
       _wrapupLimitSeconds > 0 &&
       displayTimer.inSeconds >= _wrapupLimitSeconds &&
-      _selectedDisposition == null) {
+      _selectedLevels.isEmpty) {
 
     debugPrint("WrapUp time completed → Auto closing screen");
 
@@ -712,10 +842,15 @@ Future<void> _autoCloseWrapUp() async {
   if (!mounted) return;
 
   try {
+
+    final dispositionName = _selectedLevels.join(", ");
+  final dispositionId =
+      _selectedLevelIds.isNotEmpty ? _selectedLevelIds.last : "";
+
     await context.read<CallStateCubit>().saveWrapUp(
       context: context,
-      dispositionName: _selectedDisposition ?? "",
-      dispositionId: _selectedDispositionId ?? "",
+     dispositionName: dispositionName,
+      dispositionId: dispositionId,
       remarks: _remarkController.text.trim(),
       rating: _rating,
                                   wrapUpSeconds: displayTimer.inSeconds, 

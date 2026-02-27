@@ -103,13 +103,32 @@ class BreakWidget extends StatelessWidget {
         : AppConstant.breakDefaultTime;
   }(),
 ),
- TimeContainer(
-                    title: AppLocalizations.of(context)!.breakTime,
-                    time: state.breakTime > 0
-                        ? getDurationFromSeconds(
-                            duration: state.breakTime, isShowText: false)
-                        : AppConstant.breakDefaultTime,
-                  ),
+//  TimeContainer(
+//                     title: AppLocalizations.of(context)!.breakTime,
+//                     time: state.breakTime > 0
+//                         ? getDurationFromSeconds(
+//                             duration: state.breakTime, isShowText: false)
+//                         : AppConstant.breakDefaultTime,
+//                   ),
+
+TimeContainer(
+  title: AppLocalizations.of(context)!.breakTime,
+  time: () {
+    final userState = context.watch<UserDetailsCubit>().state;
+
+    int lunch = 0;
+    if (userState is UserDetailsSuccessState) {
+      lunch = userState.lunchHours;
+    }
+
+    return lunch > 0
+        ? getDurationFromSeconds(
+            duration: lunch,
+            isShowText: false,
+          )
+        : AppConstant.breakDefaultTime;
+  }(),
+),
 
                 ],
               ),
@@ -154,7 +173,7 @@ class BreakWidget extends StatelessWidget {
                 children: [
                   Text(AppLocalizations.of(context)!.onBreakMsg),
                   _kSized10,
-                  const Icon(
+                   const Icon(
                     Icons.coffee,
                     color: AppColors.appColor,
                   ),

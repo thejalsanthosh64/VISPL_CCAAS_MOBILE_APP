@@ -53,7 +53,7 @@ bool _socketReady = false;
 
 final campaign = CampaignManager.campaign;
 
-  // 🔍 DEBUG PRINTS
+  //  DEBUG PRINTS
   debugPrint("📦 Campaign loaded: ${campaign != null}");
   debugPrint("📦 Campaign ID: ${campaign?.id}");
   debugPrint("📦 Wrapup Enabled: ${campaign?.wrapupEnabled}");
@@ -61,7 +61,7 @@ final campaign = CampaignManager.campaign;
 
 
   if (campaign == null) {
-    debugPrint("❌ Campaign is NULL – socket init should not proceed");
+    debugPrint(" Campaign is NULL – socket init should not proceed");
     return;
   }
     });
@@ -118,7 +118,9 @@ await ActivityHelperRepo().updateAgentActivityTime(
     context.read<UserDetailsCubit>().setTodayOfficeHours(
       insight.officeHours ?? 0,
     );
-
+context.read<UserDetailsCubit>().setTodayLunchHours(
+  insight.lunchHours ?? 0,
+);
     debugPrint(" Today Office Hours Loaded: ${insight.officeHours}");
   }
 }
@@ -173,7 +175,8 @@ await ActivityHelperRepo().updateAgentActivityTime(
   Widget build(BuildContext context) {
     final userDetails = context.read<UserDetailsCubit>().userDetailsModel;
 
-
+// return BlocBuilder<WhiteLabelCubit, WhiteLabelModel?>(
+//     builder: (context, whiteLabel) {
     return Scaffold(
       appBar: MyAppBar(
         title: AppLocalizations.of(context)!.applicationName,
@@ -214,14 +217,21 @@ await ActivityHelperRepo().updateAgentActivityTime(
             Expanded(
               child: RefreshIndicator(
                 onRefresh: () async {
+                    final cubit = context.read<UserDetailsCubit>();
+
                   await context
                       .read<UserDetailsCubit>()
                       .loadUserDetails(isLoading: false);
+                      cubit.stopActiveTimer();
+  cubit.startActiveTimer(); 
                   if (context.mounted) {
                     await context
                         .read<BreakCubit>()
                         .getBreakDetails(isLoading: false);
+                            await _loadTodayInsights();
+
                   }
+                  
                 },
                 child: SingleChildScrollView(
                   physics: const ClampingScrollPhysics(
@@ -232,7 +242,7 @@ await ActivityHelperRepo().updateAgentActivityTime(
                       _kSized5,
                       _buildTimeView(
                           context: context, userDetails: userDetails),
-                      _kSized10,
+                      _kSized5,
                       _buildOnboarding(),
                       _kSized5,
                       ..._buildButtons1(context: context),
@@ -245,10 +255,23 @@ await ActivityHelperRepo().updateAgentActivityTime(
           ],
         ),
       ),
-    );
-  }
+);
+    }
 
+// Widget _buildLogo(WhiteLabelModel? whiteLabel) {
+//   if (whiteLabel?.dashboardLogo != null &&
+//       whiteLabel!.dashboardLogo!.isNotEmpty) {
+//     return Image.network(
+//       whiteLabel.dashboardLogo!,
+//       fit: BoxFit.contain,
+//       errorBuilder: (_, __, ___) {
+//         return Image.asset(Assets.imagesAppLogo);
+//       },
+//     );
+//   }
 
+//   return Image.asset(Assets.imagesAppLogo);
+// }
   Widget _buildAppBar({
   required BuildContext context,
   required UserDetailsModel userDetails,
@@ -328,18 +351,18 @@ print("Status$status");
   );
 }
 Widget _buildStatus(String status, String timer) {
-  const Color color = AppColors.appColor;
+   Color color = AppColors.appColor;
 
   return Row(
     mainAxisSize: MainAxisSize.min,
     children: [
-      const Icon(Icons.circle, size: 10, color: color),
+       Icon(Icons.circle, size: 10, color: color),
   
       const SizedBox(width: 6),
   
       Text(
         status,
-        style: const TextStyle(
+        style:  TextStyle(
           color: color,
           fontWeight: FontWeight.w700,
           fontSize: 13,
@@ -351,7 +374,7 @@ Widget _buildStatus(String status, String timer) {
         const SizedBox(width: 6),
         Text(
           timer,
-          style: const TextStyle(
+          style:  TextStyle(
             color: color,
             fontWeight: FontWeight.w700,
             fontSize: 13,
@@ -390,7 +413,7 @@ String formatSeconds(int sec) {
 
   Widget _buildOnboarding() {
     return const SizedBox(
-      height: 120,
+      height: 140,
       child: OnboardingWidget(
         content: [
           OnBoardConatiner(),

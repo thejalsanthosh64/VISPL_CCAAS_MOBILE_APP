@@ -174,7 +174,7 @@ class _CampaignListState extends StatelessWidget {
   onPressed: () async {
     await LogoutManager.logoutUser(context: context);
   },
-  child: const Text(
+  child:  Text(
     "Back to Login",
     style: TextStyle(
       color: AppColors.appColor,

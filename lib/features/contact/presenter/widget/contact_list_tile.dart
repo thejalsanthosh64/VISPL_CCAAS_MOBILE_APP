@@ -45,7 +45,7 @@ class ContactListTile extends StatelessWidget {
         children: [
           AppIconButton(
             onTap: onTapPhone,
-            icon: const Icon(Icons.phone, color: AppColors.appColor),
+            icon: Icon(Icons.phone, color: AppColors.appColor),
           ),
           ...trailing
         ],

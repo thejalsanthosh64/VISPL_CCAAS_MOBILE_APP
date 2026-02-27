@@ -27,96 +27,7 @@ static UserDetailsCubit? instance;
 
 Timer? _activeTimer;
 int activeSeconds = 0;
-
-  //  Start waiting timer 
-  // void startWaitingTimer() {
-  //   stopWaitingTimer(); 
-
-  //   waitingSeconds = 0;
-    
-  //   if (state is UserDetailsSuccessState) {
-  //     emit((state as UserDetailsSuccessState).copyWith(
-  //       agentStatus: "Waiting",
-  //       waitingSeconds: 0,
-  //     ));
-  //   }
-
-  //   _waitingTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-  //     waitingSeconds++;
-      
-  //     if (state is UserDetailsSuccessState) {
-  //       emit((state as UserDetailsSuccessState).copyWith(
-  //         agentStatus: "Waiting",
-  //         waitingSeconds: waitingSeconds,
-  //       ));
-  //     }
-  //   });
-    
-  //   debugPrint(" Started waiting timer");
-  // }
-
-//   void startWaitingTimer() {
-//   if (isClosed) {
-//     debugPrint("⛔ UserDetailsCubit closed → skip startWaitingTimer");
-//     return;
-//   }
-
-//   stopWaitingTimer();
-
-//   waitingSeconds = 0;
-
-//   if (state is UserDetailsSuccessState) {
-//     emit((state as UserDetailsSuccessState).copyWith(
-//       agentStatus: "Waiting",
-//       waitingSeconds: 0,
-//     ));
-//   }
-
-//   _waitingTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-//     if (isClosed) return;
-
-//     waitingSeconds++;
-//     if (state is UserDetailsSuccessState) {
-//       emit((state as UserDetailsSuccessState).copyWith(
-//         agentStatus: "Waiting",
-//         waitingSeconds: waitingSeconds,
-//       ));
-//     }
-//   });
-
-//   debugPrint("✅ Started waiting timer");
-// }
-
-
-
-
-
-  //  Stop timer and return total waiting seconds
-  // int stopWaitingTimer() {
-  //   final capturedSeconds = waitingSeconds;
-  //     debugPrint(" stopWaitingTimer CALLED → $capturedSeconds sec");
-
-  //   _waitingTimer?.cancel();
-  //   _waitingTimer = null;
-  //   waitingSeconds = 0; 
-    
-  //   debugPrint(" Stopped waiting timer. Total: $capturedSeconds seconds");
-    
-  //   return capturedSeconds;
-  // }
-
-//   int stopWaitingTimer() {
-//   if (isClosed) return 0;
-
-//   final capturedSeconds = waitingSeconds;
-//   _waitingTimer?.cancel();
-//   _waitingTimer = null;
-//   waitingSeconds = 0;
-
-//   debugPrint("⏹ Waiting stopped → $capturedSeconds sec");
-//   return capturedSeconds;
-// }
-
+int todayLunchHours = 0;
 
 void startWaitingTimer() {
   if (isClosed) return;
@@ -186,30 +97,17 @@ void setActive() {
   }
 }
 
-
-  // void setActive() {
-  //   final elapsedSeconds = stopWaitingTimer();
-    
-  //   debugPrint(" Agent now Active. Was waiting for $elapsedSeconds seconds");
-    
-  //   if (state is UserDetailsSuccessState) {
-  //     emit((state as UserDetailsSuccessState).copyWith(
-  //       agentStatus: "Active",
-  //       waitingSeconds: 0,
-  //     ));
-  //   }
-  // }
-
   //  After call restart waiting
   void backToWaiting() {
     debugPrint("⏮️ Agent back to Waiting");
     startWaitingTimer();
   }
 
-
-
 void startActiveTimer() {
-  stopActiveTimer(); 
+  if (_activeTimer != null) {
+    debugPrint("⚠️ Active timer already running");
+    return;
+  }
 
   _activeTimer = Timer.periodic(const Duration(seconds: 1), (_) {
     activeSeconds++;
@@ -221,8 +119,24 @@ void startActiveTimer() {
     }
   });
 
-  debugPrint(" Active Timer Started");
+  debugPrint("✅ Active Timer Started");
 }
+
+// void startActiveTimer() {
+//   stopActiveTimer(); 
+
+//   _activeTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+//     activeSeconds++;
+
+//     if (state is UserDetailsSuccessState) {
+//       emit((state as UserDetailsSuccessState).copyWith(
+//         activeSeconds: activeSeconds,
+//       ));
+//     }
+//   });
+
+//   debugPrint(" Active Timer Started");
+// }
 
 void stopActiveTimer() {
   _activeTimer?.cancel();
@@ -244,7 +158,15 @@ void setTodayOfficeHours(int value) {
     ));
   }
 }
+void setTodayLunchHours(int value) {
+  todayLunchHours = value;
 
+  if (state is UserDetailsSuccessState) {
+    emit((state as UserDetailsSuccessState).copyWith(
+      lunchHours: value,
+    ));
+  }
+}
   @override
   Future<void> close() {
     stopWaitingTimer();
@@ -265,7 +187,8 @@ void setTodayOfficeHours(int value) {
         final data = List<Map<String, dynamic>>.from(res.data as List);
         if (data. isNotEmpty) {
           userDetailsModel = UserDetailsModel.fromJson(data.first);
-          emit(UserDetailsSuccessState(userDetailsModel: userDetailsModel));
+          emit(UserDetailsSuccessState(userDetailsModel: userDetailsModel,  activeSeconds: activeSeconds,lunchHours: todayLunchHours,
+  officeHours: todayOfficeHours,));
         } else {
           emit(const UserDetailsNotFoundState());
         }

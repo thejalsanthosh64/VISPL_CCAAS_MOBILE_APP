@@ -17,9 +17,9 @@ class HomeButton extends StatelessWidget {
 
   final String iconPath;
 
-  static const width = 115.0;
+  static const width = 120.0;
 
-  static const height = 70.0;
+  static const height = 85.0;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class HomeButton extends StatelessWidget {
         Material(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5),
-            side: const BorderSide(color: AppColors.appColor),
+            side:  BorderSide(color: AppColors.appColor),
           ),
           color: AppColors.white,
           child: InkWell(

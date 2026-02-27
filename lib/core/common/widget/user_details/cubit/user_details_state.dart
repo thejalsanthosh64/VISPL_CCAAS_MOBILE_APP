@@ -39,7 +39,7 @@ final class UserDetailsSuccessState extends UserDetailsState {
   final int waitingSeconds;   
     final int activeSeconds; 
   final int officeHours;
-
+final int lunchHours;
 
   const UserDetailsSuccessState({
     required this.userDetailsModel,
@@ -47,7 +47,7 @@ final class UserDetailsSuccessState extends UserDetailsState {
     this.waitingSeconds = 0,
         this.activeSeconds = 0, 
                 this.officeHours = 0, 
-
+this.lunchHours = 0,
 
   });
 
@@ -56,7 +56,8 @@ final class UserDetailsSuccessState extends UserDetailsState {
     String? agentStatus,
     int? waitingSeconds,
         int? activeSeconds,
-           int? officeHours
+           int? officeHours,
+           int? lunchHours,
 
 
   }) {
@@ -67,7 +68,7 @@ final class UserDetailsSuccessState extends UserDetailsState {
             activeSeconds: activeSeconds ?? this.activeSeconds,
 
             officeHours: officeHours ?? this.officeHours,
-
+lunchHours: lunchHours ?? this.lunchHours,
     );
   }
 
@@ -76,7 +77,7 @@ final class UserDetailsSuccessState extends UserDetailsState {
         userDetailsModel,
         agentStatus,
         waitingSeconds,
-        activeSeconds,officeHours
+        activeSeconds,officeHours,lunchHours
       ];
 }
 

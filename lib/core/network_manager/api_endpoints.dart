@@ -13,6 +13,10 @@ abstract class ApiEndpoints {
   // static const String baseUrlWebSo = "https://ccssio.smartping.io/";
 
 
+  static const String whiteLabelDomain = "https://test.smartping.ai";
+// static const String whiteLabelDomain = "https://ccs.sparc.smartping.io";
+
+
   static const int _receiveTimeout = 15000;
 
   static const int _connectionTimeout = 15000;
@@ -25,11 +29,24 @@ abstract class ApiEndpoints {
 
   static String logout(int id) => "sme/$id/setNotificationToken";
 
-  static String forgotPassword(String userName) => "component/$userName/forget/password";
+  // static String forgotPassword(String userName) => "component/$userName/forget/password";
 
-  static String verifyOtp(String userName) => "component/$userName/forget/otp/verify";
+  // static String verifyOtp(String userName) => "component/$userName/forget/otp/verify";
 
-  static String changePassword(String userName) => "component/$userName/forget/change/password";
+  // static String changePassword(String userName) => "component/$userName/forget/change/password";
+
+
+ static String getUserDetailByEmail(String email) =>
+      "agent/$email/getUserDetailByEmailId";
+
+  static String sendForgotPasswordOtp =
+      "agent/sendForgotPasswordOtp";
+
+  static String verifyOtp(String email) =>
+      "component/$email/forget/otp/verify";
+
+  static String changePassword(String email) =>
+      "component/$email/forget/change/password";
 
   static String userDetails(String userName) => "user/$userName/typedetail";
 
@@ -181,5 +198,8 @@ static String updateCrmForm(int smeId, String sessionId) =>
     static String updateIsWrapUpTimeOver(int smeId) => "agent/$smeId/updateIsWrapUpTimeOver";
       static String setDialerStatus(int smeID) =>
       "agent/$smeID/setDialerStatus";
+
+static const String getWhiteLabelingDetails =
+    "billing/getWhiteLabelingDetails";
 
 }

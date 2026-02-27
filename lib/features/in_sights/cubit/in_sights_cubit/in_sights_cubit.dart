@@ -115,7 +115,13 @@ part 'in_sights_state.dart';
 
 
 class InSightsCubit extends Cubit<InSightsState> {
-  InSightsCubit() : super(const InSightsInitialState());
+  static InSightsCubit? instance;
+  // InSightsCubit() : super(const InSightsInitialState());
+
+  InSightsCubit() : super(const InSightsInitialState()) {
+    instance = this; 
+  }
+
 
   final _inSightsRepo = InSightsRepo();
 
@@ -261,5 +267,13 @@ class InSightsCubit extends Cubit<InSightsState> {
       );
   }
 }
+
+  static InSightsCubit get safeInstance {
+    if (instance == null || instance!.isClosed) {
+      instance = InSightsCubit();
+    }
+    return instance!;
+  }
+
 
 }

@@ -1,3 +1,4 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kommuno/core/common/app_theme/app_theme.dart';
@@ -13,83 +14,95 @@ class CrmFormSheet extends StatelessWidget {
     return BlocBuilder<CallStateCubit, CallState>(
       builder: (context, state) {
         final form = state.crmFormJson;
+        
+        //  Get keyboard height
+        final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+        final screenHeight = MediaQuery.of(context).size.height;
 
-        return Padding(
-          padding: EdgeInsets.only(
-            left: 16,
-            right: 16,
-            top: 12,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 12,
-          ),
-          child: Column(
-            children: [
-              // ───────── Header ─────────
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    state.crmFormName,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-              const Divider(),
-
-              // ───────── Form ─────────
-              Expanded(
-                child: form.isEmpty
-                    ? const Center(child: Text("No CRM fields"))
-                    : ListView.builder(
-                        itemCount: form.length,
-                        itemBuilder: (_, index) {
-                          return _buildField(
-                            context,
-                            field: form[index],
-                            index: index,
-                          );
-                        },
-                      ),
-              ),
-
-              const SizedBox(height: 12),
-
-              // ───────── Footer Buttons ─────────
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
+        return SizedBox(
+          height: screenHeight * 0.6 + keyboardHeight,
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 12,
+              bottom: keyboardHeight + 12,
+            ),
+            child: Column(
+              children: [
+                // ───────── Header ─────────
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      state.crmFormName,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close),
                       onPressed: () => Navigator.pop(context),
-                      child: const Text("Cancel"),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
+                  ],
+                ),
+                const Divider(),
 
-                      style: ElevatedButton.styleFrom(backgroundColor: AppColors.appColor),
-                      
-                      onPressed: state.isSavingCrm
-                          ? null
-                          : () => _saveCrm(context),
-                      child: state.isSavingCrm
-                          ? const SizedBox(
-                              height: 18,
-                              width: 18,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
-                          : const Text("Save",style:TextStyle(color: AppColors.white),),
+                // ───────── Form ─────────
+                Expanded(
+                  child: form.isEmpty
+                      ? const Center(child: Text("No CRM fields"))
+                      : ListView.builder(
+                          // Allow keyboard to not cover active field
+                          keyboardDismissBehavior:
+                              ScrollViewKeyboardDismissBehavior.onDrag,
+                          itemCount: form.length,
+                          itemBuilder: (_, index) {
+                            return _buildField(
+                              context,
+                              field: form[index],
+                              index: index,
+                            );
+                          },
+                        ),
+                ),
+
+                const SizedBox(height: 12),
+
+                // ───────── Footer Buttons ─────────
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text("Cancel"),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.appColor),
+                        onPressed: state.isSavingCrm
+                            ? null
+                            : () => _saveCrm(context),
+                        child: state.isSavingCrm
+                            ? const SizedBox(
+                                height: 18,
+                                width: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text(
+                                "Save",
+                                style: TextStyle(color: AppColors.white),
+                              ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -130,23 +143,50 @@ Widget _buildField(
       );
       break;
 
+    // case "dropdown":
+    //   input = DropdownButtonFormField<String>(
+    //     value: field["value"],
+    //     items: (field["options"] as List)
+    //         .map<DropdownMenuItem<String>>(
+    //           (o) => DropdownMenuItem(
+    //             value: o["title"],
+    //             child: Text(o["title"]),
+    //           ),
+    //         )
+    //         .toList(),
+    //     onChanged: (v) => field["value"] = v,
+    //     decoration: InputDecoration(
+    //       labelText: mandatory ? "$title *" : title,
+    //     ),
+    //   );
+    //   break;
+
     case "dropdown":
-      input = DropdownButtonFormField<String>(
-        value: field["value"],
-        items: (field["options"] as List)
-            .map<DropdownMenuItem<String>>(
-              (o) => DropdownMenuItem(
-                value: o["title"],
-                child: Text(o["title"]),
-              ),
-            )
-            .toList(),
-        onChanged: (v) => field["value"] = v,
-        decoration: InputDecoration(
-          labelText: mandatory ? "$title *" : title,
-        ),
-      );
-      break;
+  input = DropdownButtonFormField2<String>(
+    isExpanded: true,
+    value: field["value"],
+    decoration: InputDecoration(
+      labelText: mandatory ? "$title *" : title,
+    ),
+    hint: Text("Select $title"),
+    items: (field["options"] as List)
+        .map<DropdownMenuItem<String>>(
+          (o) => DropdownMenuItem<String>(
+            value: o["title"],
+            child: Text(o["title"]),
+          ),
+        )
+        .toList(),
+    onChanged: (v) {
+      field["value"] = v;
+    },
+    onMenuStateChange: (isOpen) {
+      if (isOpen) {
+        FocusScope.of(context).unfocus(); 
+      }
+    },
+  );
+  break;
 
     case "radio":
       input = Column(
@@ -168,35 +208,46 @@ Widget _buildField(
       break;
 
     case "date":
-  input = InkWell(
-    onTap: () async {
-      final picked = await showDatePicker(
-        context: context,
-        firstDate: DateTime(2000),
-        lastDate: DateTime(2100),
-        initialDate: DateTime.tryParse(field["value"] ?? "") ?? DateTime.now(),
-      );
-      if (picked != null) {
-        field["value"] = picked.toIso8601String().split("T").first;
-        (context as Element).markNeedsBuild();
-      }
-    },
-    child: InputDecorator(
-      decoration: InputDecoration(
-        labelText: mandatory ? "$title *" : title,
-      ),
-      child: Text(
-        field["value"]?.toString().isNotEmpty == true
-            ? field["value"]
-            : "Select date",
-        style: TextStyle(
-          color: field["value"] != null
-              ? Colors.black
-              : Colors.grey,
+  input = StatefulBuilder(
+    builder: (context, setFieldState) {
+      
+  
+    return InkWell(
+      onTap: () async {
+        final picked = await showDatePicker(
+          context: context,
+          firstDate: DateTime(2000),
+          lastDate: DateTime(2100),
+          initialDate: DateTime.tryParse(field["value"] ?? "") ?? DateTime.now(),
+        );
+        // if (picked != null) {
+        //   field["value"] = picked.toIso8601String().split("T").first;
+        //   (context as Element).markNeedsBuild();
+        // }
+        if (picked != null) {
+              setFieldState(() {
+                field["value"] = picked.toIso8601String().split("T").first;
+              });
+            }
+      },
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: mandatory ? "$title *" : title,
+        ),
+        child: Text(
+          field["value"]?.toString().isNotEmpty == true
+              ? field["value"]
+              : "Select date",
+          style: TextStyle(
+            color: field["value"] != null
+                ? Colors.black
+                : Colors.grey,
+          ),
         ),
       ),
-    ),
+      );},
   );
+  
   break;
 
     default:

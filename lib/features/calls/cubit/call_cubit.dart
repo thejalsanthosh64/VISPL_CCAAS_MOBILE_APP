@@ -280,6 +280,11 @@ if (wrapupEnabled && !dispositionFilled) {
     status: "Wrap up",
     enabledWrapupTime: wrapUpTime,
   );
+
+
+
+  stopTimer();
+  emit(const CallState());
 } else {
 
   //  userDetailsCubit?.stopWaitingTimer() ?? 0;
@@ -292,7 +297,12 @@ if (wrapupEnabled && !dispositionFilled) {
   );
 
     // userDetailsCubit?.startWaitingTimer();
-
+stopTimer();
+emit(state.copyWith(
+  isDispositionFilled: state.isDispositionFilled, // preserve it
+  duration: Duration.zero,
+  // reset only what you need
+));
 }
 
 
@@ -314,9 +324,6 @@ if (wrapupEnabled && !dispositionFilled) {
 //   status: CallSession.callType,
 // );
 
-
-  stopTimer();
-  emit(const CallState());
 }}
 
 
@@ -409,13 +416,17 @@ await ActivityHelperRepo().updateAgentActivityTime(
 );
 
 
+ emit(const CallState());
+
+  CallSession.clear();
+
 userDetailsCubit.startWaitingTimer();
   }
 
 }
 
 
-
+ 
 Future<void> unattendedTransfer({
   required int smeId,
   required String sessionId,

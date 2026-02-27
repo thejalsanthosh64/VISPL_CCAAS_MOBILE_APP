@@ -28,7 +28,7 @@ class SlidableIconButton extends StatelessWidget {
           slidableController.openEndActionPane();
         }
       },
-      icon: const Icon(
+      icon:  Icon(
         Icons.more_vert,
         color: AppColors.appColor,
       ),

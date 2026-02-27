@@ -52,7 +52,7 @@ class AppTextField extends StatelessWidget {
   final EditableTextContextMenuBuilder? contextMenuBuilder;
 
   InputBorder get _border {
-    return OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: const BorderSide(color: AppColors.appColor));
+    return OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide:  BorderSide(color: AppColors.appColor));
   }
 
   @override

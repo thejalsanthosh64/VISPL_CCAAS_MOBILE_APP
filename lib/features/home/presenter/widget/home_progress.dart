@@ -35,7 +35,7 @@ class HomeProgress extends StatelessWidget {
           height: 60,
           width: 60,
           child: DecoratedBox(
-            decoration: const BoxDecoration(
+            decoration:  BoxDecoration(
               shape: BoxShape.circle,
               color: AppColors.appColor,
             ),

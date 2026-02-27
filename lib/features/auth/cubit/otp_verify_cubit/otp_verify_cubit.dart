@@ -15,6 +15,16 @@ part 'otp_verify_state.dart';
 class OtpVerifyCubit extends Cubit<OtpVerifyState> {
   OtpVerifyCubit() : super(const OtpVerifyState());
 
+
+void init({
+  required String otpMethod,
+  required String sendMessageVia,
+}) {
+  emit(state.copyWith(
+    otpMethod: otpMethod,
+    sendMessageVia: sendMessageVia,
+  ));
+}
   final otpController = TextEditingController();
 
   final _authRepo = AuthRepo();
@@ -25,9 +35,12 @@ class OtpVerifyCubit extends Cubit<OtpVerifyState> {
     return super.close();
   }
 
-  void initialState() {
-    emit(const OtpVerifyState());
-  }
+void initialState() {
+  emit(state.copyWith(
+    isOtpVerified: false,
+    isTimeCompleted: false,
+  ));
+}
 
   void changeTimeCompleteStatus(bool isCompleted) {
     emit(state.copyWith(isTimeCompleted: isCompleted));
@@ -47,7 +60,7 @@ class OtpVerifyCubit extends Cubit<OtpVerifyState> {
       } else {
         hideKeyboard();
         AppLoadingIndicator.showLoadingIndicator();
-        final res = await _authRepo.verifyOtp(userName: username, otp: otp);
+        final res = await _authRepo.verifyOtp(email: username, otp: otp,mode: state.otpMethod,);
         if (res.isSuccess) {
           emit(state.copyWith(isOtpVerified: true));
         } else {
@@ -65,4 +78,29 @@ class OtpVerifyCubit extends Cubit<OtpVerifyState> {
     }
     AppLoadingIndicator.dismissLoadingIndicator();
   }
+Future<void> resendOtp({
+  required String email,
+  required String phone,
+  required int smeId,
+}) async {
+  try {
+    AppLoadingIndicator.showLoadingIndicator();
+
+    final sendVia =
+        state.sendMessageVia == "0" ? "default" : state.sendMessageVia;
+
+    await _authRepo.sendForgotPasswordOtp(
+      email: email,
+      phone: phone,
+      smeId: smeId,
+      sendVia: sendVia,
+      sendOptionType: state.otpMethod,
+    );
+
+    emit(state.copyWith(isTimeCompleted: false));
+    FToastManager().showToast(message: "OTP resent successfully");
+  } finally {
+    AppLoadingIndicator.dismissLoadingIndicator();
+  }
+}
 }

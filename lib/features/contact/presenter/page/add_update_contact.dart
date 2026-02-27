@@ -105,7 +105,7 @@ class _AddUpdateContactState extends StatelessWidget {
                         .changeAvatarState(text: text);
                   });
                 },
-                prefixIcon: const Icon(
+                prefixIcon:  Icon(
                   Icons.person,
                   color: AppColors.appColor,
                 ),
@@ -123,7 +123,7 @@ class _AddUpdateContactState extends StatelessWidget {
                 controller:
                     _addUpdateContactCubit(context).companyNameController,
                 textInputAction: TextInputAction.next,
-                prefixIcon: const Icon(
+                prefixIcon:  Icon(
                   Icons.apartment_sharp,
                   color: AppColors.appColor,
                 ),
@@ -134,7 +134,7 @@ class _AddUpdateContactState extends StatelessWidget {
                 controller: _addUpdateContactCubit(context).emailIdController,
                 keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.done,
-                prefixIcon: const Icon(
+                prefixIcon:  Icon(
                   Icons.email,
                   color: AppColors.appColor,
                 ),

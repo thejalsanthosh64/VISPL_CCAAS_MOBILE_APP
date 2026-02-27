@@ -31,6 +31,7 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (__) => PermissionHandlerCubit()),
         BlocProvider(create: (__) => InternetConnectionCubit()),
+        // BlocProvider(create: (_) => WhiteLabelCubit())
       ],
       child: const _MyAppState(),
     );
@@ -72,19 +73,29 @@ class _MyAppState extends StatelessWidget {
         listenWhen: (previous, newState) {
           return previous != newState;
         },
-        child: MaterialApp(
+        child: 
+  //       BlocBuilder<WhiteLabelCubit, WhiteLabelModel?>(
+  // builder: (context, whiteLabel) {
+
+        
+         MaterialApp(
           key: AppKeys.materialAppKey,
           builder: FToastBuilder(),
           debugShowCheckedModeBanner: false,
           title: AppConstant.applicationName,
           theme: AppTheme.appTheme(context),
+    // theme: AppTheme.appTheme(
+    //     context,
+    //     primaryColor: whiteLabel?.primaryColor,
+    //     secondaryColor: whiteLabel?.secondaryColor,
+    //   ),
           navigatorKey: AppKeys.navigatorKey,
           scaffoldMessengerKey: AppKeys.scaffoldMessengerKey,
           initialRoute: AppRouteNames.splashScreen,
           onGenerateRoute: AppRouterManager.generateMainRoute,
           supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
-        ),
+       ),
       ),
     );
   }

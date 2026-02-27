@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kommuno/core/common/app_keys.dart';
 import 'package:kommuno/core/common/widget/toast_manager.dart';
+import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
+import 'package:kommuno/core/common/widget/user_details/data/model/user_details_model.dart';
 import 'package:kommuno/core/utilities/call_manager/call_manager.dart';
 import 'package:kommuno/core/utilities/validation.dart';
 import 'package:kommuno/features/dial/data/model/dial_data_model.dart';
@@ -90,7 +92,8 @@ class DialCubit extends Cubit<DialState> {
 Future<void> toggleDialer({
     required int agentId,
     required bool value,
-    required int smeID
+    required int smeID,
+    required BuildContext context
   }) async {
     try {
       emit(state.copyWith(isUpdating: true));
@@ -106,6 +109,13 @@ Future<void> toggleDialer({
           isDialerOn: value,
           isUpdating: false,
         ));
+
+         final userCubit = context.read<UserDetailsCubit>();
+      final user = userCubit.userDetailsModel;
+
+      userCubit.userDetailsModel = user.copyWith(
+        autoDialerCallsStatus: value ? 1 : 0,
+      );
       }
 
       FToastManager().showToast(message: res.message);
@@ -114,5 +124,13 @@ Future<void> toggleDialer({
       FToastManager().showToast(message: "Failed to update dialer status");
     }
   }
+
+void syncFromUserDetails(UserDetailsModel user) {
+  emit(
+    state.copyWith(
+      isDialerOn: user.autoDialerCallsStatus == 1,
+    ),
+  );
+}
 
 }

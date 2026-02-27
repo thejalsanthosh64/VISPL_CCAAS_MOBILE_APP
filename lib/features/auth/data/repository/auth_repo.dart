@@ -21,38 +21,96 @@ final class AuthRepo {
     }
   }
 
-  Future<CommonResponseModel> forgotPassword({required String userName}) async {
-    try {
-      final res = await _dioClient.post(ApiEndpoints.forgotPassword(userName));
-      return res;
-    } catch (e) {
-      rethrow;
-    }
-  }
+  // Future<CommonResponseModel> forgotPassword({required String userName}) async {
+  //   try {
+  //     final res = await _dioClient.post(ApiEndpoints.forgotPassword(userName));
+  //     return res;
+  //   } catch (e) {
+  //     rethrow;
+  //   }
+  // }
 
-  Future<CommonResponseModel> verifyOtp(
-      {required String userName, required String otp}) async {
-    try {
-      final res = await _dioClient
-          .post(ApiEndpoints.verifyOtp(userName), data: {"oneTimeCode": otp});
-      return res;
-    } catch (e) {
-      rethrow;
-    }
-  }
+Future<CommonResponseModel> getUserDetailByEmail({
+  required String email,
+}) async {
+  return _dioClient.post(
+    ApiEndpoints.getUserDetailByEmail(email),
+  );
+}
 
-  Future<CommonResponseModel> changePassword(
-      {required String userName, required String newPassword}) async {
-    try {
-      final res =
-          await _dioClient.post(ApiEndpoints.changePassword(userName), data: {
-        "newPassword": newPassword,
-      });
-      return res;
-    } catch (e) {
-      rethrow;
-    }
-  }
+Future<CommonResponseModel> sendForgotPasswordOtp({
+  required String email,
+  required String phone,
+  required int smeId,
+  required String sendVia, // default / email
+  required String sendOptionType, // 👈 ADD
+
+}) async {
+  return _dioClient.post(
+    ApiEndpoints.sendForgotPasswordOtp,
+    data: {
+      "sendOptionType": sendOptionType, // email | sms
+      "userEmail": email,
+      "userPhoneNumber": phone,
+      "smeId": smeId,
+      "sendEmailVia": sendVia,
+    },
+  );
+}
+
+Future<CommonResponseModel> verifyOtp({
+  required String email,
+  required String otp,
+  required String mode, // email
+}) async {
+  return _dioClient.post(
+    ApiEndpoints.verifyOtp(
+      email
+    ),
+    data: {
+      "oneTimeCode": otp,
+      "mode": mode, // email
+    },
+  );
+}
+
+Future<CommonResponseModel> changeForgotPassword({
+  required String email,
+  required String newPassword,
+}) async {
+  return _dioClient.post(
+    ApiEndpoints.changePassword(
+      email
+    ),
+    data: {
+      "newPassword": newPassword,
+    },
+  );
+}
+
+  // Future<CommonResponseModel> verifyOtp(
+  //     {required String userName, required String otp}) async {
+  //   try {
+  //     final res = await _dioClient
+  //         .post(ApiEndpoints.verifyOtp(userName), data: {"oneTimeCode": otp});
+  //     return res;
+  //   } catch (e) {
+  //     rethrow;
+  //   }
+  // }
+
+  // Future<CommonResponseModel> changePassword(
+  //     {required String userName, required String newPassword}) async {
+  //   try {
+  //     final res =
+  //         await _dioClient.post(ApiEndpoints.changePassword(userName), data: {
+  //       "newPassword": newPassword,
+  //     });
+  //     return res;
+  //   } catch (e) {
+  //     rethrow;
+  //   }
+  // }
 
   Future<CommonResponseModel> logoutUser({
     required String username,
@@ -164,6 +222,22 @@ Future<UserDetailsModel> getTypeDetail({
 
   return UserDetailsModel.fromJson(data.first);
 }
+Future<Map<String, dynamic>?> getWhiteLabelDetails({
+  required int smeId,
+}) async {
+  final CommonResponseModel res = await _dioClient.get(
+    ApiEndpoints.getWhiteLabelingDetails,
+    queryParameters: {
+      "domain": ApiEndpoints.whiteLabelDomain,
+      "smeId": smeId,
+    },
+  );
 
+  if (res.status == 200 && res.data != null) {
+    return Map<String, dynamic>.from(res.data);
+  }
+
+  return null;
+}
 
 }
