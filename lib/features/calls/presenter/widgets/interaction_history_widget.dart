@@ -32,6 +32,21 @@ String formatDate(dynamic value) {
   }
 }
 
+String formatStatus(dynamic value) {
+  if (value == null) return "No Information Available";
+
+  String text = value.toString().trim().toLowerCase();
+  if (text.isEmpty) return "No Information Available";
+
+  // Known special cases
+  if (text == "notpatched") return "Not Patched";
+  if (text == "patched") return "Patched";
+  if (text == "abandoned") return "Abandoned";
+
+  // Default → First letter capital only
+  return text[0].toUpperCase() + text.substring(1);
+}
+
   Widget detailRow(String title, dynamic value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
@@ -90,8 +105,7 @@ String formatDate(dynamic value) {
                 detailRow("Campaign Name", item["campaign_name"]),
                 detailRow("Campaign Type", item["campaign_type"]),
                 detailRow("Queue Name", item["queue_name"]),
-                detailRow("Call Result", item["final_status"]),
-                detailRow("Start Time", formatDate(item["start_date_time"])),
+detailRow("Call Result", formatStatus(item["final_status"])),                detailRow("Start Time", formatDate(item["start_date_time"])),
 detailRow("End Time", formatDate(item["end_date_time"])),
 
                 detailRow("Duration", item["duration"]),
@@ -238,7 +252,7 @@ detailRow("End Time", formatDate(item["end_date_time"])),
                       child: Align(
                         alignment: Alignment.centerRight,
                         child: Text(
-                          displayValue(item["final_status"]),
+                          formatStatus(item["final_status"]),
                           style: const TextStyle(
                             fontWeight: FontWeight.w600,
                           ),

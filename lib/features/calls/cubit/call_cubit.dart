@@ -6,6 +6,7 @@ import 'package:kommuno/core/common/app_constant.dart';
 import 'package:kommuno/core/common/repo/activity_log_repo.dart';
 import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
+import 'package:kommuno/core/network_manager/websocket_service.dart';
 import 'package:kommuno/core/utilities/call_manager/call_session.dart';
 import 'package:kommuno/core/utilities/campaign_manager.dart';
 import 'package:kommuno/features/calls/cubit/call_state.dart';
@@ -254,7 +255,7 @@ Future<void> drop({
   final res=await callsRepo.drop(smeId: smeId, body: body);
   if (res.isSuccess) {
 
-   
+   resetTransferConferenceState();
 final enabledWrapTime = CampaignManager.campaign?.wrapupTimeInSeconds;
 final wrapUpTime = (enabledWrapTime != null && enabledWrapTime > 0)
     ? enabledWrapTime
@@ -284,7 +285,7 @@ if (wrapupEnabled && !dispositionFilled) {
 
 
   stopTimer();
-  emit(const CallState());
+  // emit(const CallState());
 } else {
 
   //  userDetailsCubit?.stopWaitingTimer() ?? 0;
@@ -299,10 +300,12 @@ if (wrapupEnabled && !dispositionFilled) {
     // userDetailsCubit?.startWaitingTimer();
 stopTimer();
 emit(state.copyWith(
-  isDispositionFilled: state.isDispositionFilled, // preserve it
+  isDispositionFilled: false, // preserve it
   duration: Duration.zero,
   // reset only what you need
 ));
+
+print("state.isDispositionFilled${state.isDispositionFilled}");
 }
 
 
@@ -359,7 +362,38 @@ markDispositionFilled();
 }
 
 
+Future<void> saveWrapUpInRingingState({
+  required String dispositionName,
+  required String dispositionId,
+  required String remarks,
+  required int rating,
+  required BuildContext context,
+  required int wrapUpSeconds,
+}) async {
+  final smeId = CallSession.smeId ?? 0;
+  final agentId = CallSession.agentId ?? 0;
+  final sessionId = CallSession.sessionId ?? "";
 
+  final body = {
+    "session_id": sessionId,
+    "rate": rating,
+    "remarks": remarks,
+    "disposition_id": dispositionId,
+    "disposition_name": dispositionName,
+    "agent_id": agentId,
+  };
+
+  await callsRepo.saveRating(smeId: smeId, body: body);
+  await callsRepo.saveRatingCrm(smeId: smeId, body: body);
+
+  await logRepo.updateIsWrapUpTimeOver(
+      smeId: smeId,
+      agentId: agentId,
+      sessionId: sessionId,
+      wrapupTime: wrapUpSeconds,
+    );
+
+}
 Future<void> saveWrapUp({
   required String dispositionName,
   required String dispositionId,
@@ -545,6 +579,151 @@ Future<void> attendedTransfer({
     }
   } 
 }
+
+
+ /// Step 2a — Agent clicks "Merge" after consult leg is connected.
+  /// Calls /attended with action:"conference".
+  /// UI waits for transfer_confirmed(Conference) socket event.
+  Future<void> mergeConference({
+    required int smeId,
+    required String sessionId,
+    required String channelId,
+    required int agentId,
+    required String agentName,
+  }) async {
+
+    if (state.transferStatus != TransferStatus.attendedStep1Confirmed) {
+    debugPrint("mergeConference blocked — state is ${state.transferStatus}");
+    return;
+  }
+  
+  if (CallSession.sessionId == null) {
+    debugPrint("[MERGE] Skipped — CallSession already cleared");
+    return;
+  }
+  
+
+    debugPrint(" [MERGE] Calling /attended action=conference");
+ 
+    final req = AttendedTransferRequestModel(
+      sessionId: sessionId,
+      channelId: channelId,
+      callType: CallSession.callType,
+      agentId: agentId,
+      action: "conference",
+    );
+ 
+    final res = await callsRepo.attendedTransfer(smeId: smeId, body: req);
+ 
+    print("res: $res");
+    if (res.isSuccess) {
+      
+      FToastManager().showToast(message: "Merging conference...");
+      print("testing issue not called");
+      await logRepo.setActivityLogs(smeId,
+          moduleName: "call",
+          action: "Conference Merge",
+          userRole: "agent",
+          message: "$agentName merged conference call",
+          agentId: agentId);
+      // Wait for transfer_confirmed(Conference) socket event → onConferenceConfirmed()
+    } else {
+      FToastManager().showToast(message: "Failed to merge conference");
+    }
+  }
+ 
+
+
+  /// Step 2b — Agent clicks "Transfer" DURING an active conference.
+  /// Calls /attended with action:"transfer".
+  /// On API success, cleans up agent1's side WITHOUT calling /dropCall —
+  /// that would kill the entire session. Instead, mirrors _dropSenderCallAfterTransfer:
+  /// just update backend status, disconnect locally, navigate to wrapup.
+  Future<void> transferDuringConference({
+    required int smeId,
+    required String sessionId,
+    required String channelId,
+    required int agentId,
+    required String agentName,
+    int? transferToAgentId,
+    String? agentMobile,
+  }) async {
+
+    if (CallSession.sessionId == null) {
+      debugPrint("🔀 [CONF TRANSFER] Skipped — CallSession already cleared");
+      return;
+    }
+    debugPrint("🔀 [CONF TRANSFER] Calling /attended action=transfer");
+ 
+    final req = AttendedTransferRequestModel(
+      sessionId: sessionId,
+      channelId: channelId,
+      callType: CallSession.callType,
+      agentId: transferToAgentId,
+      agentMobile: agentMobile,
+      action: "transfer",
+    );
+ 
+    final res = await callsRepo.attendedTransfer(smeId: smeId, body: req);
+ 
+    if (res.isSuccess) {
+          emit(state.copyWith(transferStatus: TransferStatus.transferRinging));
+
+      await logRepo.setActivityLogs(smeId,
+          moduleName: "call",
+          action: "Conference Transfer",
+          userRole: "agent",
+          message: "$agentName transferred during conference",
+          agentId: agentId);
+ 
+      // ── Clean up agent1's side WITHOUT calling /dropCall ──────────────
+      // Calling drop() would hit /dropCall and kill the entire session,
+      // disconnecting the customer and the second agent too.
+      // Instead, mirror _dropSenderCallAfterTransfer: only update backend
+      // status, disconnect our socket, and navigate to wrapup.
+ 
+      stopTimer();
+ 
+      final enabledWrapTime = CampaignManager.campaign?.wrapupTimeInSeconds;
+      final wrapUpTime = (enabledWrapTime != null && enabledWrapTime > 0)
+          ? enabledWrapTime
+          : AppConstant.defaultWrapUpFallbackSeconds;
+ 
+      final wrapupEnabled     = CampaignManager.campaign?.wrapupEnabled == true;
+      final dispositionFilled = state.isDispositionFilled;
+ 
+      try {
+        if (wrapupEnabled && !dispositionFilled) {
+          await callsRepo.updateAgentLiveStatusForDropCall(
+            smeId: smeId,
+            agentId: agentId,
+            status: "Wrap up",
+            enabledWrapupTime: wrapUpTime,
+          );
+        } else {
+          await logRepo.updateAgentLiveStatus(
+            smeId: smeId,
+            agentId: agentId,
+            status: "Waiting",
+          );
+        }
+      } catch (e) {
+        debugPrint("❌ transferDuringConference status update error: $e");
+      }
+ 
+      // Signal the WebSocketManager to navigate appropriately.
+      // We use the same flag that _dropSenderCallAfterTransfer uses.
+      CallWebSocketManager.triggerConferenceTransferCleanup(
+        wrapupEnabled: wrapupEnabled && !dispositionFilled,
+        wrapUpTime: wrapUpTime,
+      );
+    } else {
+      FToastManager().showToast(message: "Transfer failed — still in conference");
+    }
+  }
+
+
+
 List<Map<String, dynamic>> getWaitingAgentsOnly(
   List<dynamic> data,
 ) {
@@ -602,7 +781,7 @@ List<Map<String, dynamic>> getWaitingAgentsOnly(
     final status = res.data["call_status"];
     return status == "free";
   }
-Future<void> sendSurveyIVR() async {
+Future<bool> sendSurveyIVR() async {
   final smeId = CallSession.smeId!;
   final sessionId = CallSession.sessionId!;
 
@@ -615,10 +794,12 @@ Future<void> sendSurveyIVR() async {
     FToastManager().showToast(
       message: "Survey IVR sent successfully",
     );
+    return true;
   } else {
     FToastManager().showToast(
       message: "Failed to send survey IVR",
     );
+    return false;
   }
 }
 
@@ -897,5 +1078,157 @@ void markDispositionFilled() {
 }
 
 
+  // ── Transfer Status Mutations ─────────────────────────────────────────────
+  //
+  // These are called exclusively by CallWebSocketManager in response to
+  // socket events. The UI reads state.areIconsDisabled and
+  // state.isConferenceButtonDisabled — no UI logic here.
+ 
+  /// cbwt_confirmed received — transfer is ringing on other agent.
+  /// Disable ALL icons (except Survey) immediately.
+  /// cbwt_confirmed received for an ATTENDED transfer — consult leg is ringing.
+  /// Show the Merge button immediately. Other icons stay enabled.
+  void onAttendedConsultRinging() {
+    debugPrint("📞 onAttendedConsultRinging → consult ringing, Merge button shown");
+    emit(state.copyWith(transferStatus: TransferStatus.attendedConsultRinging));
+  }
+ 
+  /// cbwt_confirmed received for a BLIND transfer — other agent is ringing.
+  /// Disable ALL icons (except Survey) immediately.
+  void onTransferRinging() {
+    debugPrint("🔔 onTransferRinging → icons disabled");
+    emit(state.copyWith(transferStatus: TransferStatus.transferRinging));
+  }
+ 
+  /// transfer_confirmed (callStatusDescription == "Transfer") received.
+  /// Other agent answered — keep icons disabled, call ending soon.
+  void onTransferConfirmed() {
+    debugPrint("✅ onTransferConfirmed → transferDone, icons stay disabled");
+    emit(state.copyWith(transferStatus: TransferStatus.transferDone));
+    FToastManager().showToast(message: "Transfer successful");
+  }
+ 
+  /// transfer_confirmed (attended, callStatusDescription == "Transfer") received.
+  /// The consult leg is now connected. Sender is STILL on the call.
+  /// Re-enable ALL icons — agent can now choose to Conference or Transfer.
+  void onAttendedStep1Confirmed() {
+    debugPrint("📞 onAttendedStep1Confirmed → consult leg connected, icons re-enabled");
+    emit(state.copyWith(transferStatus: TransferStatus.attendedStep1Confirmed));
+    FToastManager().showToast(message: "Connected — choose Conference or Transfer");
+  }
+ 
+  /// transfer_confirmed (callStatusDescription == "Conference") received.
+  /// 3-way conference is now live. Re-enable Transfer button, keep Conf disabled.
+  void onConferenceConfirmed() {
+    debugPrint("🎉 onConferenceConfirmed → conferenceLive");
+    emit(state.copyWith(
+      transferStatus: TransferStatus.conferenceLive,
+      conferenceCompleted: true, // permanent — survives back-to-idle
+    ));
+    FToastManager().showToast(message: "Conference started successfully");
+  }
+ 
+  /// transfer_clear_confirmed received — other agent did NOT answer (or hung up from consult).
+  /// Re-enable ALL icons. Conf button stays disabled if conference already happened.
+  void onTransferCleared() {
+    debugPrint(
+        "🔄 onTransferCleared → idle. conferenceCompleted=${state.conferenceCompleted}");
+    // If we were in attendedStep1Confirmed (consult leg active) and agent hung up,
+    // go back to normal idle state so agent can continue the original call normally.
+    emit(state.copyWith(
+      transferStatus: state.conferenceCompleted
+          ? TransferStatus.conferenceEnded
+          : TransferStatus.idle,
+      // conferenceCompleted is intentionally NOT reset here
+    ));
+    FToastManager().showToast(message: "Transfer cleared — back on call");
+  }
+ 
+  /// cbwt_clear_confirmed — Coach/Barge/Whisper session ended.
+  void onCbwtCleared() {
+    debugPrint("🔄 onCbwtCleared → idle");
+    emit(state.copyWith(transferStatus: TransferStatus.idle));
+  }
+ 
+  /// Full reset — used by drop / wrapup.
+  void resetTransferConferenceState() {
+    emit(state.copyWith(transferStatus: TransferStatus.idle));
+  }
+ 
+  // // ── Transfer Status Mutations ─────────────────────────────────────────────
+  // //
+  // // These are called exclusively by CallWebSocketManager in response to
+  // // socket events. The UI reads state.areIconsDisabled and
+  // // state.isConferenceButtonDisabled — no UI logic here.
+
+  // /// cbwt_confirmed received — transfer is ringing on other agent.
+  // /// Disable ALL icons (except Survey) immediately.
+  // void onTransferRinging() {
+  //   debugPrint("🔔 onTransferRinging → icons disabled");
+  //   emit(state.copyWith(transferStatus: TransferStatus.transferRinging));
+  // }
+
+  // /// transfer_confirmed (callStatusDescription == "Transfer") received.
+  // /// Other agent answered — keep icons disabled, call ending soon.
+  // void onTransferConfirmed() {
+  //   debugPrint("✅ onTransferConfirmed → transferDone, icons stay disabled");
+  //   emit(state.copyWith(transferStatus: TransferStatus.transferDone));
+  //   FToastManager().showToast(message: "Transfer successful");
+  // }
+
+  // /// transfer_confirmed (attended, callStatusDescription == "Transfer") received.
+  // /// The consult leg is now connected. Sender is STILL on the call.
+  // /// Re-enable ALL icons — agent can now choose to Conference or Transfer.
+  // void onAttendedStep1Confirmed() {
+  //   debugPrint("📞 onAttendedStep1Confirmed → consult leg connected, icons re-enabled");
+  //   emit(state.copyWith(transferStatus: TransferStatus.attendedStep1Confirmed));
+  //   FToastManager().showToast(message: "Connected — choose Conference or Transfer");
+  // }
+
+  // /// transfer_confirmed (callStatusDescription == "Conference") received.
+  // /// 3-way conference is now live. Re-enable Transfer button, keep Conf disabled.
+  // void onConferenceConfirmed() {
+  //   debugPrint("🎉 onConferenceConfirmed → conferenceLive");
+  //   emit(state.copyWith(
+  //     transferStatus: TransferStatus.conferenceLive,
+  //     conferenceCompleted: true, // permanent — survives back-to-idle
+  //   ));
+  //   FToastManager().showToast(message: "Conference started successfully");
+  // }
+
+  // /// transfer_clear_confirmed received — other agent did NOT answer (or hung up from consult).
+  // /// Re-enable ALL icons. Conf button stays disabled if conference already happened.
+  // void onTransferCleared() {
+  //   debugPrint(
+  //       "🔄 onTransferCleared → idle. conferenceCompleted=${state.conferenceCompleted}");
+  //   // If we were in attendedStep1Confirmed (consult leg active) and agent hung up,
+  //   // go back to normal idle state so agent can continue the original call normally.
+  //   emit(state.copyWith(
+  //     transferStatus: state.conferenceCompleted
+  //         ? TransferStatus.conferenceEnded
+  //         : TransferStatus.idle,
+  //     // conferenceCompleted is intentionally NOT reset here
+  //   ));
+  //   FToastManager().showToast(message: "Transfer cleared — back on call");
+  // }
+
+  // /// cbwt_clear_confirmed — Coach/Barge/Whisper session ended.
+  // void onCbwtCleared() {
+  //   debugPrint("🔄 onCbwtCleared → idle");
+  //   emit(state.copyWith(transferStatus: TransferStatus.idle));
+  // }
+
+  // /// Full reset — used by drop / wrapup.
+  // void resetTransferConferenceState() {
+  //   emit(state.copyWith(transferStatus: TransferStatus.idle));
+  // }
+
 }
+
+
+
+
+
+
+
 

@@ -2,13 +2,14 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kommuno/core/common/app_theme/app_theme.dart';
+import 'package:kommuno/core/common/widget/loading_indicator.dart';
 import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/features/calls/cubit/call_cubit.dart';
 import 'package:kommuno/features/calls/cubit/call_state.dart';
 
 class CrmFormSheet extends StatelessWidget {
   const CrmFormSheet({super.key});
-
+static bool _crmClickLocked = false;
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CallStateCubit, CallState>(
@@ -81,18 +82,23 @@ class CrmFormSheet extends StatelessWidget {
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.appColor),
-                        onPressed: state.isSavingCrm
-                            ? null
-                            : () => _saveCrm(context),
-                        child: state.isSavingCrm
-                            ? const SizedBox(
-                                height: 18,
-                                width: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
+                        // onPressed: state.isSavingCrm
+                        //     ? null
+                        //     : () => _saveCrm(context),
+
+                        onPressed: state.isSavingCrm || _crmClickLocked
+    ? null
+    : () async {
+        _crmClickLocked = true;
+
+        try {
+        await  _saveCrm(context);
+        } finally {
+          _crmClickLocked = false;
+        }
+      },
+                        child: state.isSavingCrm || _crmClickLocked
+                            ? const AppLoadingIndicator()
                             : const Text(
                                 "Save",
                                 style: TextStyle(color: AppColors.white),
@@ -260,7 +266,7 @@ Widget _buildField(
   );
 }
 
-void _saveCrm(BuildContext context) async {
+ Future <void> _saveCrm(BuildContext context) async {
   final cubit = context.read<CallStateCubit>();
   final form = cubit.state.crmFormJson;
 

@@ -160,20 +160,39 @@ class _InSightsState extends StatelessWidget {
                         : null,
                     hinText: AppLocalizations.of(context)!.selectDateTime,
                     style: AppTextStyle.appColorNormal,
-                    onTap: () async {
-                      final dateRange = await appDateRangePicker(
-                        context: context,
-                        currentDate: DateTime.now(),
-                        firstDate:
-                            DateTime.now().subtract(const Duration(days: 90)),
-                        lastDate: DateTime.now(),
-                      );
-                      if (context.mounted && dateRange != null) {
-                        _inSightsCubit(context).getInSights(
-                            smeId: userDetails.smeId,
-                            selectedDateTimeRange: dateRange);
-                      }
-                    },
+                    // onTap: () async {
+                    //   final dateRange = await appDateRangePicker(
+                    //     context: context,
+                    //     currentDate: DateTime.now(),
+                    //     firstDate:
+                    //         DateTime.now().subtract(const Duration(days: 90)),
+                    //     lastDate: DateTime.now(),
+                    //   );
+                    //   if (context.mounted && dateRange != null) {
+                    //     _inSightsCubit(context).getInSights(
+                    //         smeId: userDetails.smeId,
+                    //         selectedDateTimeRange: dateRange);
+                    //   }
+                    // },
+    //                 onTap: () => DateUtility.selectDateRangeWithLimit(
+    // context: context,
+    // maxDays: 31, // Your specific limit for this screen
+    // onSelected: (dateRange) {
+    //   _inSightsCubit(context).getInSights(
+    //     smeId: userDetails.smeId,
+    //     selectedDateTimeRange: dateRange,
+    //   );
+    // },)
+
+    onTap: () => DateUtility.selectDateRangeWithLimit(
+    context: context,
+    maxDays: 31, // Your specific limit for this screen
+    onSelected: (dateRange) {
+      _inSightsCubit(context).getInSights(
+        smeId: userDetails.smeId,
+        selectedDateTimeRange: dateRange,
+      );
+    },)
                   ),
                   _kSized10,
                   ..._buildCallsInfo(

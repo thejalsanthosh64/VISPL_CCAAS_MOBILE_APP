@@ -7,6 +7,7 @@ abstract interface class CampaignManager {
   static CampaignData? _campaign;
 
   static CampaignData? get campaign => _campaign;
+  
 
   static Future<void> setCampaignInfo({CampaignData? campaign}) async {
     try {
@@ -29,4 +30,24 @@ abstract interface class CampaignManager {
       rethrow;
     }
   }
+static int? extractLevel(String? combinedField) {
+  if (combinedField == null) return null;
+  final match = RegExp(r'L([1-5])$').firstMatch(combinedField.trim());
+  return match != null ? int.parse(match.group(1)!) : null;
+}
+
+static Map<int, List<DispositionItem>> groupDispositionsByLevel(
+  List<DispositionItem> dispositions,
+) {
+  final Map<int, List<DispositionItem>> map = {};
+
+  for (final d in dispositions) {
+    final level = extractLevel(d.combinedField);
+    if (level == null) continue;
+
+    map.putIfAbsent(level, () => []).add(d);
+  }
+
+  return map;
+}
 }

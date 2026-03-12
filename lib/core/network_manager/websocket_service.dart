@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kommuno/core/common/app_constant.dart';
 import 'package:kommuno/core/common/app_keys.dart';
 import 'package:kommuno/core/common/app_routes/app_routes_manager.dart';
 import 'package:kommuno/core/common/app_theme/app_theme.dart';
@@ -17,6 +17,7 @@ import 'package:kommuno/core/utilities/local_storage/hive_service.dart';
 import 'package:kommuno/core/utilities/secure_storage/secure_storage.dart';
 import 'package:kommuno/core/utilities/user_login_info_manager/user_login_info_manager.dart';
 import 'package:kommuno/features/calls/cubit/call_cubit.dart';
+import 'package:kommuno/features/calls/cubit/call_state.dart';
 import 'package:kommuno/features/calls/data/repository/call_repo.dart';
 import 'package:kommuno/features/calls/presenter/page/call_screen.dart';
 import 'package:kommuno/features/calls/presenter/page/call_wrapup_.dart';
@@ -332,19 +333,22 @@ if (sessionId == null) return;
 
 
     if (sessionId == null || sessionId.toString().isEmpty) return;
-
+ 
     final customerNumber = data["customerNumber"] ?? 
                           data["phoneNumber"] ?? 
                           data["customer_number"] ?? "";
     
     final customerName = extractCustomerName(data);
+final callCubit = activeCallCubit ?? CallStateCubit();
 
+callCubit.emit(
+  callCubit.state.copyWith(isDispositionFilled: false),
+);
     debugPrint(" [INCOMING] Phone: $customerNumber, Name: $customerName");
 
     // start vibration
     startContinuousVibration();
 
-  final callCubit = activeCallCubit ?? CallStateCubit();
 
     debugPrint(" [INCOMING] Storing phone in cubit: $customerNumber");
     callCubit.setPhoneNumber(customerNumber);
@@ -401,19 +405,350 @@ final type =
     _showReminderPopup(data);
   });
 
-  globalSocket?.onAny((event, raw) {
-  final data = normalize(raw);
-  final eventAgentId = data["agentId"] ?? data["agent_id"];
 
-  if (eventAgentId == agentId) {
-  // logLong('[CALL EVENT] $event →', data);
 
-    debugPrint("[MY EVENT] $event → $data");
+    // ── Transfer / Conference — globalSocket fallback ─────────────────────
+    //
+    // These fire on globalSocket too. We only act here if callSocket is NOT
+    // active (pure unattended transfer with no active call socket).
+    // When callSocket is active, it handles everything.
 
+    // globalSocket?.on("cbwt_confirmed", (raw) {
+    //   final e = normalize(raw);
+    //   final fromId = e["fromAgentId"];
+    //   if (fromId != agentId) return;
+    //   if (callSocket != null) return; // callSocket handles it
+
+    //   debugPrint("[global cbwt_confirmed] No callSocket — disabling icons");
+    //   activeCallCubit?.onTransferRinging();
+    // });
+
+    // globalSocket?.on("transfer_confirmed", (raw) {
+    //   final e = normalize(raw);
+    //   final fromId = e["fromAgentId"];
+    //   final recvId = e["agentId"];
+    //   if (fromId != agentId && recvId != agentId) return;
+    //   if (callSocket != null) return;
+
+    //   debugPrint("[global transfer_confirmed] handling as fallback");
+    //   _handleTransferConfirmed(e, myAgentId: agentId);
+    // });
+
+
+
+    globalSocket?.on("cbwt_confirmed", (raw) {
+      final e = normalize(raw);
+      final fromId   = e["fromAgentId"];
+      final callType = (e["callType"] ?? "").toString().toLowerCase();
+      if (fromId != agentId) return;
+      if (callSocket != null) return; // callSocket handles it
+ 
+      final isAttended = callType.contains("attendent");
+      if (isAttended) {
+        debugPrint("[global cbwt_confirmed] ATTENDED — showing Merge button");
+        activeCallCubit?.onAttendedConsultRinging();
+      } else {
+        debugPrint("[global cbwt_confirmed] BLIND — disabling icons");
+        activeCallCubit?.onTransferRinging();
+      }
+    });
+ globalSocket?.on("transfer_confirmed", (raw) {
+      final e = normalize(raw);
+      final fromId = e["fromAgentId"];
+      final recvId = e["agentId"];
+      if (fromId != agentId && recvId != agentId) return;
+      if (callSocket != null) return;
+ 
+      debugPrint("[global transfer_confirmed] handling as fallback");
+      _handleTransferConfirmed(e, myAgentId: agentId);
+    });
+
+    // globalSocket?.on("transfer_clear_confirmed", (raw) {
+    //   final e = normalize(raw);
+    //   final fromId = e["fromAgentId"];
+    //   final recvId = e["agentId"];
+    //   if (fromId != agentId && recvId != agentId) return;
+    //   if (callSocket != null) return;
+
+    //   debugPrint("[global transfer_clear_confirmed] re-enabling icons");
+    //   activeCallCubit?.onTransferCleared();
+    // });
+
+globalSocket?.on("transfer_clear_confirmed", (raw) {
+      final e = normalize(raw);
+      final fromId = e["fromAgentId"];
+      final recvId = e["agentId"];
+      if (fromId != agentId && recvId != agentId) return;
+      if (callSocket != null) return;
+ 
+      debugPrint("[global transfer_clear_confirmed] re-enabling icons");
+      activeCallCubit?.onTransferCleared();
+    });
+ 
+    globalSocket?.on("cbwt_clear_confirmed", (raw) {
+      final e = normalize(raw);
+      final eventId = e["agentId"] ?? e["fromAgentId"];
+      if (eventId != agentId) return;
+      if (callSocket != null) return;
+ 
+      debugPrint("[global cbwt_clear_confirmed]");
+      activeCallCubit?.onCbwtCleared();
+    });
+ 
+
+    // ── Debug all my events ───────────────────────────────────────────────
+
+    globalSocket?.onAny((event, raw) {
+      final data = normalize(raw);
+      final eventAgentId = data["agentId"] ?? data["agent_id"];
+      if (eventAgentId == agentId) {
+        debugPrint("[MY EVENT] $event → $data");
+      }
+    });
   }
-});
 
-}
+  // ── Shared transfer event logic ───────────────────────────────────────────
+  //
+  // transfer_confirmed has two key fields that TOGETHER determine the action:
+  //
+  //   callType                  callStatusDescription   What happened
+  //   ─────────────────────     ─────────────────────   ─────────────────────────────────
+  //   Transfer_unattendent      Transfer                Blind transfer done — drop sender
+  //   Transfer_attendent        Transfer                Attended Step-1 confirmed: consult
+  //                                                     leg picked up. Show Conf + Transfer.
+  //                                                     Do NOT drop. Agent decides next step.
+  //   Transfer_attendent        Conference              Conference confirmed → conf live.
+  //                                                     Conf disabled, others enabled.
+
+
+  static void _handleTransferConfirmed(
+    Map<String, dynamic> e, {
+    required int myAgentId,
+  }) {
+    final desc     = (e["callStatusDescription"] ?? "").toString();
+    final callType = (e["callType"] ?? "").toString().toLowerCase();
+    final fromId   = e["fromAgentId"];
+    final recvId   = e["agentId"];
+ 
+    debugPrint("[transfer_confirmed] callType=$callType desc=$desc fromId=$fromId me=$myAgentId");
+ 
+    if (fromId == myAgentId) {
+      // ── I am the SENDER ────────────────────────────────────────────────
+ 
+      final currentStatus = activeCallCubit?.state.transferStatus;
+ 
+      // Guard: if we're already in conferenceLive/conferenceEnded/transferDone,
+      // ignore any late-arriving duplicate transfer_confirmed events.
+      // This prevents a stale socket event from resetting state back to
+      // attendedStep1Confirmed after Merge or Transfer already succeeded.
+      if (currentStatus == TransferStatus.conferenceLive ||
+          currentStatus == TransferStatus.conferenceEnded ||
+          currentStatus == TransferStatus.transferDone) {
+        debugPrint("[transfer_confirmed] IGNORED — already in $currentStatus (late/duplicate event)");
+        return;
+      }
+ 
+      final isBlind    = callType.contains("unattendent");
+      final isAttended = callType.contains("attendent");
+ 
+      if (isBlind && desc == "Transfer") {
+        debugPrint("✅ BLIND transfer done → dropping sender call");
+        activeCallCubit?.onTransferConfirmed();
+        _dropSenderCallAfterTransfer();
+ 
+      } else if (isAttended && desc == "Transfer") {
+        debugPrint("✅ ATTENDED Step-1 confirmed → re-enable icons, show Merge");
+        activeCallCubit?.onAttendedStep1Confirmed();
+ 
+      } else if (isAttended && desc == "Conference") {
+        debugPrint("✅ CONFERENCE confirmed → conference live");
+        activeCallCubit?.onConferenceConfirmed();
+      }
+ 
+    } else if (recvId == myAgentId) {
+      debugPrint("transfer_confirmed: I am receiver — no action needed");
+    }
+  }
+ 
+
+  // static void _handleTransferConfirmed(
+  //   Map<String, dynamic> e, {
+  //   required int myAgentId,
+  // }) {
+  //   final desc     = (e["callStatusDescription"] ?? "").toString();
+  //   final callType = (e["callType"] ?? "").toString().toLowerCase();
+  //   final fromId   = e["fromAgentId"];
+  //   final recvId   = e["agentId"];
+
+  //   debugPrint("[transfer_confirmed] callType=$callType desc=$desc fromId=$fromId me=$myAgentId");
+
+  //   if (fromId == myAgentId) {
+  //     // ── I am the SENDER ────────────────────────────────────────────────
+
+  //     final isBlind    = callType.contains("unattendent");
+  //     final isAttended = callType.contains("attendent");
+
+  //     if (isBlind && desc == "Transfer") {
+  //       // Blind/unattended transfer: receiver answered → auto-drop sender's leg
+  //       debugPrint("✅ BLIND transfer done → dropping sender call");
+  //       activeCallCubit?.onTransferConfirmed(); // icons stay disabled
+  //       _dropSenderCallAfterTransfer();
+
+  //     } else if (isAttended && desc == "Transfer") {
+  //       // Attended Step-1: consult leg is now connected.
+  //       // Sender is STILL on the call. Re-enable buttons so agent can
+  //       // choose to conference or complete the transfer.
+  //       debugPrint("✅ ATTENDED Step-1 confirmed → re-enable icons, show Conf+Transfer");
+  //       activeCallCubit?.onAttendedStep1Confirmed();
+
+  //     } else if (isAttended && desc == "Conference") {
+  //       // Conference confirmed — 3-way call is live.
+  //       // Conf button permanently disabled, all other buttons enabled.
+  //       debugPrint("✅ CONFERENCE confirmed → conference live");
+  //       activeCallCubit?.onConferenceConfirmed();
+  //     }
+
+  //   } else if (recvId == myAgentId) {
+  //     // I am the RECEIVER — ringing/connected events handle my UI.
+  //     debugPrint("transfer_confirmed: I am receiver — no action needed");
+  //   }
+  // }
+
+
+
+
+  /// Called when transfer_confirmed(Transfer) arrives for the SENDER.
+  /// Performs the same cleanup as a normal drop: stop timer, API calls, navigate to wrapup.
+  static Future<void> _dropSenderCallAfterTransfer() async {
+    final cubit = activeCallCubit;
+    if (cubit == null) return;
+
+    final smeId    = CallSession.smeId ?? 0;
+    final agentId  = CallSession.agentId ?? 0;
+    final sessionId = CallSession.sessionId ?? "";
+    final phone    = cubit.state.phoneNumber;
+    final name     = phone.isNotEmpty ? ContactLookup.getName(phone) : "Unknown";
+    final duration = cubit.state.duration;
+
+    cubit.stopTimer();
+
+    final enabledWrapTime = CampaignManager.campaign?.wrapupTimeInSeconds;
+    final wrapUpTime = (enabledWrapTime != null && enabledWrapTime > 0)
+        ? enabledWrapTime
+        : AppConstant.defaultWrapUpFallbackSeconds;
+
+    final wrapupEnabled      = CampaignManager.campaign?.wrapupEnabled == true;
+    final dispositionFilled  = cubit.state.isDispositionFilled;
+
+    try {
+      if (wrapupEnabled && !dispositionFilled) {
+        // Update backend to Wrap up status
+        await CallsRepo().updateAgentLiveStatusForDropCall(
+          smeId: smeId,
+          agentId: agentId,
+          status: "Wrap up",
+          enabledWrapupTime: wrapUpTime,
+        );
+
+        // Log the activity
+        await ActivityHelperRepo().setActivityLogs(
+          smeId,
+          moduleName: "call",
+          action: "Transfer Complete",
+          userRole: "agent",
+          message: "Call transferred successfully — agent moved to wrapup",
+          agentId: agentId,
+        );
+
+        disconnectCallSocket();
+
+        // Navigate to wrapup screen
+        _navigateToWrapUp(
+          caller: name,
+          phone: phone,
+          cubit: cubit,
+          duration: Duration.zero,
+        );
+      } else {
+        // No wrapup — just clean up and go to waiting
+        await ActivityHelperRepo().updateAgentLiveStatus(
+          smeId: smeId,
+          agentId: agentId,
+          status: "Waiting",
+        );
+
+        await ActivityHelperRepo().setActivityLogs(
+          smeId,
+          moduleName: "call",
+          action: "Transfer Complete",
+          userRole: "agent",
+          message: "Call transferred successfully",
+          agentId: agentId,
+        );
+
+        disconnectCallSocket();
+        CallSession.clear();
+  cubit.emit(const CallState());
+
+        final nav = AppKeys.navigatorKey.currentState;
+        if (nav != null && nav.canPop()) nav.pop();
+        await Future.delayed(const Duration(milliseconds: 300));
+        safeStartWaiting();
+      }
+    } catch (err, st) {
+      debugPrint("❌ _dropSenderCallAfterTransfer error: $err");
+      debugPrintStack(stackTrace: st);
+      disconnectCallSocket();
+    }
+  }
+  
+
+
+  /// Called by [CallStateCubit.transferDuringConference] after a successful
+  /// /attended?action=transfer API call during an active conference.
+  ///
+  /// Mirrors [_dropSenderCallAfterTransfer] exactly — disconnect our socket
+  /// and navigate to wrapup or waiting — but does NOT call /dropCall, because
+  /// that would kill the entire session (customer + second agent).
+  static Future<void> triggerConferenceTransferCleanup({
+    required bool wrapupEnabled,
+    required int wrapUpTime,
+  }) async {
+    final cubit = activeCallCubit;
+    if (cubit == null) return;
+ 
+    final phone = cubit.state.phoneNumber;
+    final name  = phone.isNotEmpty ? ContactLookup.getName(phone) : "Unknown";
+     final dispositionFilled  = cubit.state.isDispositionFilled;
+
+    debugPrint("🔀 [CONF TRANSFER CLEANUP] wrapupEnabled=$wrapupEnabled");
+ 
+    try {
+      if (wrapupEnabled &&!dispositionFilled) {
+        disconnectCallSocket();
+ 
+        _navigateToWrapUp(
+          caller: name,
+          phone: phone,
+          cubit: cubit,
+          duration: Duration.zero,
+        );
+      } else {
+        disconnectCallSocket();
+        CallSession.clear();
+        cubit.emit(const CallState());
+ 
+        final nav = AppKeys.navigatorKey.currentState;
+        if (nav != null && nav.canPop()) nav.pop();
+        await Future.delayed(const Duration(milliseconds: 300));
+        safeStartWaiting();
+      }
+    } catch (err, st) {
+      debugPrint("❌ triggerConferenceTransferCleanup error: $err");
+      debugPrintStack(stackTrace: st);
+      disconnectCallSocket();
+    }
+  }
 
 static Future<void> closePreviewPopupSafely() async {
   if (!_isPreviewOpen) {
@@ -1026,6 +1361,11 @@ static void connectForCall({
     handleRecoveryEvent("ringing_live_calls");
     final e = normalize(raw);
     if (!_matchSession(e)) return;
+    final callCubit = activeCallCubit ?? CallStateCubit();
+
+callCubit.emit(
+  callCubit.state.copyWith(isDispositionFilled: false),
+);
  final incomingSessionId = e["sessionId"];
   if (_handledRingingSessions.contains(incomingSessionId)) {
     debugPrint(" callSocket ringing already handled: $incomingSessionId");
@@ -1229,136 +1569,6 @@ if (wrapupEnabled && !activeCallCubit!.state.isDispositionFilled) {
     disconnectCallSocket();
   });
 
-//   //  NO ANSWER 
-//   callSocket?.on("clear_live_calls", (raw) async {
-//      if (_clearCallHandled) {
-//     debugPrint("⚠️ clear_live_calls ignored (already handled)");
-//     return;
-//   }
-//   _clearCallHandled = true;
-
-//   debugPrint("🛑 clear_live_calls received");
-//       handleRecoveryEvent("clear_live_calls");
-
-//     final e = normalize(raw);
-//     if (!_matchSession(e)) return;
-// final sessionId = e["sessionId"];
-// if (sessionId == null) return;
-
-// if (_handledClearSessions.contains(sessionId)) {
-//   debugPrint(" clear_live_calls already handled: $sessionId");
-//   return;
-// }
-// _handledClearSessions.add(sessionId);
-
-  
-//   try {
-
-//   CallStateCubit.shownCrmSessions.remove(activeSessionId);
-
-//     stopVibration();
-//     agentAnswered = true;
-
-//     final phone = e["customerNumber"] ?? 
-//                   e["phoneNumber"] ?? 
-//                   e["customer_number"] ?? 
-//                   activeCallCubit?.state.phoneNumber ?? 
-//                   "";
-
-//     debugPrint(" [CLEAR_CALL] Phone: $phone");
-
-//     final name = phone.isNotEmpty ? ContactLookup.getName(phone) : "Unknown";
-//    await closePreviewPopupSafely();
-//   activeCallCubit?.stopTimer();
-//   previewTimer?.cancel();
-//   answerDetectionTimer?.cancel();
-
-
-//   final campaign = CampaignManager.campaign;
-//   final wrapupEnabled = campaign?.wrapupEnabled == true;
-//   final dispositionFilled = activeCallCubit!.state.isDispositionFilled;
-// debugPrint("wrapupEnabled $wrapupEnabled");
-
-// debugPrint("dispositionFilled $dispositionFilled");
-
-//   if (wrapupEnabled && !dispositionFilled) {
-//     _navigateToWrapUp(
-//       caller: name,
-//       phone: phone,
-//       cubit: activeCallCubit!,
-//       duration: Duration.zero,
-//     );
-
-//     disconnectCallSocket();
-//    await Future.delayed(const Duration(milliseconds: 500));
-//       return; 
-      
-//        }
- 
-    
-//     debugPrint(" Wrapup disabled/filled → Returning to main screen");
-
-//     // Disconnect socket first
-//     disconnectCallSocket();
-
-//     //  Use scheduler binding for safe navigation
-//     SchedulerBinding.instance.addPostFrameCallback((_) async {
-//       final ctx = AppKeys.navigatorKey.currentContext;
-      
-//       if (ctx != null) {
-//         debugPrint("📍 Current context found, navigating...");
-        
-//         try {
-//           // Check if we're not already on the first route
-//           if (Navigator.of(ctx, rootNavigator: true).canPop()) {
-//             // Close all screens
-//             // Navigator.of(ctx, rootNavigator: true).popUntil((route) {
-//             //   debugPrint(" Checking route: ${route.settings.name}, isFirst: ${route.isFirst}");
-//             //   return route.isFirst;
-//             // });
-
-//  final ctx = AppKeys.navigatorKey.currentContext;
-//   if (ctx != null && Navigator.of(ctx).canPop()) {
-//     Navigator.of(ctx).pop();
-//     debugPrint("✅ Call screen popped");
-//   } else {
-//     debugPrint("❌ Cannot pop (route already removed)");
-//   }
-            
-//             debugPrint(" Navigation completed");
-//           } else {
-//             debugPrint("ℹAlready on first route");
-//           }
-          
-//           // Wait for navigation animation
-//           await Future.delayed(const Duration(milliseconds: 300));
-
-//           // Start waiting timer
-//           CallWebSocketManager.safeStartWaiting();
-          
-//         } catch (e) {
-//           debugPrint(" Navigation error: $e");
-//           // Fallback: still start waiting
-//           CallWebSocketManager.safeStartWaiting();
-//         }
-//       } else {
-//         debugPrint(" No context - starting waiting anyway");
-//         CallWebSocketManager.safeStartWaiting();
-//       }
-      
-//       //  Reset flag after everything completes
-//       await Future.delayed(const Duration(milliseconds: 500));
-//     });
-    
-//   } catch (e, stackTrace) {
-//     debugPrint(" Error in clear_live_calls: $e");
-//     debugPrint("Stack trace: $stackTrace");
-    
-    
-//     disconnectCallSocket();
-//     CallWebSocketManager.safeStartWaiting();
-  
-//   }});
 
 callSocket?.on("clear_live_calls", (raw) async {
   // 🔒 HARD SESSION GUARD
@@ -1443,7 +1653,130 @@ CallWebSocketManager.safeStartWaiting();
     disconnectCallSocket();
   }
 });
-}
+
+
+
+    /// cbwt_confirmed — transfer/conference is now ringing on the other agent.
+    ///
+    /// BLIND transfer  → disable ALL icons immediately (except Survey).
+    /// ATTENDED transfer → show Merge button, keep other icons enabled.
+    callSocket?.on("cbwt_confirmed", (raw) {
+      final e = normalize(raw);
+      if (!_matchSession(e)) return;
+ 
+      final fromId   = e["fromAgentId"];
+      final callType = (e["callType"] ?? "").toString().toLowerCase();
+      debugPrint("[cbwt_confirmed] fromAgentId=$fromId me=$agentId callType=$callType");
+ 
+      if (fromId != agentId) {
+        debugPrint("[cbwt_confirmed] I am receiver — ignoring");
+        return;
+      }
+ 
+      final isAttended = callType.contains("attendent");
+      if (isAttended) {
+        debugPrint("[cbwt_confirmed] ATTENDED — showing Merge button (consult ringing)");
+        activeCallCubit?.onAttendedConsultRinging();
+      } else {
+        debugPrint("[cbwt_confirmed] BLIND — disabling icons");
+        activeCallCubit?.onTransferRinging();
+      }
+    });
+ 
+    /// transfer_confirmed — second agent picked up (or conference started).
+    ///
+    /// callStatusDescription == "Transfer" → icons stay disabled, call ends soon
+    /// callStatusDescription == "Conference" → conference live, re-enable Transfer
+    callSocket?.on("transfer_confirmed", (raw) {
+      final e = normalize(raw);
+      if (!_matchSession(e)) return;
+ 
+      debugPrint("[transfer_confirmed] $e");
+      _handleTransferConfirmed(e, myAgentId: agentId);
+    });
+ 
+    /// transfer_clear_confirmed — other agent did NOT answer (or hung up).
+    ///
+    /// Re-enable ALL icons. Conf button stays disabled if conference already happened.
+    callSocket?.on("transfer_clear_confirmed", (raw) {
+      final e = normalize(raw);
+      if (!_matchSession(e)) return;
+ 
+      debugPrint("[transfer_clear_confirmed] → re-enabling icons");
+      activeCallCubit?.onTransferCleared();
+    });
+ 
+    /// cbwt_clear_confirmed — Coach/Barge/Whisper session ended.
+    callSocket?.on("cbwt_clear_confirmed", (raw) {
+      final e = normalize(raw);
+      if (!_matchSession(e)) return;
+ 
+      debugPrint("[cbwt_clear_confirmed] → idle");
+      activeCallCubit?.onCbwtCleared();
+      FToastManager().showToast(message: "CBW session ended");
+    });
+
+  // ── Transfer / Conference events on callSocket ────────────────────────
+
+    /// cbwt_confirmed — transfer/conference is now ringing on the other agent.
+    ///
+    /// As the SENDER: disable ALL icons immediately (except Survey).
+    /// As the RECEIVER: ringing_live_calls will handle UI — ignore here.
+    // callSocket?.on("cbwt_confirmed", (raw) {
+    //   final e = normalize(raw);
+    //   if (!_matchSession(e)) return;
+
+    //   final fromId = e["fromAgentId"];
+    //   debugPrint("[cbwt_confirmed] fromAgentId=$fromId me=$agentId");
+
+    //   if (fromId != agentId) {
+    //     // I am the receiver — ignore
+    //     debugPrint("[cbwt_confirmed] I am receiver — ignoring");
+    //     return;
+    //   }
+
+    //   // I am the sender — disable all icons now
+    //   debugPrint("[cbwt_confirmed] I am sender — disabling icons");
+    //   activeCallCubit?.onTransferRinging();
+    // });
+
+    // /// transfer_confirmed — second agent picked up (or conference started).
+    // ///
+    // /// callStatusDescription == "Transfer" → icons stay disabled, call ends soon
+    // /// callStatusDescription == "Conference" → conference live, re-enable Transfer
+    // callSocket?.on("transfer_confirmed", (raw) {
+    //   final e = normalize(raw);
+    //   if (!_matchSession(e)) return;
+
+    //   debugPrint("[transfer_confirmed] $e");
+    //   _handleTransferConfirmed(e, myAgentId: agentId);
+    // });
+
+    // /// transfer_clear_confirmed — other agent did NOT answer (or hung up).
+    // ///
+    // /// Re-enable ALL icons. Conf button stays disabled if conference already happened.
+    // callSocket?.on("transfer_clear_confirmed", (raw) {
+    //   final e = normalize(raw);
+    //   if (!_matchSession(e)) return;
+
+    //   debugPrint("[transfer_clear_confirmed] → re-enabling icons");
+    //   activeCallCubit?.onTransferCleared();
+    // });
+
+    // /// cbwt_clear_confirmed — Coach/Barge/Whisper session ended.
+    // callSocket?.on("cbwt_clear_confirmed", (raw) {
+    //   final e = normalize(raw);
+    //   if (!_matchSession(e)) return;
+
+    //   debugPrint("[cbwt_clear_confirmed] → idle");
+    //   activeCallCubit?.onCbwtCleared();
+    //   FToastManager().showToast(message: "CBW session ended");
+    // });
+  }
+
+
+
+
 
 static void safeStartWaiting() {
   final cubit = UserDetailsCubit.instance;

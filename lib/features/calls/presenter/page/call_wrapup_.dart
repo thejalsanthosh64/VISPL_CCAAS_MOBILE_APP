@@ -5,12 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kommuno/core/common/app_theme/app_theme.dart';
+import 'package:kommuno/core/common/widget/loading_indicator.dart';
 import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/core/utilities/call_manager/call_session.dart';
 import 'package:kommuno/core/utilities/campaign_manager.dart';
 import 'package:kommuno/features/calls/cubit/call_cubit.dart';
 import 'package:kommuno/features/calls/cubit/call_state.dart';
 import 'package:kommuno/features/calls/presenter/widgets/interaction_history_widget.dart';
+import 'package:kommuno/features/campaigns/data/model/response/campaign_data.dart';
 
 
 class AfterCallWrapUpScreen extends StatefulWidget {
@@ -41,6 +43,12 @@ class _AfterCallWrapUpScreenState extends State<AfterCallWrapUpScreen> {
   final List<String> _selectedLevels = [];
 final List<String> _selectedLevelIds = [];
   int _rating = 0;
+  late Map<int, List<DispositionItem>> _groupedDispositions;
+
+final Map<int, String?> _selectedDispositionNames = {};
+final Map<int, String?> _selectedDispositionIds = {};
+
+int _maxVisibleLevel = 1;
 
   bool _wrapupEnabled = false;
 int _wrapupLimitSeconds = 0;
@@ -50,7 +58,7 @@ bool _autoClosed = false;
   late Timer _timer;
   Duration displayTimer = Duration.zero;
 String selectedType = "sms"; 
-
+bool _isSaving = false;
   @override
   void initState() {
     super.initState();
@@ -277,6 +285,11 @@ void _openPreviewSheet(
     final timeText = _format(displayTimer);
     final campaign = CampaignManager.campaign;
     final dispositions = campaign?.dispositions ?? [];
+_groupedDispositions =
+    CampaignManager.groupDispositionsByLevel(dispositions);
+
+final levels = _groupedDispositions.keys.toList()..sort();
+
 final bool hasDispositions = dispositions.isNotEmpty;
     return PopScope(
       canPop: false, 
@@ -539,63 +552,130 @@ IconButton(
                         //   },
                         // ),
                        hasDispositions
-      ?  DropdownButtonFormField2<String>(
-  isExpanded: true,
-  decoration: InputDecoration(
-    hintText: "Select Disposition",
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide.none,
-    ),
-    filled: true,
-    fillColor: Colors.white,
-  ),
-                  hint: Text("Select Disposition"),
+      ?  
+//       DropdownButtonFormField2<String>(
+//   isExpanded: true,
+//   decoration: InputDecoration(
+//     hintText: "Select Disposition",
+//     border: OutlineInputBorder(
+//       borderRadius: BorderRadius.circular(12),
+//       borderSide: BorderSide.none,
+//     ),
+//     filled: true,
+//     fillColor: Colors.white,
+//   ),
+//                   hint: Text("Select Disposition"),
 
-  value: null, // 🔥 always null so it doesn't replace
-  items: dispositions.map((d) {
-    return DropdownMenuItem<String>(
-      value: d.combinedField,
-      child: Text(
-        d.combinedField ?? "",
-      ),
-    );
-  }).toList(),
-  onChanged: (val) {
-  if (val == null) return;
+//   value: null, // 🔥 always null so it doesn't replace
+//   items: dispositions.map((d) {
+//     return DropdownMenuItem<String>(
+//       value: d.combinedField,
+//       child: Text(
+//         d.combinedField ?? "",
+//       ),
+//     );
+//   }).toList(),
+//   onChanged: (val) {
+//   if (val == null) return;
 
-  // 🔒 Max 5 levels
-  if (_selectedLevels.length >= 5) {
-    FToastManager().showToast(
-      message: "You can select disposition only up to 5 levels",
-    );
-    return;
-  }
+//   // 🔒 Max 5 levels
+//   if (_selectedLevels.length >= 5) {
+//     FToastManager().showToast(
+//       message: "You can select disposition only up to 5 levels",
+//     );
+//     return;
+//   }
 
-  // 🚫 Prevent duplicate selection
-  if (_selectedLevels.contains(val)) {
-    FToastManager().showToast(
-      message: "This disposition is already selected",
-    );
-    return;
-  }
+//   // 🚫 Prevent duplicate selection
+//   if (_selectedLevels.contains(val)) {
+//     FToastManager().showToast(
+//       message: "This disposition is already selected",
+//     );
+//     return;
+//   }
 
-  final selected = dispositions.firstWhere(
-    (e) => e.combinedField == val,
-  );
+//   final selected = dispositions.firstWhere(
+//     (e) => e.combinedField == val,
+//   );
 
-  setState(() {
-    _selectedLevels.add(val);
+//   setState(() {
+//     _selectedLevels.add(val);
 
-    if (selected.id != null) {
-      _selectedLevelIds.add(selected.id!);
-    }
-  });
-},
-  onMenuStateChange: (isOpen) {
-    if (isOpen) FocusScope.of(context).unfocus(); // ✅ keyboard fix
-  },
-):Padding(
+//     if (selected.id != null) {
+//       _selectedLevelIds.add(selected.id!);
+//     }
+//   });
+// },
+//   onMenuStateChange: (isOpen) {
+//     if (isOpen) FocusScope.of(context).unfocus(); //  keyboard fix
+//   },
+// )
+  Column(
+    children: levels.map((level) {
+      final shouldShow = level <= _maxVisibleLevel;
+      if (!shouldShow) return const SizedBox();
+
+      final items = _groupedDispositions[level]!;
+
+      return Padding(
+        padding: const EdgeInsets.all(5),
+        child: DropdownButtonFormField2<String>(
+          isExpanded: true,
+
+          decoration: _outlinedDecoration(
+            hint: "Select Level $level Disposition",
+          ).copyWith(
+            suffixIcon: _selectedDispositionIds[level] != null
+                ? IconButton(
+                    icon: const Icon(
+                      Icons.close,
+                      size: 18,
+                      color: AppColors.red,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _selectedDispositionIds.remove(level);
+                        _selectedDispositionNames.remove(level);
+                      });
+                    },
+                  )
+                : null,
+          ),
+
+          value: _selectedDispositionIds[level],
+
+          items: items.map((d) {
+            return DropdownMenuItem<String>(
+              value: d.id,
+              child: Text(
+                d.combinedField!
+                    .replaceAll(RegExp(r'\s*-?\s*L\d$'), ''),
+              ),
+            );
+          }).toList(),
+
+          onChanged: (val) {
+            setState(() {
+              if (val == null) {
+                _selectedDispositionIds.remove(level);
+                _selectedDispositionNames.remove(level);
+              } else {
+                _selectedDispositionIds[level] = val;
+                _selectedDispositionNames[level] =
+                    items.firstWhere((e) => e.id == val).combinedField;
+
+                if (level + 1 > _maxVisibleLevel) {
+                  _maxVisibleLevel = level + 1;
+                }
+              }
+            });
+          },
+        ),
+      );
+    }).toList(),
+  )
+
+:Padding(
           padding: const EdgeInsets.all(14),
           child: Text(
             "No disposition available for this campaign",
@@ -759,42 +839,173 @@ IconButton(
       //               }};
       //             },
 
-      onPressed: widget.waitingForConnection
+//       onPressed: widget.waitingForConnection
+//     ? null
+//     : () async {
+// final selectedEntries = _selectedDispositionNames.entries.toList()
+//   ..sort((a, b) => a.key.compareTo(b.key));
+
+// final dispositionName = selectedEntries.isNotEmpty
+//     ? selectedEntries.map((e) => e.value).join(", ")
+//     : "";
+
+// final dispositionId = selectedEntries.isNotEmpty
+//     ? _selectedDispositionIds[selectedEntries.last.key]
+//     : "";
+//         await context.read<CallStateCubit>().saveWrapUp(
+//           context: context,
+//           dispositionName: dispositionName??'',
+//   dispositionId: dispositionId??'',
+//           remarks: _remarkController.text.trim(),
+//           rating: _rating,
+//           wrapUpSeconds: displayTimer.inSeconds,
+//         );
+
+//         if (context.mounted) {
+//           Navigator.pop(context);
+//         }
+//       },
+
+// onPressed:  _isSaving
+//     ? null
+//     : () async {
+//         setState(() => _isSaving = true);
+
+//         try {
+//           final selectedEntries = _selectedDispositionNames.entries.toList()
+//             ..sort((a, b) => a.key.compareTo(b.key));
+
+//           final dispositionName = selectedEntries.isNotEmpty
+//               ? selectedEntries.map((e) => e.value).join(", ")
+//               : "";
+
+//           final dispositionId = selectedEntries.isNotEmpty
+//               ? _selectedDispositionIds[selectedEntries.last.key]
+//               : "";
+
+//           // await context.read<CallStateCubit>().saveWrapUp(
+//           //       context: context,
+//           //       dispositionName: dispositionName ?? '',
+//           //       dispositionId: dispositionId ?? '',
+//           //       remarks: _remarkController.text.trim(),
+//           //       rating: _rating,
+//           //       wrapUpSeconds: displayTimer.inSeconds,
+//           //     );
+
+//             final cubit = context.read<CallStateCubit>();
+
+//               if (widget.waitingForConnection) {
+//             await cubit.saveWrapUpInRingingState(
+//               context: context,
+//               dispositionName: dispositionName,
+//               dispositionId: dispositionId ?? '',
+//               remarks: _remarkController.text.trim(),
+//               rating: _rating,
+//               wrapUpSeconds: displayTimer.inSeconds,
+//             );
+//           } else {
+//             await cubit.saveWrapUp(
+//               context: context,
+//               dispositionName: dispositionName,
+//               dispositionId: dispositionId ?? '',
+//               remarks: _remarkController.text.trim(),
+//               rating: _rating,
+//               wrapUpSeconds: displayTimer.inSeconds,
+//             );
+//           }
+
+// if (mounted && !widget.waitingForConnection) {
+//   Navigator.pop(context);
+// }        } finally {
+//           if (mounted) setState(() => _isSaving = false);
+//         }
+//       },
+
+onPressed: (_isSaving || _autoClosed)
     ? null
     : () async {
-      final dispositionName = _selectedLevels.join(", ");
-final dispositionId =
-    _selectedLevelIds.isNotEmpty ? _selectedLevelIds.last : "";
-        await context.read<CallStateCubit>().saveWrapUp(
-          context: context,
-          dispositionName: dispositionName,
-  dispositionId: dispositionId,
-          remarks: _remarkController.text.trim(),
-          rating: _rating,
-          wrapUpSeconds: displayTimer.inSeconds,
-        );
+        _timer.cancel();       // stop the countdown immediately
+        _autoClosed = true;    // block _autoCloseWrapUp from racing
+        setState(() => _isSaving = true);
+       
 
-        if (context.mounted) {
-          Navigator.pop(context);
+        try {
+          final selectedEntries = _selectedDispositionNames.entries.toList()
+            ..sort((a, b) => a.key.compareTo(b.key));
+
+          final dispositionName = selectedEntries.isNotEmpty
+              ? selectedEntries.map((e) => e.value).join(", ")
+              : "";
+
+          final dispositionId = selectedEntries.isNotEmpty
+              ? _selectedDispositionIds[selectedEntries.last.key]
+              : "";
+
+          final cubit = context.read<CallStateCubit>();
+
+          if (widget.waitingForConnection) {
+            await cubit.saveWrapUpInRingingState(
+              context: context,
+              dispositionName: dispositionName,
+              dispositionId: dispositionId ?? '',
+              remarks: _remarkController.text.trim(),
+              rating: _rating,
+              wrapUpSeconds: displayTimer.inSeconds,
+            );
+
+          
+if (mounted) {
+    setState(() {
+      _resetForm();     
+    });
+  }
+            //  show confirmation
+            if (mounted) {
+              // ScaffoldMessenger.of(context).showSnackBar(
+              //   const SnackBar(
+              //     content: Text("Form submitted successfully"),
+              //     backgroundColor: Colors.green,
+              //   ),
+              // );
+                  FToastManager().showToast(message: "Form submitted successfully");
+
+            }
+
+          } else {
+            await cubit.saveWrapUp(
+              context: context,
+              dispositionName: dispositionName,
+              dispositionId: dispositionId ?? '',
+              remarks: _remarkController.text.trim(),
+              rating: _rating,
+              wrapUpSeconds: displayTimer.inSeconds,
+            );
+
+            if (mounted) Navigator.pop(context);
+          }
+        } finally {
+          if (mounted) setState(() => _isSaving = false);
         }
       },
 
-                  style: widget.waitingForConnection
-      ? null: ElevatedButton.styleFrom(
+                  style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.appColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     elevation: 0,
                   ),
-                  child: const Text(
-                    "Save & Continue",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
+                  child: _isSaving
+    ? const     AppLoadingIndicator()
+
+    : const Text(
+        "Save & Continue",
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: Colors.white,
+        ),
+      ),
                 ),
               ),
             ),
@@ -826,7 +1037,7 @@ final dispositionId =
   if (_wrapupEnabled &&
       _wrapupLimitSeconds > 0 &&
       displayTimer.inSeconds >= _wrapupLimitSeconds &&
-      _selectedLevels.isEmpty) {
+      _selectedDispositionNames.isEmpty) {
 
     debugPrint("WrapUp time completed → Auto closing screen");
 
@@ -837,20 +1048,45 @@ final dispositionId =
   }
 }
 
+void _resetForm() {
+  // Clear remark
+  _remarkController.clear();
+
+  // Reset rating
+  _rating = 0;
+
+  // Reset dispositions
+  _selectedDispositionIds.clear();
+  _selectedDispositionNames.clear();
+
+  // Reset level visibility
+  _maxVisibleLevel = 1;
+
+  // (Optional) clear old multi-select chips if still used
+  _selectedLevels.clear();
+  _selectedLevelIds.clear();
+}
 
 Future<void> _autoCloseWrapUp() async {
-  if (!mounted) return;
+    if (!mounted) return;
+  if (_isSaving) return; // user already saving manually —
 
   try {
 
-    final dispositionName = _selectedLevels.join(", ");
-  final dispositionId =
-      _selectedLevelIds.isNotEmpty ? _selectedLevelIds.last : "";
+final selectedEntries = _selectedDispositionNames.entries.toList()
+  ..sort((a, b) => a.key.compareTo(b.key));
 
+final dispositionName = selectedEntries.isNotEmpty
+    ? selectedEntries.map((e) => e.value).join(", ")
+    : "";
+
+final dispositionId = selectedEntries.isNotEmpty
+    ? _selectedDispositionIds[selectedEntries.last.key]
+    : "";
     await context.read<CallStateCubit>().saveWrapUp(
       context: context,
-     dispositionName: dispositionName,
-      dispositionId: dispositionId,
+     dispositionName: dispositionName??'',
+      dispositionId: dispositionId??"",
       remarks: _remarkController.text.trim(),
       rating: _rating,
                                   wrapUpSeconds: displayTimer.inSeconds, 
@@ -865,4 +1101,31 @@ Future<void> _autoCloseWrapUp() async {
   }
 }
 
+  /// DECORATION
+  InputDecoration _outlinedDecoration({required String hint}) {
+    return InputDecoration(
+      hintText: hint,
+      alignLabelWithHint: true,
+      filled: true,
+      fillColor: Colors.white,
+      hintStyle: const TextStyle(height: 2),
+      isDense: true,
+      contentPadding:
+          const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide(
+          color: AppColors.appColor.withOpacity(0.6),
+          width: 1.5,
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: const BorderSide(
+          color: AppColors.appColor,
+          width: 2,
+        ),
+      ),
+    );
+  }
 }

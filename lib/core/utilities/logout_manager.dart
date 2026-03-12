@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
 import 'package:kommuno/core/l10n/app_localizations.dart';
@@ -10,6 +11,7 @@ import 'package:kommuno/core/common/app_theme/app_theme.dart';
 import 'package:kommuno/core/common/widget/loading_indicator.dart';
 import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/core/exception/app_dio_exception.dart';
+import 'package:kommuno/core/network_manager/alive_set_service.dart';
 import 'package:kommuno/core/network_manager/websocket_service.dart';
 import 'package:kommuno/core/utilities/app_methods.dart';
 import 'package:kommuno/core/utilities/campaign_manager.dart';
@@ -108,4 +110,52 @@ AppKeys.navigatorKey.currentState!.pushNamedAndRemoveUntil(
     }
     AppLoadingIndicator.dismissLoadingIndicator();
   }
+
+
+static Future<void> logoutAndExit({required BuildContext context}) async {
+    final userDetailsCubit = UserDetailsCubit.instance;
+
+  AppLoadingIndicator.showLoadingIndicator();
+
+  try {
+    if (userDetailsCubit!=null){
+
+    
+    final waitingSeconds = userDetailsCubit.stopWaitingTimer();
+    userDetailsCubit.stopActiveTimer();
+
+    final user = UserLoginInfoManager.userLoginInfoModel!;
+
+    final res = await AuthRepo().logoutUser(
+      username: user.username ?? "",
+      mode: AppConstant.loginDeviceType,
+      waitingsec: waitingSeconds,
+    );
+
+    if (res.isSuccess) {
+      // Disconnect sockets
+      CallWebSocketManager.disconnectCallSocket();
+      CallWebSocketManager.disconnectGlobal();
+      // Clear memory
+      UserLoginInfoManager.setLoginUserInfo(userInfo: null);
+      CampaignManager.setCampaignInfo(campaign: null);
+
+      for (var key in StorageEnum.values) {
+        await SecureStorage().deleteData(key: key.name);
+      }
+      await HiveService.deleteAll();
+
+      // Close app instead of going to login screen
+      SystemNavigator.pop();
+    } else {
+      FToastManager().showToast(message: res.message);
+    }
+    }
+  } catch (e) {
+    FToastManager().showToast(message: "Logout failed");
+  }
+
+  AppLoadingIndicator.dismissLoadingIndicator();
+}
+
 }

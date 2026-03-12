@@ -163,7 +163,7 @@ context.read<UserDetailsCubit>().setTodayLunchHours(
   }
 
   SizedBox get _kSized15 =>
-      const SizedBox(height: AppConstant.kSized15, width: AppConstant.kSized15);
+      const SizedBox(height: AppConstant.kSized10, width: AppConstant.kSized15);
 
   SizedBox get _kSized10 =>
       const SizedBox(height: AppConstant.kSized10, width: AppConstant.kSized10);
@@ -244,7 +244,7 @@ context.read<UserDetailsCubit>().setTodayLunchHours(
                           context: context, userDetails: userDetails),
                       _kSized5,
                       _buildOnboarding(),
-                      _kSized5,
+                      _kSized10,
                       ..._buildButtons1(context: context),
                       _kSized10,
                     ],
@@ -311,7 +311,7 @@ print("Status$status");
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(userDetails.agentName,
-                          style: AppTextStyle.appColorNormal),
+                          style: AppTextStyle.appColorNormal,),
                       Text(
                         addByIndiaCountryCodeWithoutPlus(
                           number: userDetails.agentMobile,
@@ -413,7 +413,7 @@ String formatSeconds(int sec) {
 
   Widget _buildOnboarding() {
     return const SizedBox(
-      height: 140,
+      height: 145,
       child: OnboardingWidget(
         content: [
           OnBoardConatiner(),

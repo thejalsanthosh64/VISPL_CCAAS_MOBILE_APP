@@ -9,7 +9,7 @@ abstract class AppTextStyle {
   static const whiteNormal =
       TextStyle(color: AppColors.white, fontWeight: FontWeight.w500);
   static final appColorNormal =
-      TextStyle(color: AppColors.appColor, fontWeight: FontWeight.w500);
+      TextStyle(color: AppColors.appColor, fontWeight: FontWeight.w500,fontSize: 16);
   static const greyNormal =
       TextStyle(color: AppColors.grey, fontWeight: FontWeight.w500);
   static const orangeNormal =

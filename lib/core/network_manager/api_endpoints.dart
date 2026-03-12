@@ -10,7 +10,7 @@ abstract class ApiEndpoints {
   // static const String _baseUrl = "https://dev.kommuno.com/v1/";
 
   static const String baseUrlWebSo = "https://testsio.smartping.ai/";
-  // static const String baseUrlWebSo = "https://ccssio.smartping.io/";
+//   static const String baseUrlWebSo = "https://ccssio.smartping.io/";
 
 
   static const String whiteLabelDomain = "https://test.smartping.ai";

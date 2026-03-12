@@ -1,9 +1,10 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:kommuno/core/common/app_theme/app_theme.dart';
-import 'package:kommuno/core/common/widget/toast_manager.dart';
+import 'package:kommuno/core/common/widget/loading_indicator.dart';
 import 'package:kommuno/core/utilities/campaign_manager.dart';
 import 'package:kommuno/features/calls/cubit/call_cubit.dart';
+import 'package:kommuno/features/campaigns/data/model/response/campaign_data.dart';
 
 // class DispositionBottomSheet extends StatefulWidget {
 //   final CallStateCubit cubit;
@@ -361,10 +362,16 @@ class DispositionBottomSheet extends StatefulWidget {
 class _DispositionBottomSheetState extends State<DispositionBottomSheet> {
   final TextEditingController _remarkController = TextEditingController();
 
-  String? _selectedDisposition; // comma separated
+late Map<int, List<DispositionItem>> _groupedDispositions;
+
+final Map<int, String?> _selectedDispositionNames = {};
+final Map<int, String?> _selectedDispositionIds = {};
+
+  String? _selectedDisposition;
   String? _selectedDispositionId;
   int _rating = 0;
-
+int _maxVisibleLevel = 1;
+bool _isSaving = false;
   @override
   void dispose() {
     _remarkController.dispose();
@@ -376,6 +383,12 @@ class _DispositionBottomSheetState extends State<DispositionBottomSheet> {
     final campaign = CampaignManager.campaign;
     final dispositions = campaign?.dispositions ?? [];
     final bool hasDispositions = dispositions.isNotEmpty;
+
+
+_groupedDispositions = CampaignManager.groupDispositionsByLevel(dispositions);
+
+// how many levels exist (max 5)
+final levels = _groupedDispositions.keys.toList()..sort();
 
     return SingleChildScrollView(
       child: Padding(
@@ -412,57 +425,117 @@ class _DispositionBottomSheetState extends State<DispositionBottomSheet> {
                 ),
               )
             else
-              DropdownButtonFormField2<String>(
-                isExpanded: true,
-                decoration: _outlinedDecoration(
-                  hint: "Select Disposition",
-                ),
-                hint: const Text("Select Disposition"),
-                value: null, // ❗ always null → prevents replacement
-                items: dispositions.map((d) {
-                  return DropdownMenuItem<String>(
-                    value: d.combinedField,
-                    child: Text(
-                      d.combinedField ?? "",
-                      textAlign: TextAlign.center,
-                    ),
-                  );
-                }).toList(),
-                onChanged: (val) {
-                  if (val == null) return;
+    //           DropdownButtonFormField2<String>(
+    //             isExpanded: true,
+    //             decoration: _outlinedDecoration(
+    //               hint: "Select Disposition",
+    //             ),
+    //             hint: const Text("Select Disposition"),
+    //             value: null, // ❗ always null → prevents replacement
+    //             items: dispositions.map((d) {
+    //               return DropdownMenuItem<String>(
+    //                 value: d.combinedField,
+    //                 child: Text(
+    //                   d.combinedField ?? "",
+    //                   textAlign: TextAlign.center,
+    //                 ),
+    //               );
+    //             }).toList(),
+    //             onChanged: (val) {
+    //               if (val == null) return;
       
-                  setState(() {
-                    final current = _selectedLevels;
+    //               setState(() {
+    //                 final current = _selectedLevels;
       
            
-                    // max 5
-                    if (current.length >= 5) {
-                      FToastManager().showToast(
-                        message:
-                            "You can select disposition only up to 5 levels",
-                      );
-                      return;
-                    }
-               // prevent duplicate
-                    if (current.contains(val)){
-                      FToastManager().showToast(
-      message: "This disposition is already selected",
+    //                 // max 5
+    //                 if (current.length >= 5) {
+    //                   FToastManager().showToast(
+    //                     message:
+    //                         "You can select disposition only up to 5 levels",
+    //                   );
+    //                   return;
+    //                 }
+    //            // prevent duplicate
+    //                 if (current.contains(val)){
+    //                   FToastManager().showToast(
+    //   message: "This disposition is already selected",
+    // );
+    // return;
+    //                 }
+      
+    //                 current.add(val);
+      
+    //                 _selectedDisposition = current.join(', ');
+    //                 _selectedDispositionId = dispositions
+    //                     .firstWhere((e) => e.combinedField == val)
+    //                     .id;
+    //               });
+    //             },
+    //             onMenuStateChange: (isOpen) {
+    //               if (isOpen) FocusScope.of(context).unfocus();
+    //             },
+    //           ),
+
+  Column(
+  children: levels.map((level) {
+    final bool shouldShow = level <= _maxVisibleLevel;
+    if (!shouldShow) return const SizedBox();
+
+    final items = _groupedDispositions[level]!;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: DropdownButtonFormField2<String>(
+        isExpanded: true,
+
+        decoration: _outlinedDecoration(
+          hint: "Select Level $level Disposition",
+
+        
+        ).copyWith(
+          suffixIcon: _selectedDispositionIds[level] != null
+              ? IconButton(
+                  icon: const Icon(Icons.close, size: 18, color: Colors.red),
+                  onPressed: () {
+                    setState(() {
+                      _selectedDispositionIds.remove(level);
+                      _selectedDispositionNames.remove(level);
+                    });
+                  },
+                )
+              : null,
+        ),
+        value: _selectedDispositionIds[level],
+        items: items.map((d) {
+          return DropdownMenuItem<String>(
+            value: d.id,
+            child: Text(
+              d.combinedField!
+                  .replaceAll(RegExp(r'\s*-?\s*L\d$'), ''),
+            ),
+          );
+        }).toList(),
+        onChanged: (val) {
+          setState(() {
+            if (val == null) {
+              _selectedDispositionIds.remove(level);
+              _selectedDispositionNames.remove(level);
+            } else {
+              _selectedDispositionIds[level] = val;
+              _selectedDispositionNames[level] =
+                  items.firstWhere((e) => e.id == val).combinedField;
+
+              if (level + 1 > _maxVisibleLevel) {
+                _maxVisibleLevel = level + 1;
+              }
+            }
+          });
+        },
+      ),
     );
-    return;
-                    }
-      
-                    current.add(val);
-      
-                    _selectedDisposition = current.join(', ');
-                    _selectedDispositionId = dispositions
-                        .firstWhere((e) => e.combinedField == val)
-                        .id;
-                  });
-                },
-                onMenuStateChange: (isOpen) {
-                  if (isOpen) FocusScope.of(context).unfocus();
-                },
-              ),
+  }).toList(),
+),
       
             /// SELECTED LEVELS UI
             if (_selectedLevels.isNotEmpty) ...[
@@ -576,15 +649,28 @@ class _DispositionBottomSheetState extends State<DispositionBottomSheet> {
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                onPressed: _onSave,
-                child: const Text(
-                  "Save",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
+                // onPressed: _onSave,
+
+onPressed: _isSaving
+    ? null
+    : () async {
+        setState(() => _isSaving = true);
+        try {
+          await _onSave();
+        } finally {
+          if (mounted) setState(() => _isSaving = false);
+        }
+      },
+               child: _isSaving
+    ? const AppLoadingIndicator()
+    : const Text(
+        "Save",
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: Colors.white,
+        ),
+      ),
               ),
             ),
           ],
@@ -600,6 +686,8 @@ class _DispositionBottomSheetState extends State<DispositionBottomSheet> {
       alignLabelWithHint: true,
       filled: true,
       fillColor: Colors.white,
+      hintStyle: const TextStyle(height: 2),
+      isDense: true,
       contentPadding:
           const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       enabledBorder: OutlineInputBorder(
@@ -623,13 +711,24 @@ class _DispositionBottomSheetState extends State<DispositionBottomSheet> {
   Future<void> _onSave() async {
 
 widget.cubit.state.isDispositionFilled ==false;
+ final selectedEntries = _selectedDispositionNames.entries.toList()
+    ..sort((a, b) => a.key.compareTo(b.key));
+
+  final dispositionName = selectedEntries.isNotEmpty
+      ? selectedEntries.map((e) => e.value).join(", ")
+      : "";
+
+  final dispositionId = selectedEntries.isNotEmpty
+      ? _selectedDispositionIds[selectedEntries.last.key]
+      : "";
+
 
 print("isDispositionFilledinwrapupSheet${widget.cubit.state.isDispositionFilled}");
 
     await widget.cubit.saveWrapUpInCall(
       context: context,
-      dispositionName: _selectedDisposition ?? "",
-      dispositionId: _selectedDispositionId ?? "",
+      dispositionName: dispositionName??'',
+  dispositionId: dispositionId??"",
       remarks: _remarkController.text.trim(),
       rating: _rating,
       wrapUpSeconds: widget.cubit.state.duration.inSeconds,

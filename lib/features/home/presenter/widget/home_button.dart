@@ -17,9 +17,9 @@ class HomeButton extends StatelessWidget {
 
   final String iconPath;
 
-  static const width = 120.0;
+  static const width = 125.0;
 
-  static const height = 85.0;
+  static const height = 90.0;
 
   @override
   Widget build(BuildContext context) {

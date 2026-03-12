@@ -18,7 +18,6 @@ import 'package:kommuno/core/common/widget/user_details/user_details_widget.dart
 import 'package:kommuno/core/utilities/app_methods.dart';
 import 'package:kommuno/core/utilities/campaign_manager.dart';
 import 'package:kommuno/core/utilities/logout_manager.dart';
-import 'package:kommuno/core/utilities/user_login_info_manager/user_login_info_manager.dart';
 import 'package:kommuno/features/campaigns/cubit/campagin_list_cubit/campaign_list_cubit.dart';
 import 'package:kommuno/features/campaigns/cubit/update_user_campaign/update_user_campaign_cubit.dart';
 import 'package:kommuno/features/campaigns/data/model/request/update_user_campaign_data.dart';
@@ -30,16 +29,17 @@ class CampaignList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isAssignCampaign = ModalRoute.of(context)?.settings.name == AppRouteNames.assignCampaign;
-    return PopScope(
-      canPop: !isAssignCampaign,
-      onPopInvokedWithResult: (didPop, result) async {
-        if (isAssignCampaign && !didPop) {
-          final isExit = await exitAppDialog(context: context);
-          if (isExit) {
-            exit(0);
-          }
-        }
-      },
+    return
+     PopScope(
+      canPop: false ,
+      // onPopInvokedWithResult: (didPop, result) async {
+      //   if (isAssignCampaign && !didPop) {
+      //     final isExit = await exitAppDialog(context: context);
+      //     if (isExit) {
+      //       exit(0);
+      //     }
+      //   }
+      // },
       child: MultiBlocProvider(
         providers: [
           BlocProvider(create: (__) => CampaignListCubit()),
@@ -73,127 +73,130 @@ class _CampaignListState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: MyAppBar(
-        title: AppLocalizations.of(context)!.campaigns,
-      ),
-      body: SafeArea(
-        child: UserDetailsWidget(
-          builder: (userData) {
-            return BlocListener<UpdateUserCampaignCubit, UpdateUserCampaignState>(
-              listener: (context, updateUserCampaignState) async {
-                if (updateUserCampaignState.isCampaignUpdated) {
-                  final user = context.read<UserDetailsCubit>().userDetailsModel;
-    final smeId = user.smeId;
-    final agentId = user.agentId;
-
-    await context
-        .read<UpdateUserCampaignCubit>()
-        .postCampaignSelectionSetup(
-          smeId: smeId,
-          agentId: agentId,
-        );
-
-                  if (isAssignCampaign) {
-                    Navigator.of(context).pushNamedAndRemoveUntil(AppRouteNames.homeMiddleware, (settings) => false);
-                  } else {
-                    Navigator.of(context).pop();
-                  }
-                }
-              },
-              child: BlocConsumer<CampaignListCubit, CampaignListState>(
-                listener: (context, campaignListState) {},
-                listenWhen: (oldState, currentState) {
-                  if (oldState is! CampaignListSuccessState && currentState is CampaignListSuccessState) {
-                    if (!isAssignCampaign && currentState.selectedCampaign == null) {
-                      context.read<CampaignListCubit>().onSelectCampaign(id: CampaignManager.campaign?.id);
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        appBar: MyAppBar(
+          title: AppLocalizations.of(context)!.campaigns,
+        ),
+        body: SafeArea(
+          child: UserDetailsWidget(
+            builder: (userData) {
+              return BlocListener<UpdateUserCampaignCubit, UpdateUserCampaignState>(
+                listener: (context, updateUserCampaignState) async {
+                  if (updateUserCampaignState.isCampaignUpdated) {
+                    final user = context.read<UserDetailsCubit>().userDetailsModel;
+      final smeId = user.smeId;
+      final agentId = user.agentId;
+      
+      await context
+          .read<UpdateUserCampaignCubit>()
+          .postCampaignSelectionSetup(
+            smeId: smeId,
+            agentId: agentId,
+          );
+      
+                    if (isAssignCampaign) {
+                      Navigator.of(context).pushNamedAndRemoveUntil(AppRouteNames.homeMiddleware, (settings) => false);
+                    } else {
+                      Navigator.of(context).pop();
                     }
                   }
-                  return false;
                 },
-                builder: (context, campaignListState) {
-                  if (campaignListState is CampaignListInitialState) {
-                    Future.delayed(
-                      Duration.zero,
-                      () {
-                        if (context.mounted) {
-                          _loadCampaignList(context: context);
-                        }
-                      },
-                    );
-                    return const SizedBox();
-                  } else if (campaignListState is CampaignListLoadingState) {
-                    return const AppLoadingIndicator();
-                  } else if (campaignListState is CampaignListErrorState) {
-                    return EmptyErrorWidget(
-                      text: AppLocalizations.of(context)!.somethingWentWrong,
-                      onTap: () {
-                        _loadCampaignList(context: context);
-                      },
-                    );
-                  } else if (campaignListState is CampaignListSuccessState) {
-                    if (campaignListState.campaignList.isEmpty) {
+                child: BlocConsumer<CampaignListCubit, CampaignListState>(
+                  listener: (context, campaignListState) {},
+                  listenWhen: (oldState, currentState) {
+                    if (oldState is! CampaignListSuccessState && currentState is CampaignListSuccessState) {
+                      if (!isAssignCampaign && currentState.selectedCampaign == null) {
+                        context.read<CampaignListCubit>().onSelectCampaign(id: CampaignManager.campaign?.id);
+                      }
+                    }
+                    return false;
+                  },
+                  builder: (context, campaignListState) {
+                    if (campaignListState is CampaignListInitialState) {
+                      Future.delayed(
+                        Duration.zero,
+                        () {
+                          if (context.mounted) {
+                            _loadCampaignList(context: context);
+                          }
+                        },
+                      );
+                      return const SizedBox();
+                    } else if (campaignListState is CampaignListLoadingState) {
+                      return const AppLoadingIndicator();
+                    } else if (campaignListState is CampaignListErrorState) {
                       return EmptyErrorWidget(
-                        text: AppLocalizations.of(context)!.noRecordFound,
+                        text: AppLocalizations.of(context)!.somethingWentWrong,
                         onTap: () {
                           _loadCampaignList(context: context);
                         },
                       );
-                    }
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: AppConstant.kBodyHorizontalPadding),
-                      child: Column(
-                        children: [
-                          _kSized10,
-                          Expanded(
-                            child: ListView.builder(
-                              physics: const ClampingScrollPhysics(),
-                              padding: EdgeInsets.zero,
-                              itemCount: campaignListState.campaignList.length,
-                              itemBuilder: (context, index) {
-                                return CampaignTile(
-                                  campaign: campaignListState.campaignList[index],
-                                  isSelected: campaignListState.selectedCampaign == campaignListState.campaignList[index].id,
-                                  onChanged: (campaign) {
-                                    context
-                                        .read<CampaignListCubit>()
-                                        .onSelectCampaign(id: campaign.id != campaignListState.selectedCampaign ? campaign.id ?? "" : null);
-                                  },
-                                );
-                              },
+                    } else if (campaignListState is CampaignListSuccessState) {
+                      if (campaignListState.campaignList.isEmpty) {
+                        return EmptyErrorWidget(
+                          text: AppLocalizations.of(context)!.noRecordFound,
+                          onTap: () {
+                            _loadCampaignList(context: context);
+                          },
+                        );
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: AppConstant.kBodyHorizontalPadding),
+                        child: Column(
+                          children: [
+                            _kSized10,
+                            Expanded(
+                              child: ListView.builder(
+                                physics: const ClampingScrollPhysics(),
+                                padding: EdgeInsets.zero,
+                                itemCount: campaignListState.campaignList.length,
+                                itemBuilder: (context, index) {
+                                  return CampaignTile(
+                                    campaign: campaignListState.campaignList[index],
+                                    isSelected: campaignListState.selectedCampaign == campaignListState.campaignList[index].id,
+                                    onChanged: (campaign) {
+                                      context
+                                          .read<CampaignListCubit>()
+                                          .onSelectCampaign(id: campaign.id != campaignListState.selectedCampaign ? campaign.id ?? "" : null);
+                                    },
+                                  );
+                                },
+                              ),
                             ),
-                          ),
-                          _kSized10,
-                          _updateUserCampaignButton(
-                            context: context,
-                            campaignListState: campaignListState,
-                            userData: userData,
-                          ),
-                          _kSized5,
-                    isAssignCampaign? TextButton(
-  onPressed: () async {
-    await LogoutManager.logoutUser(context: context);
-  },
-  child:  Text(
-    "Back to Login",
-    style: TextStyle(
-      color: AppColors.appColor,
-      fontWeight: FontWeight.w600,
-    ),
-  ),
-) : const SizedBox(),
-
-
-    _kSized5,
-                        ],
-                      ),
-                    );
-                  }
-                  return const SizedBox();
-                },
-              ),
-            );
-          },
+                            _kSized10,
+                            _updateUserCampaignButton(
+                              context: context,
+                              campaignListState: campaignListState,
+                              userData: userData,
+                            ),
+                            _kSized5,
+                      isAssignCampaign? TextButton(
+        onPressed: () async {
+      await LogoutManager.logoutUser(context: context);
+        },
+        child:  Text(
+      "Back to Login",
+      style: TextStyle(
+        color: AppColors.appColor,
+        fontWeight: FontWeight.w600,
+      ),
+        ),
+      ) : const SizedBox(),
+      
+      
+      _kSized5,
+                          ],
+                        ),
+                      );
+                    }
+                    return const SizedBox();
+                  },
+                ),
+              );
+            },
+          ),
         ),
       ),
     );

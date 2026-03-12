@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -44,7 +43,7 @@ class _TransferBottomSheetState extends State<TransferBottomSheet> {
   
   bool loading = false;
   bool loadingSecondary = false;
-
+bool _transferClickLocked = false;
   final transferTypes = [
     {'value': 'agent', 'label': 'Transfer to Agent'},
     {'value': 'team_lead', 'label': 'Transfer to Team Lead'},
@@ -187,7 +186,7 @@ class _TransferBottomSheetState extends State<TransferBottomSheet> {
                   if (selectedTransferType != null) ...[
                     const SizedBox(height: 20),
                     if (loading)
-                       Center(
+                       const Center(
                         child: Padding(
                           padding: EdgeInsets.all(20),
                           child: CircularProgressIndicator(
@@ -824,6 +823,8 @@ Widget _buildExternalNumberField() {
 
 
 Future<void> _performTransfer() async {
+    if (_transferClickLocked) return; // Prevent multiple clicks
+    _transferClickLocked = true;
   final cubit = context.read<CallStateCubit>();
   final smeId = CallSession.smeId!;
   final sessionId = CallSession.sessionId!;
@@ -876,59 +877,88 @@ print("myNumber$myNumber");
 
     switch (selectedTransferType) {
       
-      case 'agent':
-        final agent = selectedAgent;
-        final status = agent["agent_live_status"] ?? "";
+      // case 'agent':
+      //   final agent = selectedAgent;
+      //   final status = agent["agent_live_status"] ?? "";
         
-        // if (status.toString().toLowerCase() != "free") {
-        //   _showError("Agent is not available");
-        //   return;
-        // }
+      //   // if (status.toString().toLowerCase() != "free") {
+      //   //   _showError("Agent is not available");
+      //   //   return;
+      //   // }
 
-        if (widget.isConference) {
-          // Conference flow
-          await cubit.attendedTransfer(
-            smeId: smeId,
-            sessionId: sessionId,
-            channelId: channelId,
-            agentId: agentId,
-            agentName: agentName,
-            transferToAgentId: agent["agent_id"],
-            agentMobile: agent["agent_mobile"],
-          );
-          await Future.delayed(const Duration(seconds: 1));
-          await cubit.attendedTransfer(
-            smeId: smeId,
-            sessionId: sessionId,
-            channelId: channelId,
-            agentId: agentId,
-            agentName: agentName,
-            action: "conference",
-          );
-        } else if (widget.isAttended) {
-          // Attended transfer
-          await cubit.attendedTransfer(
-            smeId: smeId,
-            sessionId: sessionId,
-            channelId: channelId,
-            agentId: agentId,
-            agentName: agentName,
-            transferToAgentId: agent["agent_id"],
-            agentMobile: agent["agent_mobile"],
-          );
-        } else {
-          // Blind transfer
-          await cubit.unattendedTransfer(
-            smeId: smeId,
-            sessionId: sessionId,
-            channelId: channelId,
-            agentId: agentId,
-            agentName: agentName,
-            transferToAgentId: agent["agent_id"],
-            agentMobile: agent["agent_mobile"],
-          );
-        }
-        break;
+      //   if (widget.isConference) {
+      //     // Conference flow
+      //     await cubit.attendedTransfer(
+      //       smeId: smeId,
+      //       sessionId: sessionId,
+      //       channelId: channelId,
+      //       agentId: agentId,
+      //       agentName: agentName,
+      //       transferToAgentId: agent["agent_id"],
+      //       agentMobile: agent["agent_mobile"],
+      //     );
+      //     // await Future.delayed(const Duration(seconds: 1));
+      //     // await cubit.attendedTransfer(
+      //     //   smeId: smeId,
+      //     //   sessionId: sessionId,
+      //     //   channelId: channelId,
+      //     //   agentId: agentId,
+      //     //   agentName: agentName,
+      //     //   action: "conference",
+      //     // );
+      //   } else if (widget.isAttended) {
+      //     // Attended transfer
+      //     await cubit.attendedTransfer(
+      //       smeId: smeId,
+      //       sessionId: sessionId,
+      //       channelId: channelId,
+      //       agentId: agentId,
+      //       agentName: agentName,
+      //       transferToAgentId: agent["agent_id"],
+      //       agentMobile: agent["agent_mobile"],
+      //     );
+      //   } else {
+      //     // Blind transfer
+      //     await cubit.unattendedTransfer(
+      //       smeId: smeId,
+      //       sessionId: sessionId,
+      //       channelId: channelId,
+      //       agentId: agentId,
+      //       agentName: agentName,
+      //       transferToAgentId: agent["agent_id"],
+      //       agentMobile: agent["agent_mobile"],
+      //     );
+      //   }
+      //   break;
+
+      case 'agent':
+
+     final agent = selectedAgent;
+        
+
+  if (widget.isAttended || widget.isConference) {
+    await cubit.attendedTransfer(
+      smeId: smeId,
+      sessionId: sessionId,
+      channelId: channelId,
+      agentId: agentId,
+      agentName: agentName,
+      transferToAgentId: agent["agent_id"],
+      agentMobile: agent["agent_mobile"],
+    );
+  } else {
+    await cubit.unattendedTransfer(
+      smeId: smeId,
+      sessionId: sessionId,
+      channelId: channelId,
+      agentId: agentId,
+      agentName: agentName,
+      transferToAgentId: agent["agent_id"],
+      agentMobile: agent["agent_mobile"],
+    );
+  }
+  break;
+
 
       case 'team_lead':
         final lead = selectedTeamLead;
@@ -984,55 +1014,85 @@ print("myNumber$myNumber");
         );
         break;
 
-      case 'outside_number':
+
+
+case 'outside_number':
+
+
         final cleanNumber = externalNumber!.trim();
         
         debugPrint(" [EXTERNAL TRANSFER] Number: $cleanNumber");
+
+  if (widget.isAttended || widget.isConference) {
+    await cubit.attendedTransfer(
+      smeId: smeId,
+      sessionId: sessionId,
+      channelId: channelId,
+      agentId: agentId,
+      agentName: agentName,
+      outsideNumber: cleanNumber,
+    );
+  } else {
+    await cubit.unattendedTransfer(
+      smeId: smeId,
+      sessionId: sessionId,
+      channelId: channelId,
+      agentId: agentId,
+      agentName: agentName,
+      outsideNumber: cleanNumber,
+    );
+  }
+  break;
+
+      // case 'outside_number':
+      //   final cleanNumber = externalNumber!.trim();
         
-        if (widget.isConference) {
-          //  Conference to external number
-          debugPrint(" [EXTERNAL TRANSFER] Conference mode");
-          await cubit.attendedTransfer(
-            smeId: smeId,
-            sessionId: sessionId,
-            channelId: channelId,
-            agentId: agentId,
-            agentName: agentName,
-            outsideNumber: cleanNumber, //  Pass outside number
-          );
-          await Future.delayed(const Duration(seconds: 1));
-          await cubit.attendedTransfer(
-            smeId: smeId,
-            sessionId: sessionId,
-            channelId: channelId,
-            agentId: agentId,
-            agentName: agentName,
-            action: "conference",
-          );
-        } else if (widget.isAttended) {
-          //  Attended transfer to external number
-          debugPrint(" [EXTERNAL TRANSFER] Attended mode");
-          await cubit.attendedTransfer(
-            smeId: smeId,
-            sessionId: sessionId,
-            channelId: channelId,
-            agentId: agentId,
-            agentName: agentName,
-            outsideNumber: cleanNumber, //  Pass outside number
-          );
-        } else {
-          //  Blind transfer to external number
-          debugPrint(" [EXTERNAL TRANSFER] Blind mode");
-          await cubit.unattendedTransfer(
-            smeId: smeId,
-            sessionId: sessionId,
-            channelId: channelId,
-            agentId: agentId,
-            agentName: agentName,
-            outsideNumber: cleanNumber, //  Pass outside number
-          );
-        }
-        break;
+      //   debugPrint(" [EXTERNAL TRANSFER] Number: $cleanNumber");
+        
+      //   if (widget.isConference) {
+      //     //  Conference to external number
+      //     debugPrint(" [EXTERNAL TRANSFER] Conference mode");
+      //     await cubit.attendedTransfer(
+      //       smeId: smeId,
+      //       sessionId: sessionId,
+      //       channelId: channelId,
+      //       agentId: agentId,
+      //       agentName: agentName,
+      //       outsideNumber: cleanNumber, //  Pass outside number
+      //     );
+      //     // await Future.delayed(const Duration(seconds: 1));
+      //     // await cubit.attendedTransfer(
+      //     //   smeId: smeId,
+      //     //   sessionId: sessionId,
+      //     //   channelId: channelId,
+      //     //   agentId: agentId,
+      //     //   agentName: agentName,
+      //     //   action: "conference",
+      //     // );
+      //   } else if (widget.isAttended) {
+      //     //  Attended transfer to external number
+      //     debugPrint(" [EXTERNAL TRANSFER] Attended mode");
+      //     await cubit.attendedTransfer(
+      //       smeId: smeId,
+      //       sessionId: sessionId,
+      //       channelId: channelId,
+      //       agentId: agentId,
+      //       agentName: agentName,
+      //       outsideNumber: cleanNumber, //  Pass outside number
+      //     );
+      //   } else {
+      //     //  Blind transfer to external number
+      //     debugPrint(" [EXTERNAL TRANSFER] Blind mode");
+      //     await cubit.unattendedTransfer(
+      //       smeId: smeId,
+      //       sessionId: sessionId,
+      //       channelId: channelId,
+      //       agentId: agentId,
+      //       agentName: agentName,
+      //       outsideNumber: cleanNumber, //  Pass outside number
+      //     );
+      //   }
+      //   break;
     }
 
     if (mounted) {
@@ -1042,6 +1102,8 @@ print("myNumber$myNumber");
   } catch (e) {
     debugPrint(" [TRANSFER ERROR] $e");
     _showError("Transfer failed: $e");
+  }finally{
+    _transferClickLocked = false;
   }
 }
 
