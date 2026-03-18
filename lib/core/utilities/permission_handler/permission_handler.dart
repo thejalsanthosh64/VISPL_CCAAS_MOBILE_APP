@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:kommuno/core/common/app_keys.dart';
@@ -57,8 +58,9 @@ class AppPermissionHandler extends WidgetsBindingObserver {
         actions: (ctx) => [
           TextButton(
             onPressed: () async {
-              exit(0);
-            },
+              // exit(0);
+
+SystemNavigator.pop();            },
             child: Text(AppLocalizations.of(ctx)!.exit),
           ),
           TextButton(

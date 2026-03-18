@@ -1,3 +1,5 @@
+import 'package:kommuno/features/campaigns/data/model/response/campaign_data.dart';
+
 class CallState {
   final bool isConnected;
   final bool isMuted;
@@ -16,6 +18,10 @@ final List<Map<String, dynamic>> interactions;
   final bool isSavingCrm;
     final bool crmPopupShown; 
 final bool isDispositionFilled;
+
+final List<DispositionItem> incomingDispositions;
+  final int incomingWrapUpTime;
+  final String surveyFormId;
 
 
 // // single source of truth for transfer/conference UI ────────────────────
@@ -54,10 +60,11 @@ final bool isDispositionFilled;
  
   /// ALL action icons (except Survey) should be disabled.
   /// True from cbwt_confirmed until the consult leg is confirmed or cleared.
- bool get areIconsDisabled =>
+bool get areIconsDisabled =>
     transferStatus != TransferStatus.idle &&
     transferStatus != TransferStatus.attendedStep1Confirmed &&
-    transferStatus != TransferStatus.conferenceLive;
+    transferStatus != TransferStatus.conferenceLive &&
+    transferStatus != TransferStatus.conferenceEnded; // ADD THIS
   // Note: attendedStep1Confirmed re-enables icons so agent can choose Conf/Transfer.
   // conferenceLive also has icons enabled.
  
@@ -90,6 +97,9 @@ this.isDispositionFilled = false,
  
  this.transferStatus = TransferStatus.idle,
     this.conferenceCompleted = false,
+    this.incomingDispositions = const [],
+    this.incomingWrapUpTime = 0,
+    this.surveyFormId = "",
   });
 
   CallState copyWith({
@@ -111,6 +121,11 @@ this.isDispositionFilled = false,
         bool? isDispositionFilled,
  TransferStatus? transferStatus,
     bool? conferenceCompleted,
+
+
+ List<DispositionItem>? incomingDispositions,
+   int? incomingWrapUpTime,
+   String ?surveyFormId,
   }) {
     return CallState(
       isConnected: isConnected ?? this.isConnected,
@@ -132,6 +147,10 @@ this.isDispositionFilled = false,
             isDispositionFilled: isDispositionFilled ?? this.isDispositionFilled,
  transferStatus: transferStatus ?? this.transferStatus,
       conferenceCompleted: conferenceCompleted ?? this.conferenceCompleted,
+
+      incomingDispositions: incomingDispositions??this.incomingDispositions,
+      incomingWrapUpTime: incomingWrapUpTime??this.incomingWrapUpTime,
+      surveyFormId: surveyFormId??this.surveyFormId,
     );
   }
 @override
@@ -155,7 +174,10 @@ bool operator ==(Object other) {
       other.crmPopupShown == crmPopupShown &&
       other.isDispositionFilled == isDispositionFilled &&
   other.transferStatus == transferStatus &&
-        other.conferenceCompleted == conferenceCompleted;
+        other.conferenceCompleted == conferenceCompleted &&
+        other.incomingDispositions ==incomingDispositions &&
+        other.incomingWrapUpTime == incomingWrapUpTime &&
+        other.surveyFormId == surveyFormId; 
 }
 
 @override
@@ -177,7 +199,10 @@ int get hashCode {
                crmPopupShown.hashCode ^
                isDispositionFilled.hashCode ^
                   transferStatus.hashCode ^
-      conferenceCompleted.hashCode;
+      conferenceCompleted.hashCode ^
+      incomingDispositions.hashCode ^
+      incomingWrapUpTime.hashCode ^
+      surveyFormId.hashCode;
               
 
 

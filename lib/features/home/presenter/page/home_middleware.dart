@@ -72,7 +72,7 @@ class HomeMiddleware extends StatelessWidget {
             } else {
               final isExit = await exitAppDialog(context: innerContext);
 
-             if (isExit) {
+             if (isExit) { 
   // final cubit = UserDetailsCubit.instance;
 
   // if (cubit != null) {

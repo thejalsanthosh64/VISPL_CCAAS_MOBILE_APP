@@ -7,6 +7,7 @@ import 'package:kommuno/core/common/app_constant.dart';
 import 'package:kommuno/core/common/app_keys.dart';
 import 'package:kommuno/core/common/repo/activity_log_repo.dart';
 import 'package:kommuno/core/network_manager/alive_set_service.dart';
+import 'package:kommuno/core/utilities/secure_storage/secure_storage.dart';
 import 'package:kommuno/core/utilities/user_login_info_manager/user_login_info_manager.dart';
 import 'package:kommuno/core/common/widget/loading_indicator.dart';
 import 'package:kommuno/core/common/widget/toast_manager.dart';
@@ -19,8 +20,9 @@ import 'package:kommuno/core/l10n/app_localizations.dart';
 part 'login_state.dart';
 
 class LoginCubit extends Cubit<LoginState> {
-  LoginCubit() : super(const LoginState());
-
+LoginCubit() : super(const LoginState()) {
+    _loadLastUsername();
+  }
   final userNameController = TextEditingController(text: kDebugMode ? "boffincodersprojects@gmail.com" : '');
   final passwordController = TextEditingController(text: kDebugMode ? "123456" : '');
 
@@ -61,7 +63,7 @@ class LoginCubit extends Cubit<LoginState> {
       FToastManager().showToast(message: res.message);
       return;
     }
-
+await SecureStorage().writeData(key: 'last_saved_username', value: username);
       await UserLoginInfoManager.setLoginUserInfo(
         userInfo: res.data,
       );
@@ -185,4 +187,18 @@ if (userDetails.agentStatus == 0) {
     }
     AppLoadingIndicator.dismissLoadingIndicator();
   }
+
+Future<void> _loadLastUsername() async {
+    try {
+      final savedUsername = await SecureStorage().readData(key: 'last_saved_username');
+      
+      if (savedUsername != null && savedUsername.toString().isNotEmpty) {
+        userNameController.text = savedUsername.toString();
+      }
+      
+    } catch (e) {
+      debugPrint("Failed to load last username: $e");
+    }
+  }
+
 }

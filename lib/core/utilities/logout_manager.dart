@@ -86,10 +86,17 @@ abstract class LogoutManager {
       CallWebSocketManager.disconnectGlobal();
         UserLoginInfoManager.setLoginUserInfo(userInfo: null);
         CampaignManager.setCampaignInfo(campaign: null);
+
+String? lastUser = await SecureStorage().readData(key: 'last_saved_username') as String?;
+
         for (var key in StorageEnum.values) {
           SecureStorage().deleteData(key: key.name);
         }
         await HiveService.deleteAll();
+
+        if (lastUser != null && lastUser.isNotEmpty) {
+          await SecureStorage().writeData(key: 'last_saved_username', value: lastUser);
+        }
         if (context.mounted) {
 AppKeys.navigatorKey.currentState!.pushNamedAndRemoveUntil(
   AppRouteNames.loginScreen,
@@ -139,11 +146,16 @@ static Future<void> logoutAndExit({required BuildContext context}) async {
       // Clear memory
       UserLoginInfoManager.setLoginUserInfo(userInfo: null);
       CampaignManager.setCampaignInfo(campaign: null);
+String? lastUser = await SecureStorage().readData(key: 'last_saved_username') as String?;
 
       for (var key in StorageEnum.values) {
         await SecureStorage().deleteData(key: key.name);
       }
       await HiveService.deleteAll();
+
+      if (lastUser != null && lastUser.isNotEmpty) {
+          await SecureStorage().writeData(key: 'last_saved_username', value: lastUser);
+        }
 
       // Close app instead of going to login screen
       SystemNavigator.pop();

@@ -1,8 +1,10 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kommuno/core/common/app_theme/app_theme.dart';
 import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
+import 'package:kommuno/core/utilities/app_methods.dart';
 import 'package:kommuno/core/utilities/call_manager/call_session.dart';
 import 'package:kommuno/features/calls/cubit/call_cubit.dart';
 import 'package:kommuno/features/calls/data/model/agent_queue_model.dart';
@@ -48,7 +50,6 @@ bool _transferClickLocked = false;
     {'value': 'agent', 'label': 'Transfer to Agent'},
     {'value': 'team_lead', 'label': 'Transfer to Team Lead'},
     {'value': 'specific_queue_agent', 'label': 'Specific Agent of Specific Queue'},
-    {'value': 'specific_queue', 'label': 'Specific Queue'},
     {'value': 'same_queue', 'label': 'Same Queue'},
     {'value': 'outside_number', 'label': 'External Number'},
   ];
@@ -81,28 +82,22 @@ bool _transferClickLocked = false;
 
           break;
         case 'team_lead':
-          // teamLeads = await cubit.loadTeamLeads(smeId);
- agents = await cubit.loadTeamLeads(smeId);
-
-// teamLeads = allTeamLeads.where((lead) {
-//   return lead["agent_live_status"] == "Waiting" &&
-//          lead["agent_id"] != CallSession.agentId;
-// }).toList();
+final allTeamLeads = await cubit.loadTeamLeads(smeId);
+          // Use cubit's filter for raw json
+          teamLeads = cubit.getWaitingAgentsOnly(allTeamLeads);
 
           break;
         case 'specific_queue_agent':
-        case 'specific_queue':
           queues = await cubit.loadAllQueues(smeId);
           break;
         case 'same_queue':
           // sameQueueAgents = await cubit.loadSameQueueAgents();
- agents = await cubit.loadSameQueueAgents();
-
-// sameQueueAgents = allSameQueueAgents
-//     .where((a) =>
-//         a.agentLiveStatus == "Waiting" &&
-//         a.agentId != CallSession.agentId)
-//     .toList();
+ final allSameQueueAgents = await cubit.loadSameQueueAgents();
+          // Filter for "Waiting" and exclude current agent
+          sameQueueAgents = allSameQueueAgents.where((agent) {
+            return agent.agentLiveStatus?.toLowerCase() == "waiting" &&
+                   agent.agentId != CallSession.agentId;
+          }).toList();
 
           break;
         case 'outside_number':
@@ -116,13 +111,19 @@ bool _transferClickLocked = false;
     setState(() => loading = false);
   }
 
-  Future<void> loadQueueAgentsForQueue(String queueId) async {
+Future<void> loadQueueAgentsForQueue(String queueId) async {
     setState(() => loadingSecondary = true);
 
     final cubit = context.read<CallStateCubit>();
     final smeId = CallSession.smeId!;
 
-    queueAgents = await cubit.loadQueueAgents(smeId, queueId);
+    final allQueueAgents = await cubit.loadQueueAgents(smeId, queueId);
+    
+    // Filter for "Waiting" and exclude current agent
+    queueAgents = allQueueAgents.where((agent) {
+      return agent.agentLiveStatus?.toLowerCase() == "waiting" &&
+             agent.agentId != CallSession.agentId;
+    }).toList();
     
     setState(() {
       loadingSecondary = false;
@@ -334,8 +335,6 @@ bool _transferClickLocked = false;
             ],
           ],
         );
-      case 'specific_queue':
-        return _buildQueueDropdown();
       case 'same_queue':
         return _buildSameQueueDropdown();
       case 'outside_number':
@@ -344,88 +343,96 @@ bool _transferClickLocked = false;
         return const SizedBox();
     }
   }
-Widget _buildAgentDropdown() {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        "Select Agent *",
-        style: AppTextStyle.blackNormal.copyWith(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-      const SizedBox(height: 8),
-      Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.grey.withOpacity(0.3)),
-        ),
-        child: DropdownButtonFormField<dynamic>(
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
-            ),
-            filled: true,
-            fillColor: Colors.white,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 14,
-            ),
+  Widget _buildAgentDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Select Agent *",
+          style: AppTextStyle.blackNormal.copyWith(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
           ),
-          hint: const Text("Select Agent"),
-          value: selectedAgent,
-          items: agents.map((agent) {
-            final status = agent["agent_live_status"] ?? "-";
-            final name = agent["agent_name"] ?? "Unknown";
-            
-            return DropdownMenuItem(
-              value: agent,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Flexible( 
-                    child: Text(
-                      name,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: status.toString().toLowerCase() == "free"
-                          ? Colors.green.withOpacity(0.1)
-                          : Colors.orange.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      status,
-                      style: TextStyle(
-                        color: status.toString().toLowerCase() == "free"
-                            ? Colors.green.shade700
-                            : Colors.orange.shade700,
-                        fontSize: 10,
+        ),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.grey.withOpacity(0.3)),
+          ),
+          child: DropdownButtonFormField<dynamic>(
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              filled: true,
+              fillColor: Colors.white,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
+              ),
+            ),
+            hint: const Text("Select Agent"),
+            value: selectedAgent,
+            items: agents.isEmpty ? null : agents.map((agent) {
+              final status = agent["agent_live_status"] ?? "-";
+              final name = agent["agent_name"] ?? "Unknown";
+              
+              return DropdownMenuItem(
+                value: agent,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible( 
+                      child: Text(
+                        name,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          }).toList(),
-          onChanged: (value) {
-            setState(() => selectedAgent = value);
-          },
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: status.toString().toLowerCase() == "free"
+                            ? Colors.green.withOpacity(0.1)
+                            : Colors.orange.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        status,
+                        style: TextStyle(
+                          color: status.toString().toLowerCase() == "free"
+                              ? Colors.green.shade700
+                              : Colors.orange.shade700,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+            onChanged: (value) {
+              setState(() => selectedAgent = value);
+            },
+          ),
         ),
-      ),
-    ],
-  );
-}
+        if (agents.isEmpty)
+          const Padding(
+            padding: EdgeInsets.only(top: 8.0),
+            child: Text(
+              "No agents are currently available.",
+              style: TextStyle(color: AppColors.red, fontSize: 12),
+            ),
+          ),
+      ],
+    );
+  }
 
   Widget _buildTeamLeadDropdown() {
     return Column(
@@ -460,7 +467,7 @@ Widget _buildAgentDropdown() {
             ),
             hint: const Text("Select Team Lead"),
             value: selectedTeamLead,
-            items: teamLeads.map((lead) {
+            items: teamLeads.isEmpty ? null : teamLeads.map((lead) {
               return DropdownMenuItem(
                 value: lead,
                 child: Text(lead["agent_name"] ?? "Unknown"),
@@ -471,6 +478,14 @@ Widget _buildAgentDropdown() {
             },
           ),
         ),
+        if (teamLeads.isEmpty)
+          const Padding(
+            padding: EdgeInsets.only(top: 8.0),
+            child: Text(
+              "No team leads are currently available.",
+              style: TextStyle(color: AppColors.red, fontSize: 12),
+            ),
+          ),      
       ],
     );
   }
@@ -508,7 +523,7 @@ Widget _buildAgentDropdown() {
             ),
             hint: const Text("Select Queue"),
             value: selectedQueue,
-            items: queues.map((queue) {
+            items: queues.isEmpty ? null : queues.map((queue) {
               return DropdownMenuItem(
                 value: queue,
                 child: Text(queue["name"] ?? "Unknown"),
@@ -522,177 +537,201 @@ Widget _buildAgentDropdown() {
             },
           ),
         ),
+        if (queues.isEmpty)
+          const Padding(
+            padding: EdgeInsets.only(top: 8.0),
+            child: Text(
+              "No queues found.",
+              style: TextStyle(color: AppColors.red, fontSize: 12),
+            ),
+          ),
       ],
     );
   }
 
   Widget _buildQueueAgentDropdown() {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        "Select Agent from Queue *",
-        style: AppTextStyle.blackNormal.copyWith(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-      const SizedBox(height: 8),
-      Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.grey.withOpacity(0.3)),
-        ),
-        child: DropdownButtonFormField<QueueAgentModel>(
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
-            ),
-            filled: true,
-            fillColor: Colors.white,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 14,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Select Agent from Queue *",
+          style: AppTextStyle.blackNormal.copyWith(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
           ),
-          hint: const Text("Select Agent"),
-          value: selectedQueueAgent,
-          items: queueAgents.map((agent) {
-            final name = agent.agentName ?? "Unknown";
-            
-            return DropdownMenuItem(
-              value: agent,
-              child: Row(
-                mainAxisSize: MainAxisSize.min, 
-                children: [
-                  Flexible( 
-                    child: Text(
-                      name,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  if (agent.agentLiveStatus != null) ...[
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: agent.agentLiveStatus?.toLowerCase() == "free"
-                            ? Colors.green.withOpacity(0.1)
-                            : Colors.orange.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.grey.withOpacity(0.3)),
+          ),
+          child: DropdownButtonFormField<QueueAgentModel>(
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              filled: true,
+              fillColor: Colors.white,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
+              ),
+            ),
+            hint: const Text("Select Agent"),
+            value: selectedQueueAgent,
+            items: queueAgents.isEmpty ? null : queueAgents.map((agent) {
+              final name = agent.agentName ?? "Unknown";
+              
+              return DropdownMenuItem(
+                value: agent,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min, 
+                  children: [
+                    Flexible( 
                       child: Text(
-                        agent.agentLiveStatus!,
-                        style: TextStyle(
+                        name,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (agent.agentLiveStatus != null) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
                           color: agent.agentLiveStatus?.toLowerCase() == "free"
-                              ? Colors.green.shade700
-                              : Colors.orange.shade700,
-                          fontSize: 10,
+                              ? Colors.green.withOpacity(0.1)
+                              : Colors.orange.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          agent.agentLiveStatus!,
+                          style: TextStyle(
+                            color: agent.agentLiveStatus?.toLowerCase() == "free"
+                                ? Colors.green.shade700
+                                : Colors.orange.shade700,
+                            fontSize: 10,
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ],
-                ],
-              ),
-            );
-          }).toList(),
-          onChanged: (value) {
-            setState(() => selectedQueueAgent = value);
-          },
+                ),
+              );
+            }).toList(),
+            onChanged: (value) {
+              setState(() => selectedQueueAgent = value);
+            },
+          ),
         ),
-      ),
-    ],
-  );
-}
+        if (queueAgents.isEmpty)
+          const Padding(
+            padding: EdgeInsets.only(top: 8.0),
+            child: Text(
+              "No agents found in this queue.",
+              style: TextStyle(color: AppColors.red, fontSize: 12),
+            ),
+          ),
+      ],
+    );
+  }
 
   Widget _buildSameQueueDropdown() {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        "Select Agent from Same Queue *",
-        style: AppTextStyle.blackNormal.copyWith(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-      const SizedBox(height: 8),
-      Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.grey.withOpacity(0.3)),
-        ),
-        child: DropdownButtonFormField<QueueAgentModel>(
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
-            ),
-            filled: true,
-            fillColor: Colors.white,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 14,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Select Agent from Same Queue *",
+          style: AppTextStyle.blackNormal.copyWith(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
           ),
-          hint: const Text("Select Agent"),
-          value: selectedSameQueueAgent,
-          items: sameQueueAgents.map((agent) {
-            final name = agent.agentName ?? "Unknown";
-            
-            return DropdownMenuItem(
-              value: agent,
-              child: Row(
-                mainAxisSize: MainAxisSize.min, 
-                children: [
-                  Flexible( 
-                    child: Text(
-                      name,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  if (agent.agentLiveStatus != null) ...[
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: agent.agentLiveStatus?.toLowerCase() == "free"
-                            ? Colors.green.withOpacity(0.1)
-                            : Colors.orange.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.grey.withOpacity(0.3)),
+          ),
+          child: DropdownButtonFormField<QueueAgentModel>(
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              filled: true,
+              fillColor: Colors.white,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
+              ),
+            ),
+            hint: const Text("Select Agent"),
+            value: selectedSameQueueAgent,
+            items: sameQueueAgents.isEmpty ? null : sameQueueAgents.map((agent) {
+              final name = agent.agentName ?? "Unknown";
+              
+              return DropdownMenuItem(
+                value: agent,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min, 
+                  children: [
+                    Flexible( 
                       child: Text(
-                        agent.agentLiveStatus!,
-                        style: TextStyle(
+                        name,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (agent.agentLiveStatus != null) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
                           color: agent.agentLiveStatus?.toLowerCase() == "free"
-                              ? Colors.green.shade700
-                              : Colors.orange.shade700,
-                          fontSize: 10,
+                              ? Colors.green.withOpacity(0.1)
+                              : Colors.orange.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          agent.agentLiveStatus!,
+                          style: TextStyle(
+                            color: agent.agentLiveStatus?.toLowerCase() == "free"
+                                ? Colors.green.shade700
+                                : Colors.orange.shade700,
+                            fontSize: 10,
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ],
-                ],
-              ),
-            );
-          }).toList(),
-          onChanged: (value) {
-            setState(() => selectedSameQueueAgent = value);
-          },
+                ),
+              );
+            }).toList(),
+            onChanged: (value) {
+              setState(() => selectedSameQueueAgent = value);
+            },
+          ),
         ),
-      ),
-    ],
-  );
-}
+        if (sameQueueAgents.isEmpty)
+          const Padding(
+            padding: EdgeInsets.only(top: 8.0),
+            child: Text(
+              "No agents found in your queue.",
+              style: TextStyle(color: AppColors.red, fontSize: 12),
+            ),
+          ),
+      ],
+    );
+  }
 Widget _buildExternalNumberField() {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -707,14 +746,30 @@ Widget _buildExternalNumberField() {
       const SizedBox(height: 8),
       TextField(
         keyboardType: TextInputType.phone,
+        maxLength: 10,
+        inputFormatters: [
+          FilteringTextInputFormatter.digitsOnly, 
+        ],
         onChanged: (value) {
           setState(() {
             externalNumber = value.trim(); 
           });
         },
+        // decoration: InputDecoration(
+        //   hintText: "Enter phone number (e.g., 917857684748)",
+        //   prefixIcon: const Icon(Icons.phone),
+        //   border: OutlineInputBorder(
+        //     borderRadius: BorderRadius.circular(12),
+        //     borderSide: BorderSide(color: AppColors.grey.withOpacity(0.3)),
+        //   ),
+        //   filled: true,
+        //   fillColor: Colors.white,
+        // ),
         decoration: InputDecoration(
-          hintText: "Enter phone number (e.g., 917857684748)",
+          counterText: "", // Hides the '0/10' character counter
+          hintText: "Enter 10-digit mobile number",
           prefixIcon: const Icon(Icons.phone),
+        
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(color: AppColors.grey.withOpacity(0.3)),
@@ -724,8 +779,8 @@ Widget _buildExternalNumberField() {
         ),
       ),
       const SizedBox(height: 8),
-      Text(
-        "Note: Enter number with country code (e.g., 91xxxxxxxxxx)",
+     Text(
+        "Note: Country code (91) will be added automatically.",
         style: TextStyle(
           fontSize: 12,
           color: Colors.grey.shade600,
@@ -758,9 +813,9 @@ Widget _buildExternalNumberField() {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                side:  BorderSide(color: AppColors.appColor),
+                side:  const BorderSide(color: AppColors.appColor),
               ),
-              child:  Text(
+              child:  const Text(
                 "Cancel",
                 style: TextStyle(
                   color: AppColors.appColor,
@@ -807,15 +862,13 @@ Widget _buildExternalNumberField() {
       return selectedTeamLead != null;
     case 'specific_queue_agent':
       return selectedQueue != null && selectedQueueAgent != null;
-    case 'specific_queue':
-      return selectedQueue != null;
     case 'same_queue':
       return selectedSameQueueAgent != null;
     case 'outside_number':
       //  FIX: Proper validation for external number
       return externalNumber != null && 
              externalNumber!.trim().isNotEmpty &&
-             externalNumber!.trim().length >= 10; 
+             externalNumber!.trim().length == 10; 
     default:
       return false;
   }
@@ -836,6 +889,8 @@ Future<void> _performTransfer() async {
     
  int? targetAgentId;
 
+
+
   switch (selectedTransferType) {
     case 'agent':
       targetAgentId = selectedAgent?["agent_id"];
@@ -855,24 +910,6 @@ Future<void> _performTransfer() async {
       targetAgentId == CallSession.agentId) {
     _showError("You cannot transfer call to yourself");
     return;
-  }
-
-  if (selectedTransferType == 'outside_number') {
-    final userCubit = UserDetailsCubit.instance;
-    final agentMobile = userCubit?.userDetailsModel.agentMobile;
-
-    String normalize(String n) =>
-        n.replaceAll(RegExp(r'\D'), '');
-
-    final entered = normalize(externalNumber ?? "");
-    final myNumber = normalize(agentMobile ?? "");
-print("entered$entered");
-print("myNumber$myNumber");
-
-    if (entered.isNotEmpty && entered == myNumber) {
-      _showError("You cannot transfer call to your own number");
-      return;
-    }
   }
 
     switch (selectedTransferType) {
@@ -986,17 +1023,6 @@ print("myNumber$myNumber");
         );
         break;
 
-      case 'specific_queue':
-        await cubit.unattendedTransfer(
-          smeId: smeId,
-          sessionId: sessionId,
-          channelId: channelId,
-          agentId: agentId,
-          agentName: agentName,
-          queueId: selectedQueue["id"].toString(),
-        );
-        break;
-
       case 'same_queue':
         final agent = selectedSameQueueAgent!;
         // if (agent.agentLiveStatus?.toLowerCase() != "free") {
@@ -1016,10 +1042,12 @@ print("myNumber$myNumber");
 
 
 
+
+
 case 'outside_number':
 
 
-        final cleanNumber = externalNumber!.trim();
+        final cleanNumber = addByIndiaCountryCodeWithoutPlus(number: externalNumber!.trim());
         
         debugPrint(" [EXTERNAL TRANSFER] Number: $cleanNumber");
 

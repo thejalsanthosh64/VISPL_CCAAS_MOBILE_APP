@@ -64,12 +64,26 @@ bool _isSaving = false;
     super.initState();
     displayTimer = widget.duration;
 
- final campaign = CampaignManager.campaign;
- _wrapupEnabled = campaign?.wrapupEnabled == true;
-  _wrapupLimitSeconds = campaign?.wrapupTimeInSeconds ?? 0;
+//  final campaign = CampaignManager.campaign;
+//  _wrapupEnabled = campaign?.wrapupEnabled == true;
+//   _wrapupLimitSeconds = campaign?.wrapupTimeInSeconds ?? 0;
 
-  debugPrint("WrapUp Enabled: $_wrapupEnabled");
-  debugPrint("WrapUp Limit: $_wrapupLimitSeconds seconds");
+
+final state = context.read<CallStateCubit>().state;
+    final isIncoming = CallSession.callType?.toLowerCase() == "incoming";
+
+    if (isIncoming) {
+      _wrapupLimitSeconds = state.incomingWrapUpTime;
+      _wrapupEnabled = _wrapupLimitSeconds > 0;
+    } else {
+      final campaign = CampaignManager.campaign;
+      _wrapupEnabled = campaign?.wrapupEnabled == true;
+      _wrapupLimitSeconds = campaign?.wrapupTimeInSeconds ?? 0;
+    }
+
+
+    debugPrint("WrapUp Enabled: $_wrapupEnabled");
+    debugPrint("WrapUp Limit: $_wrapupLimitSeconds seconds");
 
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       setState(() {
@@ -283,14 +297,36 @@ void _openPreviewSheet(
   @override
   Widget build(BuildContext context) {
     final timeText = _format(displayTimer);
-    final campaign = CampaignManager.campaign;
-    final dispositions = campaign?.dispositions ?? [];
-_groupedDispositions =
-    CampaignManager.groupDispositionsByLevel(dispositions);
+    // final campaign = CampaignManager.campaign;
+    // final dispositions = campaign?.dispositions ?? [];
 
-final levels = _groupedDispositions.keys.toList()..sort();
 
-final bool hasDispositions = dispositions.isNotEmpty;
+// final state = context.read<CallStateCubit>().state;
+//     final isIncoming = CallSession.callType?.toLowerCase() == "incoming";
+
+//     final dispositions = (isIncoming && state.incomingDispositions.isNotEmpty)
+//         ? state.incomingDispositions
+//         : (CampaignManager.campaign?.dispositions ?? []);
+
+
+// _groupedDispositions =
+//     CampaignManager.groupDispositionsByLevel(dispositions);
+
+// final levels = _groupedDispositions.keys.toList()..sort();
+
+// final bool hasDispositions = dispositions.isNotEmpty;
+
+
+final state = context.read<CallStateCubit>().state;
+    final isIncoming = CallSession.callType?.toLowerCase() == "incoming";
+
+    final dispositions = isIncoming 
+        ? state.incomingDispositions 
+        : (CampaignManager.campaign?.dispositions ?? []);
+
+    _groupedDispositions = CampaignManager.groupDispositionsByLevel(dispositions);
+    final levels = _groupedDispositions.keys.toList()..sort();
+    final bool hasDispositions = dispositions.isNotEmpty;
     return PopScope(
       canPop: false, 
       child: Scaffold(
@@ -522,94 +558,10 @@ IconButton(
                           ],
                         ),
                         child: 
-                        // DropdownButtonFormField<String>(
-                        //   decoration: InputDecoration(
-                        //     border: OutlineInputBorder(
-                        //       borderRadius: BorderRadius.circular(12),
-                        //       borderSide: BorderSide.none,
-                        //     ),
-                        //     filled: true,
-                        //     fillColor: Colors.white,
-                        //     contentPadding: const EdgeInsets.symmetric(
-                        //       horizontal: 16,
-                        //       vertical: 14,
-                        //     ),
-                        //   ),
-                        //   hint: const Text("Select Disposition"),
-                        //   value: _selectedDisposition,
-                        //   items: dispositions.map((d) {
-                        //     return DropdownMenuItem(
-                        //       value: d.combinedField,
-                        //       child: Text(d.combinedField ?? ""),
-                        //       onTap: () {
-                        //         _selectedDispositionId = d.id;
-                        //       },
-                        //     );
-                        //   }).toList(),
-                          
-                        //   onChanged: (value) {
-                        //     setState(() => _selectedDisposition = value);
-                        //   },
-                        // ),
+            
                        hasDispositions
       ?  
-//       DropdownButtonFormField2<String>(
-//   isExpanded: true,
-//   decoration: InputDecoration(
-//     hintText: "Select Disposition",
-//     border: OutlineInputBorder(
-//       borderRadius: BorderRadius.circular(12),
-//       borderSide: BorderSide.none,
-//     ),
-//     filled: true,
-//     fillColor: Colors.white,
-//   ),
-//                   hint: Text("Select Disposition"),
 
-//   value: null, // 🔥 always null so it doesn't replace
-//   items: dispositions.map((d) {
-//     return DropdownMenuItem<String>(
-//       value: d.combinedField,
-//       child: Text(
-//         d.combinedField ?? "",
-//       ),
-//     );
-//   }).toList(),
-//   onChanged: (val) {
-//   if (val == null) return;
-
-//   // 🔒 Max 5 levels
-//   if (_selectedLevels.length >= 5) {
-//     FToastManager().showToast(
-//       message: "You can select disposition only up to 5 levels",
-//     );
-//     return;
-//   }
-
-//   // 🚫 Prevent duplicate selection
-//   if (_selectedLevels.contains(val)) {
-//     FToastManager().showToast(
-//       message: "This disposition is already selected",
-//     );
-//     return;
-//   }
-
-//   final selected = dispositions.firstWhere(
-//     (e) => e.combinedField == val,
-//   );
-
-//   setState(() {
-//     _selectedLevels.add(val);
-
-//     if (selected.id != null) {
-//       _selectedLevelIds.add(selected.id!);
-//     }
-//   });
-// },
-//   onMenuStateChange: (isOpen) {
-//     if (isOpen) FocusScope.of(context).unfocus(); //  keyboard fix
-//   },
-// )
   Column(
     children: levels.map((level) {
       final shouldShow = level <= _maxVisibleLevel;
@@ -663,10 +615,21 @@ IconButton(
                 _selectedDispositionIds[level] = val;
                 _selectedDispositionNames[level] =
                     items.firstWhere((e) => e.id == val).combinedField;
+int currentIndex = levels.indexOf(level);
+                // if (level + 1 > _maxVisibleLevel) {
+                //   _maxVisibleLevel = level + 1;
+                // }
 
+                if (currentIndex != -1 && currentIndex + 1 < levels.length) {
+                int nextLevel = levels[currentIndex + 1]; // Grab the actual next level (e.g., 5)
+                if (nextLevel > _maxVisibleLevel) {
+                  _maxVisibleLevel = nextLevel;
+                }} else {
+                // Fallback just in case
                 if (level + 1 > _maxVisibleLevel) {
                   _maxVisibleLevel = level + 1;
                 }
+              }
               }
             });
           },
@@ -819,107 +782,7 @@ IconButton(
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
-      //             onPressed: () async {
-      
-      //               widget.waitingForConnection
-      // ? null
-      // : ()async {await context.read<CallStateCubit>().saveWrapUp(
-      //                 context: context,
-      //                     dispositionName: _selectedDisposition ?? "",
-      //                     dispositionId: _selectedDispositionId ?? "",
-      //                     remarks: _remarkController.text.trim(),
-      //                     rating: _rating,
-      //                       wrapUpSeconds: displayTimer.inSeconds, 
-
-                          
-      //                   );
-      
-      //               if (context.mounted) {
-      //                 Navigator.pop(context);
-      //               }};
-      //             },
-
-//       onPressed: widget.waitingForConnection
-//     ? null
-//     : () async {
-// final selectedEntries = _selectedDispositionNames.entries.toList()
-//   ..sort((a, b) => a.key.compareTo(b.key));
-
-// final dispositionName = selectedEntries.isNotEmpty
-//     ? selectedEntries.map((e) => e.value).join(", ")
-//     : "";
-
-// final dispositionId = selectedEntries.isNotEmpty
-//     ? _selectedDispositionIds[selectedEntries.last.key]
-//     : "";
-//         await context.read<CallStateCubit>().saveWrapUp(
-//           context: context,
-//           dispositionName: dispositionName??'',
-//   dispositionId: dispositionId??'',
-//           remarks: _remarkController.text.trim(),
-//           rating: _rating,
-//           wrapUpSeconds: displayTimer.inSeconds,
-//         );
-
-//         if (context.mounted) {
-//           Navigator.pop(context);
-//         }
-//       },
-
-// onPressed:  _isSaving
-//     ? null
-//     : () async {
-//         setState(() => _isSaving = true);
-
-//         try {
-//           final selectedEntries = _selectedDispositionNames.entries.toList()
-//             ..sort((a, b) => a.key.compareTo(b.key));
-
-//           final dispositionName = selectedEntries.isNotEmpty
-//               ? selectedEntries.map((e) => e.value).join(", ")
-//               : "";
-
-//           final dispositionId = selectedEntries.isNotEmpty
-//               ? _selectedDispositionIds[selectedEntries.last.key]
-//               : "";
-
-//           // await context.read<CallStateCubit>().saveWrapUp(
-//           //       context: context,
-//           //       dispositionName: dispositionName ?? '',
-//           //       dispositionId: dispositionId ?? '',
-//           //       remarks: _remarkController.text.trim(),
-//           //       rating: _rating,
-//           //       wrapUpSeconds: displayTimer.inSeconds,
-//           //     );
-
-//             final cubit = context.read<CallStateCubit>();
-
-//               if (widget.waitingForConnection) {
-//             await cubit.saveWrapUpInRingingState(
-//               context: context,
-//               dispositionName: dispositionName,
-//               dispositionId: dispositionId ?? '',
-//               remarks: _remarkController.text.trim(),
-//               rating: _rating,
-//               wrapUpSeconds: displayTimer.inSeconds,
-//             );
-//           } else {
-//             await cubit.saveWrapUp(
-//               context: context,
-//               dispositionName: dispositionName,
-//               dispositionId: dispositionId ?? '',
-//               remarks: _remarkController.text.trim(),
-//               rating: _rating,
-//               wrapUpSeconds: displayTimer.inSeconds,
-//             );
-//           }
-
-// if (mounted && !widget.waitingForConnection) {
-//   Navigator.pop(context);
-// }        } finally {
-//           if (mounted) setState(() => _isSaving = false);
-//         }
-//       },
+ 
 
 onPressed: (_isSaving || _autoClosed)
     ? null

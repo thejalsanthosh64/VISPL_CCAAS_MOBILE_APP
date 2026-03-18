@@ -2,6 +2,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:kommuno/core/common/app_theme/app_theme.dart';
 import 'package:kommuno/core/common/widget/loading_indicator.dart';
+import 'package:kommuno/core/utilities/call_manager/call_session.dart';
 import 'package:kommuno/core/utilities/campaign_manager.dart';
 import 'package:kommuno/features/calls/cubit/call_cubit.dart';
 import 'package:kommuno/features/campaigns/data/model/response/campaign_data.dart';
@@ -380,14 +381,35 @@ bool _isSaving = false;
 
   @override
   Widget build(BuildContext context) {
-    final campaign = CampaignManager.campaign;
-    final dispositions = campaign?.dispositions ?? [];
+    // final campaign = CampaignManager.campaign;
+    // final dispositions = campaign?.dispositions ?? [];
+    // final bool hasDispositions = dispositions.isNotEmpty;
+
+//     final state = widget.cubit.state;
+//     final isIncoming = CallSession.callType?.toLowerCase() == "incoming";
+
+//     final dispositions = (isIncoming && state.incomingDispositions.isNotEmpty)
+//         ? state.incomingDispositions
+//         : (CampaignManager.campaign?.dispositions ?? []);
+    
+//     final bool hasDispositions = dispositions.isNotEmpty;
+
+// _groupedDispositions = CampaignManager.groupDispositionsByLevel(dispositions);
+
+// // how many levels exist (max 5)
+// final levels = _groupedDispositions.keys.toList()..sort();
+
+
+final state = widget.cubit.state;
+    final isIncoming = CallSession.callType?.toLowerCase() == "incoming";
+
+    final dispositions = isIncoming 
+        ? state.incomingDispositions 
+        : (CampaignManager.campaign?.dispositions ?? []);
+    // 👆 -------------------------------------------------------------
+
     final bool hasDispositions = dispositions.isNotEmpty;
-
-
-_groupedDispositions = CampaignManager.groupDispositionsByLevel(dispositions);
-
-// how many levels exist (max 5)
+    _groupedDispositions = CampaignManager.groupDispositionsByLevel(dispositions);
 final levels = _groupedDispositions.keys.toList()..sort();
 
     return SingleChildScrollView(
@@ -525,9 +547,22 @@ final levels = _groupedDispositions.keys.toList()..sort();
               _selectedDispositionIds[level] = val;
               _selectedDispositionNames[level] =
                   items.firstWhere((e) => e.id == val).combinedField;
+int currentIndex = levels.indexOf(level);
 
-              if (level + 1 > _maxVisibleLevel) {
-                _maxVisibleLevel = level + 1;
+              // if (level + 1 > _maxVisibleLevel) {
+              //   _maxVisibleLevel = level + 1;
+              // }
+
+              if (currentIndex != -1 && currentIndex + 1 < levels.length) {
+                int nextLevel = levels[currentIndex + 1]; // Grab the actual next level (e.g., 5)
+                if (nextLevel > _maxVisibleLevel) {
+                  _maxVisibleLevel = nextLevel;
+                }
+              } else {
+                // Fallback just in case
+                if (level + 1 > _maxVisibleLevel) {
+                  _maxVisibleLevel = level + 1;
+                }
               }
             }
           });

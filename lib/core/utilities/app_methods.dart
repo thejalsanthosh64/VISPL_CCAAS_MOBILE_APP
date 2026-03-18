@@ -84,6 +84,58 @@ Future<bool> exitAppDialog({
   return result ?? false;
 }
 
+// Future<T?> appDialog<T>({
+//   required BuildContext context,
+//   BoxConstraints? constraints,
+//   String alertText = '',
+//   Widget? customBody,
+//   List<Widget> Function(BuildContext context)? actions,
+//   List<Widget> Function(BuildContext context)? prefixActions,
+//   Color? backgroundColor,
+//   EdgeInsets? insetPadding,
+// }) async {
+//   return await showDialog<T>(
+//     context: context,
+//     barrierDismissible: false,
+//     useRootNavigator: true,
+//     builder: (ctx) {
+//       return PopScope(
+//         canPop: false,
+//         child: Dialog(
+//           backgroundColor: backgroundColor,
+//           insetPadding: insetPadding,
+//           child: ConstrainedBox(
+//             constraints: constraints ?? const BoxConstraints(maxHeight: 130, maxWidth: 250),
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               mainAxisSize: MainAxisSize.min,
+//               children: [
+//                 if (customBody != null)
+//                   Expanded(child: customBody)
+//                 else
+//                   Expanded(
+//                     child: Padding(
+//                       padding: const EdgeInsets.all(18.0),
+//                       child: Text(alertText),
+//                     ),
+//                   ),
+//                 Row(
+//                   children: [
+//                     if (prefixActions != null) ...prefixActions(ctx),
+//                     const Spacer(),
+//                     if (actions != null) ...actions(ctx),
+//                   ],
+//                 ),
+//                 const SizedBox(height: 5),
+//               ],
+//             ),
+//           ),
+//         ),
+//       );
+//     },
+//   );
+// }
+
 Future<T?> appDialog<T>({
   required BuildContext context,
   BoxConstraints? constraints,
@@ -105,18 +157,24 @@ Future<T?> appDialog<T>({
           backgroundColor: backgroundColor,
           insetPadding: insetPadding,
           child: ConstrainedBox(
-            constraints: constraints ?? const BoxConstraints(maxHeight: 130, maxWidth: 250),
+            // Removed the strict maxHeight so it can grow naturally
+            constraints: constraints ?? const BoxConstraints(maxWidth: 280),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: MainAxisSize.min, // This makes the column shrink to fit children
               children: [
                 if (customBody != null)
-                  Expanded(child: customBody)
+                  Flexible(child: customBody) // Changed from Expanded to Flexible
                 else
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(18.0),
-                      child: Text(alertText),
+                  Flexible( // Changed from Expanded to Flexible
+                    child: SingleChildScrollView( // Added scroll view to prevent overflow
+                      child: Padding(
+                        padding: const EdgeInsets.all(18.0),
+                        child: Text(
+                          alertText,
+                          style: const TextStyle(fontSize: 16), // Optional: ensure readability
+                        ),
+                      ),
                     ),
                   ),
                 Row(

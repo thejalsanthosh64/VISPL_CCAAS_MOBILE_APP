@@ -77,19 +77,33 @@ final campaign = CampaignManager.campaign;
         isLogin: false,   // interval mode
       );
     }
-      
+      final userDetailsCubit = context.read<UserDetailsCubit>();
+      final breakState = context.read<BreakCubit>().state;
     final userDetails = context.read<UserDetailsCubit>().userDetailsModel;
-    context.read<UserDetailsCubit>().startWaitingTimer();
-    context.read<UserDetailsCubit>().startActiveTimer();
+// Safely check if the user is already on a break
+    bool isOnBreak = false;
+    if (breakState is BreakSuccessState) {
+      isOnBreak = breakState.isOnBreak;
+    }
 
-final user = context.read<UserDetailsCubit>().userDetailsModel;
-await ActivityHelperRepo().updateAgentActivityTime(
-  smeId: user.smeId,
-  agentId: user.agentId,
-  time: 0,
-  status: "Waiting",
-);
+    // ONLY start the waiting timer if they are NOT on a break
+    if (!isOnBreak) {
+      userDetailsCubit.startWaitingTimer();
+    }
+    
+    userDetailsCubit.startActiveTimer();
 
+    final user = userDetailsCubit.userDetailsModel;
+    
+    // ONLY send the Waiting activity status if they are NOT on a break
+    if (!isOnBreak) {
+      await ActivityHelperRepo().updateAgentActivityTime(
+        smeId: user.smeId,
+        agentId: user.agentId ?? 0,
+        time: 0,
+        status: "Waiting",
+      );
+    }
     // Start background contact sync
     ContactSync().initialize(
       context: context,
@@ -112,11 +126,19 @@ await ActivityHelperRepo().updateAgentActivityTime(
 
   final state = insightsCubit.state;
   if (state is InSightsSuccessState) {
+
+
     final insight = state.insightsResponse;
 
+        // Calculate Base Active Time
+        final int calculatedBaseActiveTime = (insight.waitingTime ?? 0) +
+            (insight.wrapUpTime ?? 0) +
+            (insight.totalRingingDuration ?? 0) +
+            (insight.totalConnectedDuration ?? 0) +
+            (insight.lunchHours ?? 0);
     // Save officeHours inside UserDetailsCubit
     context.read<UserDetailsCubit>().setTodayOfficeHours(
-      insight.officeHours ?? 0,
+      calculatedBaseActiveTime,
     );
 context.read<UserDetailsCubit>().setTodayLunchHours(
   insight.lunchHours ?? 0,

@@ -21,6 +21,7 @@ import 'package:kommuno/features/calls/cubit/call_state.dart';
 import 'package:kommuno/features/calls/data/repository/call_repo.dart';
 import 'package:kommuno/features/calls/presenter/page/call_screen.dart';
 import 'package:kommuno/features/calls/presenter/page/call_wrapup_.dart';
+import 'package:kommuno/features/campaigns/data/model/response/campaign_data.dart';
 import 'package:kommuno/features/contact/presenter/widget/contact_helper.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:flutter/material.dart';
@@ -95,12 +96,15 @@ static bool _isRecovering = false;
     // Clear user session
     UserLoginInfoManager.setLoginUserInfo(userInfo: null);
     CampaignManager.setCampaignInfo(campaign: null);
-
+String? lastUser = await SecureStorage().readData(key: 'last_saved_username') as String?;
     for (var key in StorageEnum.values) {
       await SecureStorage().deleteData(key: key.name);
     }
 
     await HiveService.deleteAll();
+    if (lastUser != null && lastUser.isNotEmpty) {
+        await SecureStorage().writeData(key: 'last_saved_username', value: lastUser);
+      }
 
     // Navigate to login screen
     AppKeys.navigatorKey.currentState!.pushNamedAndRemoveUntil(
@@ -341,9 +345,34 @@ if (sessionId == null) return;
     final customerName = extractCustomerName(data);
 final callCubit = activeCallCubit ?? CallStateCubit();
 
-callCubit.emit(
-  callCubit.state.copyWith(isDispositionFilled: false),
-);
+int parsedWrapUpTime = 0;
+    if (data["wrapUpTime"] != null) {
+      parsedWrapUpTime = int.tryParse(data["wrapUpTime"].toString()) ?? 0;
+    }
+
+    List<DispositionItem> parsedDispositions = [];
+    String parsedSurveyId = "";
+    
+    final crm = data["crm"];
+    if (crm is Map) {
+      if (crm["disposition"] is Map && crm["disposition"]["data"] is List) {
+        parsedDispositions = (crm["disposition"]["data"] as List)
+            .map((x) => DispositionItem.fromJson(Map<String, dynamic>.from(x)))
+            .toList();
+      }
+      parsedSurveyId = crm["survey_customer_feedback_form_id"]?.toString() ?? "";
+    }
+
+    // Emit everything together to prepare the UI before navigation
+    callCubit.emit(
+      callCubit.state.copyWith(
+        isDispositionFilled: false,
+        incomingDispositions: parsedDispositions,
+        incomingWrapUpTime: parsedWrapUpTime,
+        surveyFormId: parsedSurveyId,
+      ),
+    );
+
     debugPrint(" [INCOMING] Phone: $customerNumber, Name: $customerName");
 
     // start vibration
@@ -502,7 +531,8 @@ globalSocket?.on("transfer_clear_confirmed", (raw) {
       final data = normalize(raw);
       final eventAgentId = data["agentId"] ?? data["agent_id"];
       if (eventAgentId == agentId) {
-        debugPrint("[MY EVENT] $event → $data");
+        // debugPrint("[MY EVENT] $event → $data");
+        logLong('[MY EVENT] $event →', data);
       }
     });
   }
@@ -632,12 +662,27 @@ globalSocket?.on("transfer_clear_confirmed", (raw) {
 
     cubit.stopTimer();
 
-    final enabledWrapTime = CampaignManager.campaign?.wrapupTimeInSeconds;
-    final wrapUpTime = (enabledWrapTime != null && enabledWrapTime > 0)
-        ? enabledWrapTime
-        : AppConstant.defaultWrapUpFallbackSeconds;
+    // final enabledWrapTime = CampaignManager.campaign?.wrapupTimeInSeconds;
+    // final wrapUpTime = (enabledWrapTime != null && enabledWrapTime > 0)
+    //     ? enabledWrapTime
+    //     : AppConstant.defaultWrapUpFallbackSeconds;
 
-    final wrapupEnabled      = CampaignManager.campaign?.wrapupEnabled == true;
+    // final wrapupEnabled      = CampaignManager.campaign?.wrapupEnabled == true;
+    // final dispositionFilled  = cubit.state.isDispositionFilled;
+
+
+    final isIncoming = CallSession.callType?.toLowerCase() == "incoming";
+    bool wrapupEnabled = false;
+    int wrapUpTime = 0;
+
+    if (isIncoming) {
+      wrapUpTime = cubit.state.incomingWrapUpTime;
+      wrapupEnabled = wrapUpTime > 0;
+    } else {
+      wrapupEnabled = CampaignManager.campaign?.wrapupEnabled == true;
+      wrapUpTime = CampaignManager.campaign?.wrapupTimeInSeconds ?? AppConstant.defaultWrapUpFallbackSeconds;
+    }
+
     final dispositionFilled  = cubit.state.isDispositionFilled;
 
     try {
@@ -1350,8 +1395,8 @@ static void connectForCall({
   });
 
   callSocket?.onAny((event, data) {
-  // logLong('[CALL EVENT] $event →', data);
-    debugPrint("[MY EVENT] $event → $data");
+  logLong('[CALL EVENT] $event →', data);
+    // debugPrint("[MY EVENT] $event → $data");
 
   });
 
@@ -1383,8 +1428,36 @@ callCubit.emit(
                           e["customer_number"] ?? "";
     
     final customerName = extractCustomerName(e);
+
+
+    int parsedWrapUpTime = 0;
+    if (e["wrapUpTime"] != null) {
+      parsedWrapUpTime = int.tryParse(e["wrapUpTime"].toString()) ?? 0;
+    }
+
+    List<DispositionItem> parsedDispositions = [];
+    String parsedSurveyId = "";
+    
+    final crm = e["crm"];
+    if (crm is Map) {
+      if (crm["disposition"] is Map && crm["disposition"]["data"] is List) {
+        parsedDispositions = (crm["disposition"]["data"] as List)
+            .map((x) => DispositionItem.fromJson(Map<String, dynamic>.from(x)))
+            .toList();
+      }
+      parsedSurveyId = crm["survey_customer_feedback_form_id"]?.toString() ?? "";
+    }
     
     debugPrint(" [RINGING] Storing phone early: $customerNumber");
+
+    callCubit.emit(
+      callCubit.state.copyWith(
+        isDispositionFilled: false,
+        incomingDispositions: parsedDispositions,
+        incomingWrapUpTime: parsedWrapUpTime,
+        surveyFormId: parsedSurveyId,
+      ),
+    );
     activeCallCubit?.setPhoneNumber(customerNumber);
 
     final channel = e["channel_id"] ?? e["channelId"];
@@ -1426,7 +1499,34 @@ _handledConnectedSessions.add(sessionId);
     
 
   final crm = e["crm"];
-  final crmForm = crm?["crm_form"];
+final crmForm = (crm is Map) ? crm["crm_form"] : null;
+
+
+int parsedWrapUpTime = 0;
+    if (e["wrapUpTime"] != null) {
+      parsedWrapUpTime = int.tryParse(e["wrapUpTime"].toString()) ?? 0;
+    }
+
+    List<DispositionItem> parsedDispositions = [];
+    String parsedSurveyId = "";
+    
+    if (crm is Map) {
+      if (crm["disposition"] is Map && crm["disposition"]["data"] is List) {
+        parsedDispositions = (crm["disposition"]["data"] as List)
+            .map((x) => DispositionItem.fromJson(Map<String, dynamic>.from(x)))
+            .toList();
+      }
+      parsedSurveyId = crm["survey_customer_feedback_form_id"]?.toString() ?? "";
+    }
+    
+    // Emit this IMMEDIATELY regardless of CRM form status
+    activeCallCubit?.emit(
+      activeCallCubit!.state.copyWith(
+        incomingDispositions: parsedDispositions,
+        incomingWrapUpTime: parsedWrapUpTime,
+        surveyFormId: parsedSurveyId,
+      ),
+    );
 
   debugPrint("🔍 CRM check:");
   debugPrint("  - crm exists: ${crm != null}");
@@ -1446,16 +1546,14 @@ await closePreviewPopupSafely();
     //  Mark session as shown
     CallStateCubit.shownCrmSessions.add(sessionId);
     
-    activeCallCubit?.emit(
-      activeCallCubit!.state.copyWith(
-        showCrmForm: true,
-        crmPopupShown: false,  // Reset for the listener to trigger
-        crmFormName: crmForm["name"] ?? "CRM Form",
-        crmFormJson: List<Map<String, dynamic>>.from(
-          crmForm["form_json"] ?? [],
+activeCallCubit?.emit(
+        activeCallCubit!.state.copyWith(
+          showCrmForm: true,
+          crmPopupShown: false, 
+          crmFormName: crmForm["name"] ?? "CRM Form",
+          crmFormJson: List<Map<String, dynamic>>.from(crmForm["form_json"] ?? []),
         ),
-      ),
-    );
+      );
     
     debugPrint("✅ CRM state emitted");
   } else {
@@ -1550,8 +1648,20 @@ _handledCallEndedSessions.add(sessionId);
 await closePreviewPopupSafely();
 
 
-final campaign = CampaignManager.campaign;
-final wrapupEnabled = campaign?.wrapupEnabled == true;
+// final campaign = CampaignManager.campaign;
+// final wrapupEnabled = campaign?.wrapupEnabled == true;
+
+
+final isIncoming = CallSession.callType?.toLowerCase() == "incoming";
+    bool wrapupEnabled = false;
+
+    if (isIncoming) {
+      // Incoming calls skip wrap-up if time is 0
+      wrapupEnabled = (activeCallCubit?.state.incomingWrapUpTime ?? 0) > 0;
+    } else {
+      // Outgoing calls use campaign settings
+      wrapupEnabled = CampaignManager.campaign?.wrapupEnabled == true;
+    }
 
 if (wrapupEnabled && !activeCallCubit!.state.isDispositionFilled) {
   _navigateToWrapUp(
@@ -1613,14 +1723,26 @@ callSocket?.on("clear_live_calls", (raw) async {
 
     debugPrint("📞 CLEAR_CALL → phone=$phone, name=$name");
 
-    final campaign = CampaignManager.campaign;
-    final wrapupEnabled = campaign?.wrapupEnabled == true;
+    // final campaign = CampaignManager.campaign;
+    // final wrapupEnabled = campaign?.wrapupEnabled == true;
     final dispositionFilled =
         activeCallCubit?.state.isDispositionFilled ?? false;
 
-    debugPrint("📝 wrapupEnabled =$wrapupEnabled, dispositionFilled=$dispositionFilled");
 
+final isIncoming = CallSession.callType?.toLowerCase() == "incoming";
+    bool wrapupEnabled = false;
 
+    if (isIncoming) {
+      // Incoming calls skip wrap-up if time is 0
+      wrapupEnabled = (activeCallCubit?.state.incomingWrapUpTime ?? 0) > 0;
+          debugPrint("📝 wrapupEnabled =$wrapupEnabled, dispositionFilled=$dispositionFilled");
+
+    } else {
+      // Outgoing calls use campaign settings
+      wrapupEnabled = CampaignManager.campaign?.wrapupEnabled == true;
+          debugPrint("📝 wrapupEnabled =$wrapupEnabled, dispositionFilled=$dispositionFilled");
+
+    }
     // 📝 WRAPUP FLOW
     if (wrapupEnabled && !dispositionFilled) {
       _navigateToWrapUp(

@@ -268,6 +268,9 @@ surveyFormId: json["survey_customer_feedback_form_id"],
         dispositions,
         datesObject,
         pacingRatio,
+         isSurveyEnabled,
+  surveyFormId,
+  wrapupEnabled,
       ];
 }
 

@@ -38,63 +38,131 @@ class BreakCubit extends Cubit<BreakState> {
   }
 
 
-  Future<void> getBreakDetails({bool isLoading = true}) async {
-  try {
-    if (isLoading) {
-      emit(const BreakLoadingState());
-    } else {
-      AppLoadingIndicator.showLoadingIndicator();
-    }
-    final res = await _breakRepo.getBreakDetails();
+//   Future<void> getBreakDetails({bool isLoading = true}) async {
+//   try {
+//     if (isLoading) {
+//       emit(const BreakLoadingState());
+//     } else {
+//       AppLoadingIndicator.showLoadingIndicator();
+//     }
+//     final res = await _breakRepo.getBreakDetails();
 
-    if (res.isSuccess) {
-      final breakResponse = BreakResponseModel.fromJson(res.data);
+//     if (res.isSuccess) {
+//       final breakResponse = BreakResponseModel.fromJson(res.data);
       
-      final isOnBreak = breakResponse.breakStatus == 4;
+//       final isOnBreak = breakResponse.breakStatus == 4;
       
-      if (state is BreakSuccessState) {
-        emit((state as BreakSuccessState).copyWith(
-          breakResponseModel: breakResponse,
-          isOnBreak: isOnBreak, 
-        ));
+//       if (state is BreakSuccessState) {
+//         emit((state as BreakSuccessState).copyWith(
+//           breakResponseModel: breakResponse,
+//           isOnBreak: isOnBreak, 
+//         ));
+//       } else {
+//         emit(BreakSuccessState(
+//           breakResponseModel: breakResponse,
+//           isOnBreak: isOnBreak,  
+//         ));
+//       }
+      
+//       // THEN: Start the timer (it will now read from the correct state)
+//       _startTimer(isOnBreak: isOnBreak);
+//     } else {
+//       if (isLoading) {
+//         emit(const BreakErrorState());
+//       }
+//       FToastManager().showToast(message: res.message);
+//     }
+//   } on AppDioException catch (e) {
+//     if (isLoading) {
+//       emit(const BreakErrorState());
+//     }
+//     FToastManager().showToast(message: e.message);
+//   } catch (e, s) {
+//     if (isLoading) {
+//       emit(const BreakErrorState());
+//     }
+//     FToastManager().showToast(message: AppLocalizations.of(AppKeys.navigatorKey.currentContext!)!.somethingWentWrong);
+//     debugPrint("BreakCubit $e");
+//     debugPrint("$s");
+//   }
+//   if (!isLoading) {
+//     AppLoadingIndicator.dismissLoadingIndicator();
+//   }
+// }
+
+Future<void> getBreakDetails({bool isLoading = true}) async {
+    try {
+      if (isLoading) {
+        emit(const BreakLoadingState());
       } else {
-        emit(BreakSuccessState(
-          breakResponseModel: breakResponse,
-          isOnBreak: isOnBreak,  
-        ));
+        AppLoadingIndicator.showLoadingIndicator();
       }
-      
-      // THEN: Start the timer (it will now read from the correct state)
-      _startTimer(isOnBreak: isOnBreak);
-    } else {
+      final res = await _breakRepo.getBreakDetails();
+
+      if (res.isSuccess) {
+        final breakResponse = BreakResponseModel.fromJson(res.data);
+        
+        final isOnBreak = breakResponse.breakStatus == 4;
+        
+        // FIX: Ensure waiting timer is properly stopped if the user is fetched as already on break (e.g. App resume)
+        if (isOnBreak) {
+          UserDetailsCubit.instance?.stopWaitingTimer();
+        }
+
+        if (state is BreakSuccessState) {
+          emit((state as BreakSuccessState).copyWith(
+            breakResponseModel: breakResponse,
+            isOnBreak: isOnBreak, 
+          ));
+        } else {
+          emit(BreakSuccessState(
+            breakResponseModel: breakResponse,
+            isOnBreak: isOnBreak,  
+          ));
+        }
+        
+        // THEN: Start the timer (it will now read from the correct state)
+        _startTimer(isOnBreak: isOnBreak);
+      } else {
+        if (isLoading) {
+          emit(const BreakErrorState());
+        }
+        FToastManager().showToast(message: res.message);
+      }
+    } on AppDioException catch (e) {
       if (isLoading) {
         emit(const BreakErrorState());
       }
-      FToastManager().showToast(message: res.message);
+      FToastManager().showToast(message: e.message);
+    } catch (e, s) {
+      if (isLoading) {
+        emit(const BreakErrorState());
+      }
+      FToastManager().showToast(message: AppLocalizations.of(AppKeys.navigatorKey.currentContext!)!.somethingWentWrong);
+      debugPrint("BreakCubit $e");
+      debugPrint("$s");
     }
-  } on AppDioException catch (e) {
-    if (isLoading) {
-      emit(const BreakErrorState());
+    if (!isLoading) {
+      AppLoadingIndicator.dismissLoadingIndicator();
     }
-    FToastManager().showToast(message: e.message);
-  } catch (e, s) {
-    if (isLoading) {
-      emit(const BreakErrorState());
-    }
-    FToastManager().showToast(message: AppLocalizations.of(AppKeys.navigatorKey.currentContext!)!.somethingWentWrong);
-    debugPrint("BreakCubit $e");
-    debugPrint("$s");
   }
-  if (!isLoading) {
-    AppLoadingIndicator.dismissLoadingIndicator();
-  }
-}
 
   Future<void> breakIn({required BreakInRequestModel breakInRequestData,required BuildContext context,}) async {
     try {
       AppLoadingIndicator.showLoadingIndicator();
       
-      UserDetailsModel? user;
+      
+
+      final res = await _breakRepo.breakIn(breakInRequestData: breakInRequestData);
+
+
+      FToastManager().showToast(message: res.message);
+
+
+      if (res.isSuccess) {
+        print("✔ Break In API SUCCESS: ${res.data}");
+
+        UserDetailsModel? user;
 
         final userDetailsCubit = context.read<UserDetailsCubit>();
        int waitingSeconds = userDetailsCubit.stopWaitingTimer();
@@ -107,15 +175,6 @@ class BreakCubit extends Cubit<BreakState> {
       time: waitingSeconds,
       status: "Waiting",
     );
-
-      final res = await _breakRepo.breakIn(breakInRequestData: breakInRequestData);
-
-
-      FToastManager().showToast(message: res.message);
-
-
-      if (res.isSuccess) {
-        print("✔ Break In API SUCCESS: ${res.data}");
 
         getBreakDetails(isLoading: false);
       }

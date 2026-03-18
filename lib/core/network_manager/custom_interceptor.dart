@@ -5,7 +5,11 @@ class CustomInterceptor extends Interceptor {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    debugPrint('REQUEST[${options.method}] => PATH: ${options.path}');
+      final id = DateTime.now().millisecondsSinceEpoch;
+
+  options.extra["requestId"] = id;
+
+    debugPrint('REQUEST[ [$id] ${options.method}] => PATH: ${options.path}');
     if (UserLoginInfoManager.userLoginInfoModel != null) {
       final token =
           "${UserLoginInfoManager.userLoginInfoModel?.tokenType} ${UserLoginInfoManager.userLoginInfoModel?.accessToken}";
@@ -16,8 +20,10 @@ class CustomInterceptor extends Interceptor {
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
+  final id = response.requestOptions.extra["requestId"];
+
     debugPrint(
-        'RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions.path}');
+        'RESPONSE[$id] ${response.statusCode}] => PATH: ${response.requestOptions.path}');
     super.onResponse(response, handler);
   }
 
@@ -27,8 +33,10 @@ class CustomInterceptor extends Interceptor {
         err.response?.statusCode == 401) {
       LogoutManager.logoutUser(context: AppKeys.navigatorKey.currentContext!);
     }
+      final id = err.requestOptions.extra["requestId"];
+
     debugPrint(
-        'ERROR[${err.response?.statusCode}] => PATH: ${err.requestOptions.path}');
+        'ERROR[ [$id]${err.response?.statusCode}] => PATH: ${err.requestOptions.path}');
     super.onError(err, handler);
   }
 }

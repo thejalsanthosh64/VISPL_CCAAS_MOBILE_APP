@@ -12,7 +12,7 @@ class CallsInfoContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 80,
+      width: 90,
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
       
       alignment: Alignment.center,

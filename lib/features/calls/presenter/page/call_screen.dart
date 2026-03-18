@@ -94,6 +94,11 @@ class _CallScreenBodyState extends State<_CallScreenBody> {
 
     final iconsDisabled = state.areIconsDisabled;
 
+  final surveyId =  state.surveyFormId ;
+      
+      
+  final bool showSurveyIcon = surveyId != null && surveyId.isNotEmpty;
+
     return PopScope(
       canPop: false,
       child: Scaffold(
@@ -146,76 +151,70 @@ class _CallScreenBodyState extends State<_CallScreenBody> {
                       Expanded(
                         child: Align(
                           alignment: Alignment.centerRight,
-                          child: Opacity(
-                            opacity: iconsDisabled ? 0.3 : 1.0,
-                            child: IgnorePointer(
-                              ignoring: iconsDisabled,
-                              child: Wrap(
-                                spacing: 4,
-                                runSpacing: 4,
-                                children: [
-                                  IconButton(
-                                    tooltip: "Disposition",
-                                    icon: const Icon(
-                                        Icons.assignment_turned_in_outlined,
-                                        color: Colors.white,
-                                        size: 22),
-                                    onPressed: () =>
-                                        openDispositionSheet(context),
-                                  ),
-                                  IconButton(
-                                    tooltip: "History",
-                                    icon: const Icon(Icons.history,
-                                        color: Colors.white, size: 22),
-                                    onPressed: () async {
-                                      ClickGuard.run(() async {
-                                        await cubit.loadInteractionHistory(
-                                            customerNumber:
-                                                cubit.state.phoneNumber);
-                                        _openInteractionHistorySheet(context);
-                                      });
-                                    },
-                                  ),
-                                  if (state.showCrmForm)
-                                    IconButton(
-                                      tooltip: "CRM",
-                                      icon: const Icon(
-                                          Icons.assignment_outlined,
-                                          color: Colors.white,
-                                          size: 22),
-                                      onPressed: () => openCrmSheet(context),
-                                    ),
-                                  IconButton(
-                                    tooltip: "SMS",
-                                    icon: const FaIcon(
-                                        FontAwesomeIcons.message,
-                                        color: Colors.white,
-                                        size: 18),
-                                    onPressed: () async {
-                                      ClickGuard.run(() async {
-                                        await cubit.loadSmsTemplates();
-                                        _openTemplateSheet(context,
-                                            type: "sms");
-                                      });
-                                    },
-                                  ),
-                                  IconButton(
-                                    tooltip: "WhatsApp",
-                                    icon: const FaIcon(
-                                        FontAwesomeIcons.whatsapp,
-                                        color: Colors.white,
-                                        size: 20),
-                                    onPressed: () async {
-                                      ClickGuard.run(() async {
-                                        await cubit.loadWhatsappTemplates();
-                                        _openTemplateSheet(context,
-                                            type: "whatsapp");
-                                      });
-                                    },
-                                  ),
-                                ],
+                          child: Wrap(
+                            spacing: 4,
+                            runSpacing: 4,
+                            children: [
+                              IconButton(
+                                tooltip: "Disposition",
+                                icon: const Icon(
+                                    Icons.assignment_turned_in_outlined,
+                                    color: Colors.white,
+                                    size: 22),
+                                onPressed: () =>
+                                    openDispositionSheet(context),
                               ),
-                            ),
+                              IconButton(
+                                tooltip: "History",
+                                icon: const Icon(Icons.history,
+                                    color: Colors.white, size: 22),
+                                onPressed: () async {
+                                  ClickGuard.run(() async {
+                                    await cubit.loadInteractionHistory(
+                                        customerNumber:
+                                            cubit.state.phoneNumber);
+                                    _openInteractionHistorySheet(context);
+                                  });
+                                },
+                              ),
+                              if (state.showCrmForm)
+                                IconButton(
+                                  tooltip: "CRM",
+                                  icon: const Icon(
+                                      Icons.assignment_outlined,
+                                      color: Colors.white,
+                                      size: 22),
+                                  onPressed: () => openCrmSheet(context),
+                                ),
+                              IconButton(
+                                tooltip: "SMS",
+                                icon: const FaIcon(
+                                    FontAwesomeIcons.message,
+                                    color: Colors.white,
+                                    size: 18),
+                                onPressed: () async {
+                                  ClickGuard.run(() async {
+                                    await cubit.loadSmsTemplates();
+                                    _openTemplateSheet(context,
+                                        type: "sms");
+                                  });
+                                },
+                              ),
+                              IconButton(
+                                tooltip: "WhatsApp",
+                                icon: const FaIcon(
+                                    FontAwesomeIcons.whatsapp,
+                                    color: Colors.white,
+                                    size: 20),
+                                onPressed: () async {
+                                  ClickGuard.run(() async {
+                                    await cubit.loadWhatsappTemplates();
+                                    _openTemplateSheet(context,
+                                        type: "whatsapp");
+                                  });
+                                },
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -369,7 +368,8 @@ class _CallScreenBodyState extends State<_CallScreenBody> {
                       _buildConferenceButton(context, cubit, state, iconsDisabled),
 
                       // Survey — NEVER disabled by transfer state
-                      if (CampaignManager.campaign?.isSurveyEnabled == true)
+                      // if (CampaignManager.campaign?.isSurveyEnabled == true)
+                      if (showSurveyIcon)
                         Opacity(
                           opacity: _surveySent ? 0.4 : 1.0,
                           child: IgnorePointer(

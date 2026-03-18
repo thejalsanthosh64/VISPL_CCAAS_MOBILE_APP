@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -328,6 +329,38 @@ if (dialed == agent) {
             "T${dt.hour}:${dt.minute}:${dt.second}";
       }
 
+
+String? pilotNumber;
+
+// Pick random from virtualNumberPool
+if (campaign?.virtualNumberPool != null &&
+    campaign!.virtualNumberPool!.isNotEmpty) {
+
+  final pool = campaign.virtualNumberPool!;
+
+    debugPrint("🎯 Random Pilot Selected: ${campaign.virtualNumberPool!.length}");
+
+
+  final validNumbers = pool
+      .where((e) => e.longcode != null && e.longcode!.isNotEmpty)
+      .toList();
+
+  if (validNumbers.isNotEmpty) {
+    final random = Random();
+    pilotNumber =
+        validNumbers[random.nextInt(validNumbers.length)].longcode;
+
+    debugPrint("🎯 Random Pilot Selected: $pilotNumber");
+
+  }
+}
+
+
+if (pilotNumber == null || pilotNumber.isEmpty) {
+  FToastManager().showToast(message: "No pilot number available");
+  return;
+}
+
       final newCallRequestDetails = {
         "Authorization": "c5797dcbaaeed7678c4062a4a3ed2f8a",
         "sessionId": sessionId,
@@ -350,9 +383,9 @@ if (dialed == agent) {
         "smeId": userDetails.smeId,
         "accountSid": userDetails.accountSid,
         "to": addByIndiaCountryCodeWithoutPlus(number: number),
-        "from": addByIndiaCountryCodeWithoutPlus(number:userDetails.longcode.toString()),
+        "from": addByIndiaCountryCodeWithoutPlus(number:pilotNumber),
         "scheduleDateTime": formatScheduleDate(now),
-        "pilotNumber": "+${userDetails.longcode}",
+        "pilotNumber": "+$pilotNumber",
         "campaignId": campaign?.id ?? "",
         "campaignType": campaign?.campaignType ?? "click_to_call_campaign",
         "agentNumber": userDetails.agentMobile,

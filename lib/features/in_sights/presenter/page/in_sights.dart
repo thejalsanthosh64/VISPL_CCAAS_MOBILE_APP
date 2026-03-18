@@ -341,19 +341,19 @@ _kSized20,
       
     ];
   }
-  int _calculateWaitingTime(InsightsResponse data) {
-  final ringing = data.totalRingingDuration ?? 0;
-  final connected = data.totalConnectedDuration ?? 0;
-  final wrapUp = data.wrapUpTime ?? 0;
-  final breakTime = data.lunchHours ?? 0;
-  final hold = data.holdTime ?? 0;
+//   int _calculateWaitingTime(InsightsResponse data) {
+//   final ringing = data.totalRingingDuration ?? 0;
+//   final connected = data.totalConnectedDuration ?? 0;
+//   final wrapUp = data.wrapUpTime ?? 0;
+//   final breakTime = data.lunchHours ?? 0;
+//   final hold = data.holdTime ?? 0;
 
-  // Waiting / Active Time calculation as per client logic
-  return ringing + connected + wrapUp + breakTime + hold;
-}
+//   // Waiting / Active Time calculation as per client logic
+//   return ringing + connected + wrapUp + breakTime + hold;
+// }
 
 Widget _buildAgentStatusSummary(InsightsResponse data,BuildContext context) {
-  final int waitingTime = _calculateWaitingTime(data);
+  // final int waitingTime = _calculateWaitingTime(data);
 
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -412,7 +412,7 @@ Widget _buildAgentStatusSummary(InsightsResponse data,BuildContext context) {
                         context,
 
             "Waiting",
-            waitingTime,
+            data.waitingTime,
           ),
         ],
       ),
@@ -489,50 +489,212 @@ Widget _statusCircle(
 //     ],
 //   );
 // }
+// Widget _buildDispositionSummary(
+//   BuildContext context,
+//   DispositionSummaryResponse dispositionSummary,
+// ) {
+//   if (dispositionSummary.items.isEmpty) {
+//     return const SizedBox();
+//   }
+
+//   final double itemWidth =
+//       (MediaQuery.of(context).size.width -
+//               (AppConstant.kBodyHorizontalPadding * 2) -
+//               (AppConstant.kSized5 * 3)) /
+//           4;
+
+//   return Column(
+//     crossAxisAlignment: CrossAxisAlignment.start,
+//     children: [
+//       const Divider(),
+//       const SizedBox(height: 10),
+//       const Text(
+//         "Disposition Summary",
+//         style: AppTextStyle.black18,
+//       ),
+//       const SizedBox(height: 10),
+//       Wrap(
+//         spacing: AppConstant.kSized5,
+//         runSpacing: AppConstant.kSized10,
+//         children: dispositionSummary.items.map((item) {
+//           return SizedBox(
+//             width: itemWidth,
+//             child: CallsInfoContainer(
+//               title: item.name,
+//               count: item.count,
+//             ),
+//           );
+//         }).toList(),
+//       ),
+//     ],
+//   );
+// }
+
+// Widget _buildDispositionSummary(
+//     BuildContext context,
+//     DispositionSummaryResponse dispositionSummary,
+//   ) {
+//     if (dispositionSummary.items.isEmpty) {
+//       return const SizedBox();
+//     }
+
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         const Divider(),
+//         const SizedBox(height: 10),
+//         const Text(
+//           "Disposition Summary",
+//           style: AppTextStyle.black18,
+//         ),
+//         const SizedBox(height: 12),
+        
+//         // Vertical list replaces the Wrap grid
+//         Column(
+//           children: dispositionSummary.items.map((item) {
+//             return Container(
+//               margin: const EdgeInsets.only(bottom: 10),
+//               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+//               decoration: BoxDecoration(
+//                 color: Colors.white,
+//                 borderRadius: BorderRadius.circular(12),
+//                 border: Border.all(color: AppColors.appColor.withOpacity(0.4)),
+//                 boxShadow: [
+//                   BoxShadow(
+//                     color: Colors.black.withOpacity(0.02),
+//                     blurRadius: 5,
+//                     offset: const Offset(0, 2),
+//                   ),
+//                 ],
+//               ),
+//               child: Row(
+//                 children: [
+//                   // Left side: Disposition Name (Expanded allows it to wrap nicely)
+//                   Expanded(
+//                     child: Text(
+//                       item.name ?? "Unknown",
+//                       style: const TextStyle(
+//                         fontSize: 14,
+//                         fontWeight: FontWeight.w500,
+//                         color: Colors.black87,
+//                       ),
+//                     ),
+//                   ),
+//                   const SizedBox(width: 12),
+                  
+//                   // Right side: Count Badge
+//                   Container(
+//                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+//                     decoration: BoxDecoration(
+//                       color: AppColors.appColor.withOpacity(0.1),
+//                       borderRadius: BorderRadius.circular(20),
+//                     ),
+//                     child: Text(
+//                       "${item.count ?? 0}",
+//                       style: const TextStyle(
+//                         color: AppColors.appColor,
+//                         fontWeight: FontWeight.bold,
+//                         fontSize: 15,
+//                       ),
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             );
+//           }).toList(),
+//         ),
+//       ],
+//     );
+//   }
+
 Widget _buildDispositionSummary(
-  BuildContext context,
-  DispositionSummaryResponse dispositionSummary,
-) {
-  if (dispositionSummary.items.isEmpty) {
-    return const SizedBox();
+    BuildContext context,
+    DispositionSummaryResponse dispositionSummary,
+  ) {
+    if (dispositionSummary.items.isEmpty) {
+      return const SizedBox();
+    }
+
+    // Perfectly calculate the width for 4 items per row
+    final double itemWidth = (MediaQuery.of(context).size.width -
+            (AppConstant.kBodyHorizontalPadding * 2) -
+            (AppConstant.kSized5 * 3)) /
+        4;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Divider(),
+        const SizedBox(height: 10),
+        const Text(
+          "Disposition Summary",
+          style: AppTextStyle.black18,
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: AppConstant.kSized5,
+          runSpacing: AppConstant.kSized10,
+          children: dispositionSummary.items.map((item) {
+            
+            return Tooltip(
+              message: item.name ?? "", // Allows user to long-press to see the full name if it gets cut off
+              child: Container(
+                width: itemWidth,
+                height: 85, // 👈 Force uniform height for every box
+                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AppColors.appColor),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Text section expands to push the number to the bottom nicely
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          item.name ?? "",
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                          style: AppTextStyle.appColorNormal.copyWith(
+                            fontSize: 11, // Slightly smaller to fit long names better
+                            height: 1.1,  // Tighter line height for 2-line texts
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                    // The count number
+                    Text(
+                      "${item.count ?? 0}",
+                      style: AppTextStyle.appColor23.copyWith(
+                        fontSize: 18, // Scaled down slightly to balance the box
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+            
+          }).toList(),
+        ),
+      ],
+    );
   }
-
-  final double itemWidth =
-      (MediaQuery.of(context).size.width -
-              (AppConstant.kBodyHorizontalPadding * 2) -
-              (AppConstant.kSized5 * 3)) /
-          4;
-
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      const Divider(),
-      const SizedBox(height: 10),
-      const Text(
-        "Disposition Summary",
-        style: AppTextStyle.black18,
-      ),
-      const SizedBox(height: 10),
-      Wrap(
-        spacing: AppConstant.kSized5,
-        runSpacing: AppConstant.kSized10,
-        children: dispositionSummary.items.map((item) {
-          return SizedBox(
-            width: itemWidth,
-            child: CallsInfoContainer(
-              title: item.name,
-              count: item.count,
-            ),
-          );
-        }).toList(),
-      ),
-    ],
-  );
-}
 
 
   Widget _buildDuration(
       {required BuildContext context, required InSightsSuccessState state}) {
+
+        final insights = state.insightsResponse;
+final int calculatedActiveTime = (insights.waitingTime ?? 0) +
+        (insights.wrapUpTime ?? 0) +
+        (insights.totalRingingDuration ?? 0) +
+        (insights.totalConnectedDuration ?? 0);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -559,7 +721,7 @@ Widget _buildDispositionSummary(
           child: FittedBox(
             child: DurationInfoContainer(
               title: AppLocalizations.of(context)!.totalActiveTime,
-              count: state.insightsResponse.officeHours,
+              count: calculatedActiveTime,
             ),
           ),
         ),
