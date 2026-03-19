@@ -22,8 +22,8 @@ final bool isDispositionFilled;
 final List<DispositionItem> incomingDispositions;
   final int incomingWrapUpTime;
   final String surveyFormId;
-
-
+final Map<String, dynamic>? lastSavedWrapUpPayload;
+final bool isCrmRatingSavedToBackend;
 // // single source of truth for transfer/conference UI ────────────────────
 //   final TransferStatus transferStatus;
 
@@ -100,6 +100,8 @@ this.isDispositionFilled = false,
     this.incomingDispositions = const [],
     this.incomingWrapUpTime = 0,
     this.surveyFormId = "",
+    this.lastSavedWrapUpPayload,
+    this.isCrmRatingSavedToBackend = false,
   });
 
   CallState copyWith({
@@ -126,6 +128,8 @@ this.isDispositionFilled = false,
  List<DispositionItem>? incomingDispositions,
    int? incomingWrapUpTime,
    String ?surveyFormId,
+   Map<String, dynamic>? lastSavedWrapUpPayload,
+   bool? isCrmRatingSavedToBackend,
   }) {
     return CallState(
       isConnected: isConnected ?? this.isConnected,
@@ -151,6 +155,8 @@ this.isDispositionFilled = false,
       incomingDispositions: incomingDispositions??this.incomingDispositions,
       incomingWrapUpTime: incomingWrapUpTime??this.incomingWrapUpTime,
       surveyFormId: surveyFormId??this.surveyFormId,
+      lastSavedWrapUpPayload: lastSavedWrapUpPayload ?? this.lastSavedWrapUpPayload,
+      isCrmRatingSavedToBackend: isCrmRatingSavedToBackend ?? this.isCrmRatingSavedToBackend,
     );
   }
 @override
@@ -177,7 +183,9 @@ bool operator ==(Object other) {
         other.conferenceCompleted == conferenceCompleted &&
         other.incomingDispositions ==incomingDispositions &&
         other.incomingWrapUpTime == incomingWrapUpTime &&
-        other.surveyFormId == surveyFormId; 
+        other.surveyFormId == surveyFormId &&
+        other.lastSavedWrapUpPayload == lastSavedWrapUpPayload &&
+        other.isCrmRatingSavedToBackend == isCrmRatingSavedToBackend;
 }
 
 @override
@@ -202,7 +210,9 @@ int get hashCode {
       conferenceCompleted.hashCode ^
       incomingDispositions.hashCode ^
       incomingWrapUpTime.hashCode ^
-      surveyFormId.hashCode;
+      surveyFormId.hashCode ^
+      lastSavedWrapUpPayload.hashCode ^
+      isCrmRatingSavedToBackend.hashCode;
               
 
 

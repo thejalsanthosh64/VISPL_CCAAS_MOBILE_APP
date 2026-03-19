@@ -543,6 +543,7 @@ IconButton(
                     children: [
       
                       // Disposition
+                      if (hasDispositions) ...[
                       _sectionLabel("Disposition *"),
                       const SizedBox(height: 4),
                       Container(
@@ -559,8 +560,8 @@ IconButton(
                         ),
                         child: 
             
-                       hasDispositions
-      ?  
+      //                  hasDispositions
+      // ?  
 
   Column(
     children: levels.map((level) {
@@ -638,18 +639,18 @@ int currentIndex = levels.indexOf(level);
     }).toList(),
   )
 
-:Padding(
-          padding: const EdgeInsets.all(14),
-          child: Text(
-            "No disposition available for this campaign",
-            style: TextStyle(
-              color: Colors.grey.shade600,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
+// :Padding(
+//           padding: const EdgeInsets.all(14),
+//           child: Text(
+//             "No disposition available for this campaign",
+//             style: TextStyle(
+//               color: Colors.grey.shade600,
+//               fontSize: 14,
+//               fontWeight: FontWeight.w500,
+//             ),
+//             textAlign: TextAlign.center,
+//           ),
+//         ),
                       ),
       
                       const SizedBox(height: 10),
@@ -699,7 +700,7 @@ int currentIndex = levels.indexOf(level);
     }),
   ),
 ],                      const SizedBox(height: 10),
-
+],
                       // Remark
                       _sectionLabel("Remarks"),
                       const SizedBox(height: 4),

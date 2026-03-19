@@ -424,6 +424,9 @@ final levels = _groupedDispositions.keys.toList()..sort();
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
+if (hasDispositions) ...[
+
             const Text(
               "Disposition *",
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
@@ -431,22 +434,22 @@ final levels = _groupedDispositions.keys.toList()..sort();
             const SizedBox(height: 8),
       
             ///  DISPOSITION CASE
-            if (!hasDispositions)
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                child: const Text(
-                  "No disposition available for this campaign",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey, fontSize: 14),
-                ),
-              )
-            else
+            // if (!hasDispositions)
+            //   Container(
+            //     width: double.infinity,
+            //     padding: const EdgeInsets.all(14),
+            //     decoration: BoxDecoration(
+            //       color: Colors.grey.shade100,
+            //       borderRadius: BorderRadius.circular(18),
+            //       border: Border.all(color: Colors.grey.shade300),
+            //     ),
+            //     child: const Text(
+            //       "No disposition available for this campaign",
+            //       textAlign: TextAlign.center,
+            //       style: TextStyle(color: Colors.grey, fontSize: 14),
+            //     ),
+            //   )
+            // else
     //           DropdownButtonFormField2<String>(
     //             isExpanded: true,
     //             decoration: _outlinedDecoration(
@@ -629,7 +632,7 @@ int currentIndex = levels.indexOf(level);
             ],
       
             const SizedBox(height: 12),
-      
+      ],
             /// REMARKS
             const Text(
               "Remarks",

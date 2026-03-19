@@ -6,31 +6,19 @@ class DispositionSummaryResponse {
   });
 
   factory DispositionSummaryResponse.fromJson(dynamic json) {
-    final Map<String, int> aggregated = {};
+    final List list = json is List ? json : (json['data'] as List? ?? []);
 
-    final List list =
-        json is List ? json : (json['data'] as List? ?? []);
-
-    for (final e in list) {
-      final rawName = e['disposition_form_name']?.toString().trim();
+    // We no longer split by comma! We take the exact grouped string the backend gives us.
+    final parsedItems = list.map((e) {
+      final rawName = e['disposition_form_name']?.toString().trim() ?? '';
       final count = int.tryParse(e['count'].toString()) ?? 0;
 
-      // Split by comma if multiple names exist
-      final names = (rawName == null || rawName.isEmpty)
-          ? ['Unknown']
-          : rawName.split(',');
+      final finalName = rawName.isEmpty ? 'Unknown' : rawName;
 
-      for (var name in names) {
-        final key = name.trim().isEmpty ? 'Unknown' : name.trim();
-        aggregated[key] = (aggregated[key] ?? 0) + count;
-      }
-    }
+      return DispositionItem(name: finalName, count: count);
+    }).toList();
 
-    return DispositionSummaryResponse(
-      items: aggregated.entries
-          .map((e) => DispositionItem(name: e.key, count: e.value))
-          .toList(),
-    );
+    return DispositionSummaryResponse(items: parsedItems);
   }
 }
 
@@ -44,10 +32,9 @@ class DispositionItem {
   });
 
   factory DispositionItem.fromJson(Map<String, dynamic> json) {
+    final rawName = json['disposition_form_name']?.toString().trim() ?? '';
     return DispositionItem(
-      name: (json['disposition_form_name']?.toString().isNotEmpty ?? false)
-          ? json['disposition_form_name']
-          : 'Unknown',
+      name: rawName.isEmpty ? 'Unknown' : rawName,
       count: int.tryParse(json['count'].toString()) ?? 0,
     );
   }

@@ -715,6 +715,16 @@ globalSocket?.on("transfer_clear_confirmed", (raw) {
           duration: Duration.zero,
         );
       } else {
+
+await cubit.pushCrmRatingIfSaved();
+
+        await ActivityHelperRepo().updateIsWrapUpTimeOver(
+          smeId: smeId,
+          agentId: agentId,
+          sessionId: sessionId,
+          wrapupTime: wrapUpTime, 
+        );
+
         // No wrapup — just clean up and go to waiting
         await ActivityHelperRepo().updateAgentLiveStatus(
           smeId: smeId,
@@ -779,6 +789,24 @@ globalSocket?.on("transfer_clear_confirmed", (raw) {
           duration: Duration.zero,
         );
       } else {
+
+
+await cubit.pushCrmRatingIfSaved();
+
+        final smeId = CallSession.smeId ?? 0;
+        final agentId = CallSession.agentId ?? 0;
+        final sessionId = CallSession.sessionId ?? "";
+
+        if (smeId != 0) {
+          await ActivityHelperRepo().updateIsWrapUpTimeOver(
+            smeId: smeId,
+            agentId: agentId,
+            sessionId: sessionId,
+            wrapupTime: wrapUpTime,
+          );
+        }
+
+
         disconnectCallSocket();
         CallSession.clear();
         cubit.emit(const CallState());
@@ -1673,6 +1701,46 @@ if (wrapupEnabled && !activeCallCubit!.state.isDispositionFilled) {
 } else {
   // Directly end call
   activeCallCubit!.stopTimer();
+
+final manuallyDropped = activeCallCubit?.isManuallyDropped ?? false;
+      final savedSessionId = activeSessionId ?? sessionId;
+      final cubitToReset = activeCallCubit;
+
+      if (!manuallyDropped) {
+        debugPrint("📱 Customer hung up (call_ended)! Flushing CRM and syncing backend.");
+        
+        // 1. FLUSH CRM RATING
+        await activeCallCubit?.pushCrmRatingIfSaved();
+
+        final userDetails = UserDetailsCubit.instance?.userDetailsModel;
+        if (userDetails != null) {
+          try {
+            // 2. RELEASE WRAP-UP LOCK
+            await ActivityHelperRepo().updateIsWrapUpTimeOver( 
+              smeId: userDetails.smeId,
+              agentId: userDetails.agentId ?? 0,
+              sessionId: savedSessionId,
+              wrapupTime: 0,
+            );
+
+            // 3. MOVE TO WAITING
+            await ActivityHelperRepo().updateAgentLiveStatus(
+              smeId: userDetails.smeId,
+              agentId: userDetails.agentId ?? 0,
+              status: "Waiting",
+            );
+            
+            // 4. RESET CUBIT STATE TO CLEAR TIMER
+            cubitToReset?.emit(const CallState());
+            
+            debugPrint("✅ call_ended Backend sync successful.");
+          } catch (err) {
+            debugPrint("❌ Failed to sync backend on call_ended: $err");
+          }
+        }
+      }
+
+
 }
 
 
@@ -1754,11 +1822,43 @@ final isIncoming = CallSession.callType?.toLowerCase() == "incoming";
       disconnectCallSocket();
       return;
     }
+final manuallyDropped = activeCallCubit?.isManuallyDropped ?? false;
+    final savedSessionId = activeSessionId ?? sessionId;
+    final cubitToReset = activeCallCubit;
 
-    // 🔌 CLEAN DISCONNECT
+  if (!manuallyDropped) {
+      debugPrint("📱 Customer hung up! Hitting backend APIs to clear agent state.");
+      final userDetails = UserDetailsCubit.instance?.userDetailsModel;
+      await activeCallCubit?.pushCrmRatingIfSaved();
+      
+      if (userDetails != null) {
+        try {
+          // 1. Release wrap-up lock
+          await ActivityHelperRepo().updateIsWrapUpTimeOver( 
+            smeId: userDetails.smeId,
+            agentId: userDetails.agentId ?? 0,
+            sessionId: savedSessionId,
+            wrapupTime: 0,
+          );
+
+          // 2. Put agent back to Waiting
+          await ActivityHelperRepo().updateAgentLiveStatus(
+            smeId: userDetails.smeId,
+            agentId: userDetails.agentId ?? 0,
+            status: "Waiting",
+          );
+              cubitToReset?.emit(const CallState());
+
+          debugPrint("✅ Backend sync successful.");
+        } catch (err) {
+          debugPrint("❌ Failed to sync backend on clear_live_calls: $err");
+        }
+      }
+    } else {
+      debugPrint("🛑 Agent manually hung up. Skipping duplicate API calls.");
+    }
     disconnectCallSocket();
   CallSession.clear();
-
     // 🧭 SINGLE SAFE POP
    final nav = AppKeys.navigatorKey.currentState;
 if (nav != null && nav.canPop()) {

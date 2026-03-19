@@ -19,7 +19,7 @@ class CallStateCubit extends Cubit<CallState> {
  final CallsRepo callsRepo;
   final ActivityHelperRepo logRepo;
   static final Set<String> shownCrmSessions = {};
-
+bool isManuallyDropped = false;
 
 CallStateCubit({
     CallsRepo? callsRepo,  
@@ -45,6 +45,7 @@ CallStateCubit({
     required String callerName,
     required String phoneNumber,
   }) async {
+    isManuallyDropped = false;
     debugPrint(" [CUBIT] setConnected called");
     debugPrint(" [CUBIT] Incoming phone: $phoneNumber");
     debugPrint(" [CUBIT] Current state phone: ${state.phoneNumber}");
@@ -252,7 +253,7 @@ Future<void> drop({
     "callType": CallSession.callType,
     "agentId":agentId
   };
-
+isManuallyDropped = true;
   final res=await callsRepo.drop(smeId: smeId, body: body);
   if (res.isSuccess) { 
 
@@ -290,8 +291,15 @@ if (wrapupEnabled && !dispositionFilled) {
 } else {
 
   //  userDetailsCubit?.stopWaitingTimer() ?? 0;
-
+await pushCrmRatingIfSaved();
   // skip wrapup
+
+ await logRepo.updateIsWrapUpTimeOver(
+      smeId: smeId,
+      agentId: agentId,
+      sessionId: sessionId,
+      wrapupTime: wrapUpTime,
+    );
   await logRepo.updateAgentLiveStatus(
     smeId: smeId,
     agentId: agentId,
@@ -301,7 +309,7 @@ if (wrapupEnabled && !dispositionFilled) {
     // userDetailsCubit?.startWaitingTimer();
 stopTimer();
 emit(state.copyWith(
-  isDispositionFilled: false, // preserve it
+  // isDispositionFilled: false, // preserve it
   duration: Duration.zero,
   // reset only what you need
 ));
@@ -355,9 +363,12 @@ Future<void> saveWrapUpInCall({
   };
  final wrapupEnabled = CampaignManager.campaign?.wrapupEnabled == true;
 await callsRepo.saveRating(smeId: smeId, body: body);
-await callsRepo.saveRatingCrm(smeId: smeId, body: body);
-
-markDispositionFilled();
+// await callsRepo.saveRatingCrm(smeId: smeId, body: body);
+emit(state.copyWith(
+    isDispositionFilled: true,
+    lastSavedWrapUpPayload: body,
+  ));
+// markDispositionFilled();
 
 
 }
@@ -385,16 +396,36 @@ Future<void> saveWrapUpInRingingState({
   };
 
   await callsRepo.saveRating(smeId: smeId, body: body);
-  await callsRepo.saveRatingCrm(smeId: smeId, body: body);
+  // await callsRepo.saveRatingCrm(smeId: smeId, body: body);
 
-  await logRepo.updateIsWrapUpTimeOver(
-      smeId: smeId,
-      agentId: agentId,
-      sessionId: sessionId,
-      wrapupTime: wrapUpSeconds,
-    );
+
+emit(state.copyWith(
+    isDispositionFilled: true,
+    lastSavedWrapUpPayload: body,
+  ));
+
+  // await logRepo.updateIsWrapUpTimeOver(
+  //     smeId: smeId,
+  //     agentId: agentId,
+  //     sessionId: sessionId,
+  //     wrapupTime: wrapUpSeconds,
+  //   );
 
 }
+
+Future<void> pushCrmRatingIfSaved() async {
+    final payload = state.lastSavedWrapUpPayload;
+    if (payload != null && !state.isCrmRatingSavedToBackend) {
+      final smeId = CallSession.smeId ?? 0;
+      try {
+        debugPrint("🚀 Pushing latest saved remark to saveRatingCrm...");
+        await callsRepo.saveRatingCrm(smeId: smeId, body: payload);
+        emit(state.copyWith(isCrmRatingSavedToBackend: true));
+      } catch (e) {
+        debugPrint("❌ Failed to push saveRatingCrm: $e");
+      }
+    }
+  }
 Future<void> saveWrapUp({
   required String dispositionName,
   required String dispositionId,
@@ -419,8 +450,10 @@ Future<void> saveWrapUp({
   };
  final wrapupEnabled = CampaignManager.campaign?.wrapupEnabled == true;
 await callsRepo.saveRating(smeId: smeId, body: body);
-await callsRepo.saveRatingCrm(smeId: smeId, body: body);
-
+if (!state.isCrmRatingSavedToBackend) {
+    await callsRepo.saveRatingCrm(smeId: smeId, body: body);
+    emit(state.copyWith(isCrmRatingSavedToBackend: true));
+  }
 markDispositionFilled();
 
 
@@ -738,6 +771,7 @@ if (res.isSuccess) {
             enabledWrapupTime: wrapUpTime,
           );
         } else {
+          
           await logRepo.updateAgentLiveStatus(
             smeId: smeId,
             agentId: agentId,

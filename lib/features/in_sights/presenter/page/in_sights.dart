@@ -607,6 +607,85 @@ Widget _statusCircle(
 //     );
 //   }
 
+// Widget _buildDispositionSummary(
+//     BuildContext context,
+//     DispositionSummaryResponse dispositionSummary,
+//   ) {
+//     if (dispositionSummary.items.isEmpty) {
+//       return const SizedBox();
+//     }
+
+//     // Perfectly calculate the width for 4 items per row
+//     final double itemWidth = (MediaQuery.of(context).size.width -
+//             (AppConstant.kBodyHorizontalPadding * 2) -
+//             (AppConstant.kSized5 * 3)) /
+//         4;
+
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         const Divider(),
+//         const SizedBox(height: 10),
+//         const Text(
+//           "Disposition Summary",
+//           style: AppTextStyle.black18,
+//         ),
+//         const SizedBox(height: 12),
+//         Wrap(
+//           spacing: AppConstant.kSized5,
+//           runSpacing: AppConstant.kSized10,
+//           children: dispositionSummary.items.map((item) {
+            
+//             return Tooltip(
+//               message: item.name ?? "", // Allows user to long-press to see the full name if it gets cut off
+//               child: Container(
+//                 width: itemWidth,
+//                 height: 85, // 👈 Force uniform height for every box
+//                 padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+//                 decoration: BoxDecoration(
+//                   color: Colors.white,
+//                   borderRadius: BorderRadius.circular(10),
+//                   border: Border.all(color: AppColors.appColor),
+//                 ),
+//                 child: Column(
+//                   mainAxisAlignment: MainAxisAlignment.center,
+//                   children: [
+//                     // Text section expands to push the number to the bottom nicely
+//                     Expanded(
+//                       child: Align(
+//                         alignment: Alignment.center,
+//                         child: Text(
+//                           item.name ?? "",
+//                           maxLines: 2,
+//                           overflow: TextOverflow.ellipsis,
+//                           textAlign: TextAlign.center,
+//                           style: AppTextStyle.appColorNormal.copyWith(
+//                             fontSize: 11, // Slightly smaller to fit long names better
+//                             height: 1.1,  // Tighter line height for 2-line texts
+//                             fontWeight: FontWeight.w600,
+//                           ),
+//                         ),
+//                       ),
+//                     ),
+//                     // The count number
+//                     Text(
+//                       "${item.count ?? 0}",
+//                       style: AppTextStyle.appColor23.copyWith(
+//                         fontSize: 18, // Scaled down slightly to balance the box
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//             );
+            
+//           }).toList(),
+//         ),
+//       ],
+//     );
+//   }
+
+
 Widget _buildDispositionSummary(
     BuildContext context,
     DispositionSummaryResponse dispositionSummary,
@@ -615,76 +694,78 @@ Widget _buildDispositionSummary(
       return const SizedBox();
     }
 
-    // Perfectly calculate the width for 4 items per row
-    final double itemWidth = (MediaQuery.of(context).size.width -
-            (AppConstant.kBodyHorizontalPadding * 2) -
-            (AppConstant.kSized5 * 3)) /
-        4;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Divider(),
-        const SizedBox(height: 10),
-        const Text(
-          "Disposition Summary",
-          style: AppTextStyle.black18,
+    return Padding(
+      // Adds a nice gap between the top section and the bottom of the screen
+      padding: const EdgeInsets.only(top: 10, bottom: 20), 
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16), // Tighter outer padding
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.appColor.withOpacity(0.2)), // Soft purple border
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.appColor.withOpacity(0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: AppConstant.kSized5,
-          runSpacing: AppConstant.kSized10,
-          children: dispositionSummary.items.map((item) {
-            
-            return Tooltip(
-              message: item.name ?? "", // Allows user to long-press to see the full name if it gets cut off
-              child: Container(
-                width: itemWidth,
-                height: 85, // 👈 Force uniform height for every box
-                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppColors.appColor),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Text section expands to push the number to the bottom nicely
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.center,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Text(
+              "Disposition Summary",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppColors.appColor,
+              ),
+            ),
+            const SizedBox(height: 16), // Tighter gap below the title
+
+            Column(
+              children: dispositionSummary.items.map((item) {
+                final String rawName = item.name ?? "Unknown";
+                // Added a space after the arrow for better readability
+                final String formattedPath = "${rawName.replaceAll(',', ' → ')}:";
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8), // Tighter gap between rows
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
                         child: Text(
-                          item.name ?? "",
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.center,
-                          style: AppTextStyle.appColorNormal.copyWith(
-                            fontSize: 11, // Slightly smaller to fit long names better
-                            height: 1.1,  // Tighter line height for 2-line texts
-                            fontWeight: FontWeight.w600,
+                          formattedPath,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Colors.black87,
+                            height: 1.3, // Tighter line height
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
-                    ),
-                    // The count number
-                    Text(
-                      "${item.count ?? 0}",
-                      style: AppTextStyle.appColor23.copyWith(
-                        fontSize: 18, // Scaled down slightly to balance the box
+                      const SizedBox(width: 12),
+                      Text(
+                        "${item.count ?? 0}",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.redAccent,
+                          fontWeight: FontWeight.w500, // Slightly less bold, like the mockup
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-            
-          }).toList(),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
-
 
   Widget _buildDuration(
       {required BuildContext context, required InSightsSuccessState state}) {
