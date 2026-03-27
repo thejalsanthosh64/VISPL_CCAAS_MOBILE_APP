@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kommuno/core/common/app_constant.dart';
 import 'package:kommuno/core/common/app_keys.dart';
 import 'package:kommuno/core/common/widget/loading_indicator.dart';
 import 'package:kommuno/core/common/widget/toast_manager.dart';
@@ -357,7 +358,7 @@ if (campaign?.virtualNumberPool != null &&
 
 
 if (pilotNumber == null || pilotNumber.isEmpty) {
-  FToastManager().showToast(message: "No pilot number available");
+  FToastManager().showToast(message: AppLocalizations.of(AppKeys.navigatorKey.currentContext!)!.pilotNumber);
   return;
 }
 
@@ -453,10 +454,6 @@ callStateCubit.setPhoneNumber(number);
 );
 
 
-
-        FToastManager().showToast(
-            message: AppLocalizations.of(AppKeys.navigatorKey.currentContext!)!
-                .waitForTheCall);
       } else {
         debugPrint(' Call API Failed: ${res.message}');
         FToastManager().showToast(message: res.message);

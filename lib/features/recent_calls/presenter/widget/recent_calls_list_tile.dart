@@ -395,7 +395,18 @@ void _openPreviewSheet(
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  child: const Text("Send"),
+                   style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                backgroundColor: AppColors.appColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+                  child: const Text("Send",style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: AppColors.white,
+        ),),
                   onPressed: () async {
               final body = _buildPayloadFromRecentCall(
   call: recentCallsData,

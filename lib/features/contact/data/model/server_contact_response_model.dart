@@ -108,10 +108,15 @@ class ServerContactsResponseModel extends Equatable {
       address: json["address"]??"",
       createdBy: json["created_by"] ?? 0,
       visibilityFlag: json["visibility_flag"]??"",
-      insertDateTime: DateTime.parse(json["insert_date_time"]),
-      updatedDateTime: json["updated_date_time"] != null
-          ? DateTime.tryParse(json["updated_date_time"])
-          : null,
+      // insertDateTime: DateTime.parse(json["insert_date_time"]),
+      // updatedDateTime: json["updated_date_time"] != null
+      //     ? DateTime.tryParse(json["updated_date_time"])
+      //     : null,
+
+      insertDateTime: _parseCustomDate(json["insert_date_time"]) ?? DateTime.now(),
+      
+      // updatedDateTime handles null automatically because it is a nullable field.
+      updatedDateTime: _parseCustomDate(json["updated_date_time"]),
       isUpdated: json["is_updated"] ?? 0,
     );
   }
@@ -155,4 +160,41 @@ class ServerContactsResponseModel extends Equatable {
         updatedDateTime,
         isUpdated,
       ];
+}
+DateTime? _parseCustomDate(String? dateStr) {
+  if (dateStr == null || dateStr.trim().isEmpty) return null;
+
+  try {
+    // Attempt 1: Standard format (e.g., "2026-03-25 17:04:44")
+    // This will successfully handle 99% of your JSON list
+    return DateTime.parse(dateStr);
+  } catch (_) {
+    // Attempt 2: Handle the verbose format for the user "mm"
+    // (e.g., "Fri Apr 25 2025 11:02:49 GMT+0000 (Coordinated Universal Time)")
+    try {
+      final cleanStr = dateStr.split(' (')[0]; 
+      final parts = cleanStr.split(' ');
+
+      if (parts.length >= 6) {
+        const months = {
+          'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04', 'May': '05', 'Jun': '06',
+          'Jul': '07', 'Aug': '08', 'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'
+        };
+
+        final month = months[parts[1]] ?? '01';
+        final day = parts[2].padLeft(2, '0'); 
+        final year = parts[3];
+        final time = parts[4];
+        final offset = parts[5].replaceAll('GMT', ''); 
+
+        // Reconstruct into standard ISO format: "2025-04-25T11:02:49+0000"
+        final isoString = '$year-$month-${day}T$time$offset';
+
+        return DateTime.parse(isoString);
+      }
+    } catch (e) {
+      print('Failed to parse custom date: $dateStr');
+    }
+  }
+  return null;
 }

@@ -88,6 +88,7 @@ abstract class LogoutManager {
         CampaignManager.setCampaignInfo(campaign: null);
 
 String? lastUser = await SecureStorage().readData(key: 'last_saved_username') as String?;
+String? lastPass =await SecureStorage().readData(key: 'last_saved_password') as String?;
 
         for (var key in StorageEnum.values) {
           SecureStorage().deleteData(key: key.name);
@@ -96,6 +97,9 @@ String? lastUser = await SecureStorage().readData(key: 'last_saved_username') as
 
         if (lastUser != null && lastUser.isNotEmpty) {
           await SecureStorage().writeData(key: 'last_saved_username', value: lastUser);
+        }
+        if (lastPass != null && lastPass.isNotEmpty) {
+          await SecureStorage().writeData(key: 'last_saved_password', value: lastPass);
         }
         if (context.mounted) {
 AppKeys.navigatorKey.currentState!.pushNamedAndRemoveUntil(
@@ -147,6 +151,7 @@ static Future<void> logoutAndExit({required BuildContext context}) async {
       UserLoginInfoManager.setLoginUserInfo(userInfo: null);
       CampaignManager.setCampaignInfo(campaign: null);
 String? lastUser = await SecureStorage().readData(key: 'last_saved_username') as String?;
+String? lastPass =await SecureStorage().readData(key: 'last_saved_password') as String?;
 
       for (var key in StorageEnum.values) {
         await SecureStorage().deleteData(key: key.name);
@@ -155,6 +160,9 @@ String? lastUser = await SecureStorage().readData(key: 'last_saved_username') as
 
       if (lastUser != null && lastUser.isNotEmpty) {
           await SecureStorage().writeData(key: 'last_saved_username', value: lastUser);
+        }
+        if (lastPass != null && lastPass.isNotEmpty) {
+          await SecureStorage().writeData(key: 'last_saved_password', value: lastPass);
         }
 
       // Close app instead of going to login screen

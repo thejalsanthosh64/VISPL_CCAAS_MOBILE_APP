@@ -517,10 +517,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get failedToMakePhoneCall => 'Failed to make phone call';
 
   @override
-  String get waitForTheCall =>
-      'Your request has been submitted. Please wait for the call.';
-
-  @override
   String get noMatchingRecordsFound => 'No matching records found';
 
   @override
@@ -557,4 +553,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dialer => 'Dialer';
+
+  @override
+  String get pilotNumber =>
+      'DID/CLI is not available in this campaign, please contact your Admin';
 }

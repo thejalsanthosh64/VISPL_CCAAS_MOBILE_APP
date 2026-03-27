@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kommuno/core/common/app_constant.dart';
+import 'package:kommuno/core/common/app_keys.dart';
 import 'package:kommuno/core/common/repo/activity_log_repo.dart';
 import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
@@ -247,6 +248,7 @@ Future<void> drop({
   required int agentId,
   required String agentName,
 }) async {
+
   final body = {
     "sessionId": sessionId,
     "channelId": channelId,
@@ -783,7 +785,7 @@ if (res.isSuccess) {
       }
  
       // Signal the WebSocketManager to navigate appropriately.
-      // We use the same flag that _dropSenderCallAfterTransfer uses.
+      // We use the same flag that _dropSender. CallAfterTransfer uses.
       CallWebSocketManager.triggerConferenceTransferCleanup(
         wrapupEnabled: wrapupEnabled && !dispositionFilled,
         wrapUpTime: wrapUpTime,
@@ -928,13 +930,10 @@ final agentMobile = userCubit?.userDetailsModel.agentMobile;
 
   final res = await callsRepo.sendSms(smeId: smeId, body: body);
 
-  final message = _extractBackendMessage(
-    res.data,
-    fallback: "SMS failed",
-  );
-
-  FToastManager().showToast(message: message);
+ 
+  FToastManager().showToast(message: res.message); 
 }
+
 Future<void> sendWhatsappTemplate(Map<String, dynamic> t) async {
   final smeId = CallSession.smeId!;
  final userCubit = UserDetailsCubit.instance;
@@ -957,51 +956,9 @@ final agentMobile = userCubit?.userDetailsModel.agentMobile;
 
   final res = await callsRepo.sendWhatsapp(smeId: smeId, body: body);
 
-   final message = _extractBackendMessage(
-    res.data,
-    fallback: "WhatsApp failed",
-  );
-
-  FToastManager().showToast(message: message);
+ 
+  FToastManager().showToast(message: res.message);  
 }
-
-String _extractBackendMessage(dynamic data,
-    {String fallback = "Request failed"}) {
-  try {
-    if (data == null) return fallback;
-
-    if (data is Map) {
-      if (data["message"] != null) {
-        return data["message"].toString();
-      }
-
-      final inner = data["data"];
-      if (inner is Map) {
-        if (inner["message"] != null) {
-          return inner["message"].toString();
-        }
-
-        if (inner["description"] != null) {
-          return inner["description"].toString();
-        }
-
-        if (inner["success"] == true || inner["success"] == "true") {
-          return "Message sent successfully";
-        }
-      }
-
-      if (data["success"] == true || data["success"] == "true") {
-        return "Message sent successfully";
-      }
-    }
-  } catch (e) {
-    debugPrint("Message parse error: $e");
-  }
-
-  return fallback;
-}
-
-
 
 
 Future<void> updateSocketId({

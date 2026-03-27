@@ -4,7 +4,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kommuno/core/common/app_theme/app_theme.dart';
 import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
 import 'package:kommuno/core/utilities/call_manager/call_session.dart';
-import 'package:kommuno/core/utilities/campaign_manager.dart';
 import 'package:kommuno/features/calls/cubit/call_cubit.dart';
 import 'package:kommuno/features/calls/cubit/call_state.dart';
 import 'package:kommuno/features/calls/presenter/widgets/bottom_sheet.dart';
@@ -821,9 +820,18 @@ if (status == TransferStatus.conferenceEnded) {
                   const SizedBox(height: 16),
                   SizedBox(
                     width: double.infinity,
-                    height: 48,
                     child: ElevatedButton(
-                      child: const Text("Send"),
+                      style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                backgroundColor: AppColors.appColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+                      child: const Text("Send",style: TextStyle(   fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: AppColors.white,
+        ),),
                       onPressed: () {
                         final updated =
                             Map<String, dynamic>.from(template)

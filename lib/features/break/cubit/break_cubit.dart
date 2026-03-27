@@ -155,9 +155,11 @@ Future<void> getBreakDetails({bool isLoading = true}) async {
 
       final res = await _breakRepo.breakIn(breakInRequestData: breakInRequestData);
 
-
-      FToastManager().showToast(message: res.message);
-
+if(res.message=="Successfully In"){
+      FToastManager().showToast(message: "Successfully on break");
+}else{
+  FToastManager().showToast(message: res.message);
+}
 
       if (res.isSuccess) {
         print("✔ Break In API SUCCESS: ${res.data}");

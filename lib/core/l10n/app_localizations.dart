@@ -1090,12 +1090,6 @@ abstract class AppLocalizations {
   /// **'Failed to make phone call'**
   String get failedToMakePhoneCall;
 
-  /// No description provided for @waitForTheCall.
-  ///
-  /// In en, this message translates to:
-  /// **'Your request has been submitted. Please wait for the call.'**
-  String get waitForTheCall;
-
   /// No description provided for @noMatchingRecordsFound.
   ///
   /// In en, this message translates to:
@@ -1167,6 +1161,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dialer'**
   String get dialer;
+
+  /// No description provided for @pilotNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'DID/CLI is not available in this campaign, please contact your Admin'**
+  String get pilotNumber;
 }
 
 class _AppLocalizationsDelegate

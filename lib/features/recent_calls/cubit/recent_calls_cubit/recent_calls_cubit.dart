@@ -287,12 +287,7 @@ Future<void> sendSms({
     body: body,
   );
 
-  final message = _extractBackendMessage(
-    res.data,
-    fallback: "SMS failed",
-  );
-
-  FToastManager().showToast(message: message);
+  FToastManager().showToast(message: res.message);
 }
 
 Future<void> sendWhatsapp({
@@ -305,50 +300,9 @@ Future<void> sendWhatsapp({
   );
 
 
-  final message = _extractBackendMessage(
-    res.data,
-    fallback: "WhatsApp failed",
-  );
+ 
 
-  FToastManager().showToast(message: message);
-}
-
-
-
-String _extractBackendMessage(dynamic data,
-    {String fallback = "Request failed"}) {
-  try {
-    if (data == null) return fallback;
-
-    if (data is Map) {
-      if (data["message"] != null) {
-        return data["message"].toString();
-      }
-
-      final inner = data["data"];
-      if (inner is Map) {
-        if (inner["message"] != null) {
-          return inner["message"].toString();
-        }
-
-        if (inner["description"] != null) {
-          return inner["description"].toString();
-        }
-
-        if (inner["success"] == true || inner["success"] == "true") {
-          return "Message sent successfully";
-        }
-      }
-
-      if (data["success"] == true || data["success"] == "true") {
-        return "Message sent successfully";
-      }
-    }
-  } catch (e) {
-    debugPrint("Message parse error: $e");
-  }
-
-  return fallback;
+  FToastManager().showToast(message: res.message);  // directly use res.message
 }
 
 DateTime _startOfDay(DateTime date) {

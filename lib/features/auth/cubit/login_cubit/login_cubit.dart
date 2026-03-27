@@ -64,6 +64,9 @@ LoginCubit() : super(const LoginState()) {
       return;
     }
 await SecureStorage().writeData(key: 'last_saved_username', value: username);
+await SecureStorage().writeData(key: 'last_saved_password', value: password);
+
+
       await UserLoginInfoManager.setLoginUserInfo(
         userInfo: res.data,
       );
@@ -191,11 +194,13 @@ if (userDetails.agentStatus == 0) {
 Future<void> _loadLastUsername() async {
     try {
       final savedUsername = await SecureStorage().readData(key: 'last_saved_username');
-      
+      final savedPassword = await SecureStorage().readData(key: 'last_saved_password');
       if (savedUsername != null && savedUsername.toString().isNotEmpty) {
         userNameController.text = savedUsername.toString();
       }
-      
+      if (savedPassword != null && savedPassword.toString().isNotEmpty) {
+        passwordController.text = savedPassword.toString();
+      }
     } catch (e) {
       debugPrint("Failed to load last username: $e");
     }

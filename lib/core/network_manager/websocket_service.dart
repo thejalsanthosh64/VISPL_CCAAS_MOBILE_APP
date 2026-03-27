@@ -97,6 +97,7 @@ static bool _isRecovering = false;
     UserLoginInfoManager.setLoginUserInfo(userInfo: null);
     CampaignManager.setCampaignInfo(campaign: null);
 String? lastUser = await SecureStorage().readData(key: 'last_saved_username') as String?;
+String? lastPass =await SecureStorage().readData(key: 'last_saved_password') as String?;
     for (var key in StorageEnum.values) {
       await SecureStorage().deleteData(key: key.name);
     }
@@ -104,6 +105,9 @@ String? lastUser = await SecureStorage().readData(key: 'last_saved_username') as
     await HiveService.deleteAll();
     if (lastUser != null && lastUser.isNotEmpty) {
         await SecureStorage().writeData(key: 'last_saved_username', value: lastUser);
+      }
+    if (lastPass != null && lastPass.isNotEmpty) {
+        await SecureStorage().writeData(key: 'last_saved_password', value: lastPass);
       }
 
     // Navigate to login screen
@@ -412,7 +416,13 @@ final type =
       callerName: customerName,
       phone: customerNumber,
     );
-  });
+  
+  }
+  
+  
+  );
+
+
 
   // FOLLOW-UP REMINDER EVENT 
   globalSocket?.on("follow_up_notification", (raw) {
@@ -571,7 +581,7 @@ globalSocket?.on("transfer_clear_confirmed", (raw) {
       // ignore any late-arriving duplicate transfer_confirmed events.
       // This prevents a stale socket event from resetting state back to
       // attendedStep1Confirmed after Merge or Transfer already succeeded.
-      if (currentStatus == TransferStatus.conferenceLive ||
+      if (
           currentStatus == TransferStatus.conferenceEnded ||
           currentStatus == TransferStatus.transferDone) {
         debugPrint("[transfer_confirmed] IGNORED — already in $currentStatus (late/duplicate event)");
@@ -1067,16 +1077,39 @@ static void _showReminderPopup(Map<String, dynamic> data) {
         ],
       ),
       actions: [
-        TextButton(
-          onPressed: () {
-            debugPrint(" [POPUP] Dismiss button pressed");
-            Navigator.pop(ctx);
-          },
-          child: Text(
-            "Dismiss",
-            style: TextStyle(color: Colors.grey.shade600),
-          ),
-        ),
+SizedBox(
+                      width: double.infinity,
+
+  child: ElevatedButton(
+    
+                        style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: AppColors.appColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                        child: const Text("Dismiss",style: TextStyle(   fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: AppColors.white,
+          ),),
+                        onPressed: () {
+                        //      debugPrint(" [POPUP] Dismiss button pressed");
+              Navigator.pop(ctx);
+                        },
+                      ),
+),
+
+        // TextButton(
+        //   onPressed: () {
+        //     debugPrint(" [POPUP] Dismiss button pressed");
+        //     Navigator.pop(ctx);
+        //   },
+        //   child: Text(
+        //     "Dismiss",
+        //     style: TextStyle(color: Colors.grey.shade600),
+        //   ),
+        // ),
       
       ],
     ),
@@ -2030,7 +2063,18 @@ static void safeStartWaiting() {
     });
   }
 
-
+static void navigateToWrapUpManual({
+    required String caller,
+    required String phone,
+    required CallStateCubit cubit,
+  }) {
+    _navigateToWrapUp(
+      caller: caller,
+      phone: phone,
+      cubit: cubit,
+      duration: Duration.zero,
+    );
+  }
 static void _navigateToWaitingScreen({
   required CallStateCubit cubit,
   required String callerName,

@@ -210,7 +210,7 @@ class _CampaignListState extends StatelessWidget {
     final campaign = campaignListState.campaignList.firstWhereOrNull((e) => e.id == campaignListState.selectedCampaign);
     return AppButton(
       text:isAssignCampaign
-        ? AppLocalizations.of(context)!.login      
+        ? AppLocalizations.of(context)!.submit      
         : AppLocalizations.of(context)!.switchCampaign,
       onTap: campaign != null && CampaignManager.campaign?.id != campaign.id
           ? () {

@@ -165,7 +165,6 @@
   "pleaseEnterPrice" : "Please enter price",
   "pleaseSelectPriceSortOrder" : "Please select price sort order",
   "failedToMakePhoneCall" : "Failed to make phone call",
-  "waitForTheCall" : "Your request has been submitted. Please wait for the call.",
 
    "noMatchingRecordsFound" : "No matching records found",
 
@@ -179,5 +178,6 @@
   "switchCampaign": "Switch Campaign",
     "selfCallNotAllowed": "You cannot call your own number",
 "pleaseEnteraValidNumber": "Please enter a valid number",
-"dialer":"Dialer"
+"dialer":"Dialer",
+"pilotNumber":"DID/CLI is not available in this campaign, please contact your Admin"
  }

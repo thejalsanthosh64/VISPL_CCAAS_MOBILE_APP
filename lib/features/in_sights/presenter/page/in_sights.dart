@@ -150,16 +150,16 @@ class _InSightsState extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildDaysChip(
-                      context: context, userDetails: userDetails, state: state),
-                  _kSized10,
-                  CustomFieldDecoration(
-                    suffixIcon: const [Icon(Icons.calendar_month)],
-                    value: state.dateTimeRange != null
-                        ? "${DateUtility.getDateYMDOnly(date: state.dateTimeRange!.start)}    ${DateUtility.getDateYMDOnly(date: state.dateTimeRange!.end)}"
-                        : null,
-                    hinText: AppLocalizations.of(context)!.selectDateTime,
-                    style: AppTextStyle.appColorNormal,
+                  // _buildDaysChip(
+                  //     context: context, userDetails: userDetails, state: state),
+                  // _kSized10,
+                  // CustomFieldDecoration(
+                  //   suffixIcon: const [Icon(Icons.calendar_month)],
+                  //   value: state.dateTimeRange != null
+                  //       ? "${DateUtility.getDateYMDOnly(date: state.dateTimeRange!.start)}    ${DateUtility.getDateYMDOnly(date: state.dateTimeRange!.end)}"
+                  //       : null,
+                  //   hinText: AppLocalizations.of(context)!.selectDateTime,
+                  //   style: AppTextStyle.appColorNormal,
                     // onTap: () async {
                     //   final dateRange = await appDateRangePicker(
                     //     context: context,
@@ -184,30 +184,30 @@ class _InSightsState extends StatelessWidget {
     //   );
     // },)
 
-    onTap: () => DateUtility.selectDateRangeWithLimit(
-    context: context,
-    maxDays: 31, // Your specific limit for this screen
-    onSelected: (dateRange) {
-      _inSightsCubit(context).getInSights(
-        smeId: userDetails.smeId,
-        selectedDateTimeRange: dateRange,
-      );
-    },)
-                  ),
-                  _kSized10,
-                  ..._buildCallsInfo(
-                    context: context,
-                    title: AppLocalizations.of(context)!.incomingCalls,
-                    totalValue: state.insightsResponse.totalInCalls,
-                    failValue: state.insightsResponse.inFailedCalls,
-                    successValue: state.insightsResponse.inSuccessCalls,
-                    successPercentAge: double.tryParse(
-                        state.insightsResponse.inSuccess?.toStringAsFixed(2) ??
-                            ''),
-                  ),
-                  _kSized20,
-                  const Divider(height: 0),
-                  _kSized5,
+    // onTap: () => DateUtility.selectDateRangeWithLimit(
+    // context: context,
+    // maxDays: 31, // Your specific limit for this screen
+    // onSelected: (dateRange) {
+    //   _inSightsCubit(context).getInSights(
+    //     smeId: userDetails.smeId,
+    //     selectedDateTimeRange: dateRange,
+    //   );
+    // },)
+                  // ),
+                  // _kSized10,
+                  // ..._buildCallsInfo(
+                  //   context: context,
+                  //   title: AppLocalizations.of(context)!.incomingCalls,
+                  //   totalValue: state.insightsResponse.totalInCalls,
+                  //   failValue: state.insightsResponse.inFailedCalls,
+                  //   successValue: state.insightsResponse.inSuccessCalls,
+                  //   successPercentAge: double.tryParse(
+                  //       state.insightsResponse.inSuccess?.toStringAsFixed(2) ??
+                  //           ''),
+                  // ),
+                  // _kSized20,
+                  // const Divider(height: 0),
+                  // _kSized5,
                   ..._buildCallsInfo(
                     context: context,
                     title: AppLocalizations.of(context)!.outgoingCalls,
@@ -453,237 +453,6 @@ Widget _statusCircle(
   );
 }
 
-
-// Widget _buildDispositionSummary(
-//     DispositionSummaryResponse dispositionSummary) {
-//   if (dispositionSummary.items.isEmpty) {
-//     return const SizedBox();
-//   }
-
-//   return Column(
-//     crossAxisAlignment: CrossAxisAlignment.start,
-//     children: [
-//       const Divider(),
-//       const SizedBox(height: 10),
-
-//       const Text(
-//         "Disposition Summary",
-//         style: AppTextStyle.black18,
-//       ),
-
-//       const SizedBox(height: 10),
-
-//       Wrap(
-//         alignment: WrapAlignment.center,
-//         spacing: AppConstant.kSized5,
-//         runSpacing: AppConstant.kSized10,
-//         children: dispositionSummary.items.map((item) {
-//           return FittedBox(
-//             child: CallsInfoContainer(
-//               title: item.name,
-//               count: item.count,
-//             ),
-//           );
-//         }).toList(),
-//       ),
-//     ],
-//   );
-// }
-// Widget _buildDispositionSummary(
-//   BuildContext context,
-//   DispositionSummaryResponse dispositionSummary,
-// ) {
-//   if (dispositionSummary.items.isEmpty) {
-//     return const SizedBox();
-//   }
-
-//   final double itemWidth =
-//       (MediaQuery.of(context).size.width -
-//               (AppConstant.kBodyHorizontalPadding * 2) -
-//               (AppConstant.kSized5 * 3)) /
-//           4;
-
-//   return Column(
-//     crossAxisAlignment: CrossAxisAlignment.start,
-//     children: [
-//       const Divider(),
-//       const SizedBox(height: 10),
-//       const Text(
-//         "Disposition Summary",
-//         style: AppTextStyle.black18,
-//       ),
-//       const SizedBox(height: 10),
-//       Wrap(
-//         spacing: AppConstant.kSized5,
-//         runSpacing: AppConstant.kSized10,
-//         children: dispositionSummary.items.map((item) {
-//           return SizedBox(
-//             width: itemWidth,
-//             child: CallsInfoContainer(
-//               title: item.name,
-//               count: item.count,
-//             ),
-//           );
-//         }).toList(),
-//       ),
-//     ],
-//   );
-// }
-
-// Widget _buildDispositionSummary(
-//     BuildContext context,
-//     DispositionSummaryResponse dispositionSummary,
-//   ) {
-//     if (dispositionSummary.items.isEmpty) {
-//       return const SizedBox();
-//     }
-
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         const Divider(),
-//         const SizedBox(height: 10),
-//         const Text(
-//           "Disposition Summary",
-//           style: AppTextStyle.black18,
-//         ),
-//         const SizedBox(height: 12),
-        
-//         // Vertical list replaces the Wrap grid
-//         Column(
-//           children: dispositionSummary.items.map((item) {
-//             return Container(
-//               margin: const EdgeInsets.only(bottom: 10),
-//               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-//               decoration: BoxDecoration(
-//                 color: Colors.white,
-//                 borderRadius: BorderRadius.circular(12),
-//                 border: Border.all(color: AppColors.appColor.withOpacity(0.4)),
-//                 boxShadow: [
-//                   BoxShadow(
-//                     color: Colors.black.withOpacity(0.02),
-//                     blurRadius: 5,
-//                     offset: const Offset(0, 2),
-//                   ),
-//                 ],
-//               ),
-//               child: Row(
-//                 children: [
-//                   // Left side: Disposition Name (Expanded allows it to wrap nicely)
-//                   Expanded(
-//                     child: Text(
-//                       item.name ?? "Unknown",
-//                       style: const TextStyle(
-//                         fontSize: 14,
-//                         fontWeight: FontWeight.w500,
-//                         color: Colors.black87,
-//                       ),
-//                     ),
-//                   ),
-//                   const SizedBox(width: 12),
-                  
-//                   // Right side: Count Badge
-//                   Container(
-//                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-//                     decoration: BoxDecoration(
-//                       color: AppColors.appColor.withOpacity(0.1),
-//                       borderRadius: BorderRadius.circular(20),
-//                     ),
-//                     child: Text(
-//                       "${item.count ?? 0}",
-//                       style: const TextStyle(
-//                         color: AppColors.appColor,
-//                         fontWeight: FontWeight.bold,
-//                         fontSize: 15,
-//                       ),
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             );
-//           }).toList(),
-//         ),
-//       ],
-//     );
-//   }
-
-// Widget _buildDispositionSummary(
-//     BuildContext context,
-//     DispositionSummaryResponse dispositionSummary,
-//   ) {
-//     if (dispositionSummary.items.isEmpty) {
-//       return const SizedBox();
-//     }
-
-//     // Perfectly calculate the width for 4 items per row
-//     final double itemWidth = (MediaQuery.of(context).size.width -
-//             (AppConstant.kBodyHorizontalPadding * 2) -
-//             (AppConstant.kSized5 * 3)) /
-//         4;
-
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         const Divider(),
-//         const SizedBox(height: 10),
-//         const Text(
-//           "Disposition Summary",
-//           style: AppTextStyle.black18,
-//         ),
-//         const SizedBox(height: 12),
-//         Wrap(
-//           spacing: AppConstant.kSized5,
-//           runSpacing: AppConstant.kSized10,
-//           children: dispositionSummary.items.map((item) {
-            
-//             return Tooltip(
-//               message: item.name ?? "", // Allows user to long-press to see the full name if it gets cut off
-//               child: Container(
-//                 width: itemWidth,
-//                 height: 85, // 👈 Force uniform height for every box
-//                 padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-//                 decoration: BoxDecoration(
-//                   color: Colors.white,
-//                   borderRadius: BorderRadius.circular(10),
-//                   border: Border.all(color: AppColors.appColor),
-//                 ),
-//                 child: Column(
-//                   mainAxisAlignment: MainAxisAlignment.center,
-//                   children: [
-//                     // Text section expands to push the number to the bottom nicely
-//                     Expanded(
-//                       child: Align(
-//                         alignment: Alignment.center,
-//                         child: Text(
-//                           item.name ?? "",
-//                           maxLines: 2,
-//                           overflow: TextOverflow.ellipsis,
-//                           textAlign: TextAlign.center,
-//                           style: AppTextStyle.appColorNormal.copyWith(
-//                             fontSize: 11, // Slightly smaller to fit long names better
-//                             height: 1.1,  // Tighter line height for 2-line texts
-//                             fontWeight: FontWeight.w600,
-//                           ),
-//                         ),
-//                       ),
-//                     ),
-//                     // The count number
-//                     Text(
-//                       "${item.count ?? 0}",
-//                       style: AppTextStyle.appColor23.copyWith(
-//                         fontSize: 18, // Scaled down slightly to balance the box
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             );
-            
-//           }).toList(),
-//         ),
-//       ],
-//     );
-//   }
 
 
 Widget _buildDispositionSummary(
