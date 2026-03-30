@@ -8,6 +8,7 @@ import 'package:kommuno/core/exception/app_dio_exception.dart';
 import 'package:kommuno/core/utilities/date_utility.dart';
 import 'package:kommuno/core/utilities/debouncer.dart';
 import 'package:kommuno/core/utilities/pagination_scroll_controller.dart';
+import 'package:kommuno/features/contact/presenter/widget/contact_helper.dart';
 import 'package:kommuno/features/recent_calls/data/model/request/recent_calls_request_model.dart';
 import 'package:kommuno/features/recent_calls/data/model/response/recent_calls_data.dart';
 import 'package:kommuno/features/recent_calls/data/repository/recent_calls_repo.dart';
@@ -181,24 +182,51 @@ final requestModel = RecentCallsRequestModel(
     return hasMoreData;
   }
 
+  // void searchRecentCalls(String text) {
+  //   if (state is RecentCallsSuccessState) {
+  //     final currentState = state as RecentCallsSuccessState;
+  //     final searchedText = text.trim().toLowerCase();
+  //     if (searchedText.isNotEmpty) {
+  //       final searchedList = currentState.recentCallsData
+  //           .where((e) => "${e.customerName ?? ''} ${e.customerNumber}"
+  //               .trim()
+  //               .toLowerCase()
+  //               .contains(searchedText))
+  //           .toList();
+  //       emit(
+  //           currentState.copyWith(searchedRecentCallsData: () => searchedList));
+  //     } else {
+  //       emit(currentState.copyWith(searchedRecentCallsData: () => null));
+  //     }
+  //   }
+  // }
+
   void searchRecentCalls(String text) {
-    if (state is RecentCallsSuccessState) {
-      final currentState = state as RecentCallsSuccessState;
-      final searchedText = text.trim().toLowerCase();
-      if (searchedText.isNotEmpty) {
-        final searchedList = currentState.recentCallsData
-            .where((e) => "${e.customerName ?? ''} ${e.customerNumber}"
-                .trim()
-                .toLowerCase()
-                .contains(searchedText))
-            .toList();
-        emit(
-            currentState.copyWith(searchedRecentCallsData: () => searchedList));
-      } else {
-        emit(currentState.copyWith(searchedRecentCallsData: () => null));
-      }
+  if (state is RecentCallsSuccessState) {
+    final currentState = state as RecentCallsSuccessState;
+    final searchedText = text.trim().toLowerCase();
+    if (searchedText.isNotEmpty) {
+      final searchedList = currentState.recentCallsData.where((e) {
+        // Get the resolved name same way as the tile does
+        final contact = ContactLookup.getContact(e.customerNumber);
+        final resolvedName = (e.customerName?.isNotEmpty ?? false)
+            ? e.customerName!
+            : (contact?.customerName?.isNotEmpty ?? false)
+                ? contact!.customerName
+                : '';
+
+        return "${resolvedName} ${e.customerNumber}"
+            .trim()
+            .toLowerCase()
+            .contains(searchedText);
+      }).toList();
+
+      emit(currentState.copyWith(searchedRecentCallsData: () => searchedList));
+    } else {
+      emit(currentState.copyWith(searchedRecentCallsData: () => null));
     }
   }
+}
 
   // void onSelectDate({DateTimeRange? selectedDate, required int smeId}) {
   //   if (state is RecentCallsSuccessState) {
@@ -311,6 +339,24 @@ DateTime _startOfDay(DateTime date) {
 
 DateTime _endOfDay(DateTime date) {
   return DateTime(date.year, date.month, date.day, 23, 59, 59, 999);
+}
+
+void refreshSingleContact({
+  required String customerNumber,
+  required String newName,
+}) {
+  if (state is! RecentCallsSuccessState) return;
+  final currentState = state as RecentCallsSuccessState;
+
+  final norm = ContactLookup.normalize(customerNumber);
+  final updatedList = currentState.recentCallsData.map((call) {
+    if (ContactLookup.normalize(call.customerNumber) == norm) {
+      return call.copyWith(customerName: newName);
+    }
+    return call;
+  }).toList();
+
+  emit(currentState.copyWith(recentCallsData: updatedList));
 }
 
 }

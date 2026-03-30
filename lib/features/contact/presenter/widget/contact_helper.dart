@@ -8,7 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 class ContactLookup {
   static Map<String, String> serverNames = {};
   // static Map<String, String> deviceNames = {};
-
+static Map<String, ServerContactsResponseModel> serverContacts = {};
 static String normalize(String number) {
   // Remove invisible RTL/LTR formatting characters
   number = number.replaceAll(RegExp(r'[\u202A\u202B\u202C\u202D\u202E\u2066\u2067\u2068\u2069]'), "");
@@ -80,6 +80,7 @@ static String normalize(String number) {
   // Clear all contacts (use carefully)
   static void clearAll() {
     serverNames.clear();
+    serverContacts.clear(); // Clear the new map too
     // deviceNames.clear();
   }
 
@@ -98,6 +99,12 @@ static String normalize(String number) {
     //   debugPrint("  $key → $value");
     // });
   }
+
+static ServerContactsResponseModel? getContact(String number) {
+    final n = normalize(number);
+    return serverContacts[n];
+  }
+  
 }
 
 /// BACKGROUND CONTACT SYNC SERVICE
@@ -212,6 +219,7 @@ class ContactSync {
               name.toLowerCase() != "no name") {
             final normalized = ContactLookup.normalize(number);
             ContactLookup.serverNames[normalized] = name;
+            ContactLookup.serverContacts[normalized] = contact;
             added++;
           }
         }
@@ -250,9 +258,10 @@ class ContactSync {
           final contact = ServerContactsResponseModel.fromJson(item);
           final name = contact.customerName.trim();
           final number = contact.customerNumberPrimary;
-
+final normalized = ContactLookup.normalize(contact.customerNumberPrimary);
           if (number.isNotEmpty && name.isNotEmpty) {
             ContactLookup.serverNames[ContactLookup.normalize(number)] = name;
+            ContactLookup.serverContacts[normalized] = contact;
           }
         }
 
@@ -287,4 +296,6 @@ class ContactSync {
   String getStats() {
     return " Server: ${ContactLookup.serverNames.length} | Total: ${ContactLookup.totalContacts}";
   }
+
+  
 }

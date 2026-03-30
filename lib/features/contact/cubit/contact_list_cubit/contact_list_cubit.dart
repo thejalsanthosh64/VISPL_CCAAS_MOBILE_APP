@@ -226,6 +226,9 @@ for (var group in contactList) {
               ContactLookup.serverNames[
                 ContactLookup.normalize(c.customerNumberPrimary)
               ] = name;
+                ContactLookup.serverContacts[
+        ContactLookup.normalize(c.customerNumberPrimary)
+      ] = c;
             }
           }
         }

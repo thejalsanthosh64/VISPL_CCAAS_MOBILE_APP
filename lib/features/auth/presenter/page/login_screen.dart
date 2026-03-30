@@ -79,7 +79,7 @@ class _LoginScreenState extends StatelessWidget {
                 ),            const SizedBox(width: AppConstant.kSized10),
 
                              const Text(
-      "v1.0.21",
+      "v1.0.22",
       style: TextStyle(
         color: Colors.black,
         fontSize: 12,

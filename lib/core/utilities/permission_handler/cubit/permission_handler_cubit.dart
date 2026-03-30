@@ -115,4 +115,5 @@ class PermissionHandlerCubit extends Cubit<PermissionHandlerState>
       emit(const AllPermissionsGranted());
     }
   }
+  
 }

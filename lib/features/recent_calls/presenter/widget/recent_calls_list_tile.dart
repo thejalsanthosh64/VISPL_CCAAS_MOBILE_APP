@@ -19,6 +19,8 @@ import 'package:kommuno/core/utilities/audio_player_2/widget/app_audio_player.da
 import 'package:kommuno/core/utilities/date_utility.dart';
 import 'package:kommuno/features/calls/cubit/call_cubit.dart';
 import 'package:kommuno/features/contact/data/model/add_update_contact_address_model.dart';
+import 'package:kommuno/features/contact/data/model/server_contact_response_model.dart';
+import 'package:kommuno/features/contact/presenter/widget/contact_helper.dart';
 import 'package:kommuno/features/recent_calls/cubit/recent_calls_cubit/recent_calls_cubit.dart';
 import 'package:kommuno/features/recent_calls/data/enum/call_direction_enum.dart';
 import 'package:kommuno/features/recent_calls/data/model/request/recent_calls_request_model.dart';
@@ -52,6 +54,19 @@ class RecentCallsListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
+final String rawNumber = recentCallsData.customerNumber;
+    final contact = ContactLookup.getContact(rawNumber);
+
+    // Use synced contact name > API name > Fallback to formatted number
+    final String resolvedDisplayName = (contact?.customerName?.isNotEmpty ?? false)
+        ? contact!.customerName
+        : (recentCallsData.customerName?.isNotEmpty ?? false)
+            ? recentCallsData.customerName!
+            : addByIndiaCountryCodeWithoutPlus(number: rawNumber);
+
+    // Check if the name we found is different from the raw number (to decide if we show the number row)
+    final bool hasName = resolvedDisplayName != addByIndiaCountryCodeWithoutPlus(number: rawNumber);
     return Slidable(
       controller: slidableController,
       key: ValueKey<String>(
@@ -90,41 +105,250 @@ class RecentCallsListTile extends StatelessWidget {
             text: AppLocalizations.of(context)!.schedule,
             iconName: Assets.iconsSchedule,
           ),
-          AppSlidableAction(
-            onPressed: (__) async {
-              final userDetailsModel =
-                  context.read<UserDetailsCubit>().userDetailsModel;
-              final updatedContactDetails = await Navigator.of(context)
-                  .pushNamed(AppRouteNames.addUpdateContact, arguments: {
-                "updateContactDetails": AddUpdateContactsRequestModel(
-                  customerNumber: recentCallsData.customerNumber,
-                  customerName: recentCallsData.customerName ?? '',
-                  addressBookId:
-                      AddUpdateContactsRequestModel.defaultAddressBookId,
-                  agentNumber: userDetailsModel.agentMobile,
-                  companyName: '',
-                  createdBy: userDetailsModel.agentId,
-                  emailId: '',
-                  insertDateTime: recentCallsData.insertDateTime,
-                  updatedDateTime: DateTime.now(),
-                  smeId: "${userDetailsModel.smeId}",
-                )
-              });
-              if (context.mounted &&
-                  updatedContactDetails is AddUpdateContactsRequestModel) {
-                _recentCallsCubit(context).getRecentCalls(
-                  smeId: userDetailsModel.smeId,
-                  initialRecordValue: 1,
-                  isLoading: false,
-                  // recentCallsRequestModel: recentCallsRequestModel,
-                  agentId: userDetailsModel.agentId
-                );
-              }
-            },
-            backgroundColor: AppColors.appColor,
-            text: AppLocalizations.of(context)!.update,
-            iconName: Assets.iconsSettings,
-          ),
+//           AppSlidableAction(
+//             onPressed: (__) async {
+//               final userDetailsModel =
+//                   context.read<UserDetailsCubit>().userDetailsModel;
+// final syncDetails = ContactLookup.getContact(recentCallsData.customerNumber);
+              
+//                    final updatedContactDetails = await Navigator.of(context)
+//                   .pushNamed(AppRouteNames.addUpdateContact, arguments: {
+//                 "updateContactDetails": AddUpdateContactsRequestModel(
+//                   customerName: recentCallsData.customerName ?? '',
+//                   customerNumber: recentCallsData.customerNumber,
+//                   addressBookId:
+//                       AddUpdateContactsRequestModel.defaultAddressBookId,
+//                   agentNumber: userDetailsModel.agentMobile,
+//                     companyName: syncDetails?.companyName ?? '',         
+//                   createdBy: userDetailsModel.agentId,
+// emailId: syncDetails?.emailId ?? '',                  insertDateTime: recentCallsData.insertDateTime,
+//                   updatedDateTime: DateTime.now(),
+//                   smeId: "${userDetailsModel.smeId}",
+//                 )
+//               });
+//              if (context.mounted && updatedContactDetails is AddUpdateContactsRequestModel) {
+//       // ✅ 1. INSTANT LOCAL UPDATE (This makes the name change immediately)
+//       final norm = ContactLookup.normalize(updatedContactDetails.customerNumber);
+//       ContactLookup.serverNames[norm] = updatedContactDetails.customerName;
+      
+//       // ✅ 2. SYNC IN BACKGROUND
+//       ContactSync().refresh(
+//         context: context,
+//         smeId: userDetailsModel.smeId.toString(),
+//         agentId: userDetailsModel.agentId,
+//       );
+
+//       // ✅ 3. REFRESH LIST
+//       _recentCallsCubit(context).getRecentCalls(
+//         smeId: userDetailsModel.smeId,
+//         initialRecordValue: 1,
+//         isLoading: false,
+//         agentId: userDetailsModel.agentId
+//       );
+//     }
+//             },
+//             backgroundColor: AppColors.appColor,
+//             text: AppLocalizations.of(context)!.update,
+//             iconName: Assets.iconsSettings,
+//           ),
+
+// AppSlidableAction(
+//   onPressed: (__) async {
+//     final userDetailsModel = context.read<UserDetailsCubit>().userDetailsModel;
+//     final syncDetails = ContactLookup.getContact(recentCallsData.customerNumber);
+    
+//     final updatedContactDetails = await Navigator.of(context).pushNamed(
+//       AppRouteNames.addUpdateContact, 
+//       arguments: {
+//         "updateContactDetails": AddUpdateContactsRequestModel(
+//           // Use the resolved name so it's pre-filled correctly
+//           customerName: resolvedDisplayName, 
+//           customerNumber: recentCallsData.customerNumber,
+//           agentNumber: userDetailsModel.agentMobile,
+//           companyName: syncDetails?.companyName ?? '',
+//           emailId: syncDetails?.emailId ?? '',
+//           createdBy: userDetailsModel.agentId,
+//           insertDateTime: recentCallsData.insertDateTime,
+//           updatedDateTime: DateTime.now(),
+//           smeId: "${userDetailsModel.smeId}",
+//         )
+//       }
+//     );
+
+//     if (context.mounted && updatedContactDetails is AddUpdateContactsRequestModel) {
+//       final norm = ContactLookup.normalize(updatedContactDetails.customerNumber);
+      
+//       // ✅ 1. MANUALLY UPDATE BOTH MAPS IMMEDIATELY
+//       ContactLookup.serverNames[norm] = updatedContactDetails.customerName;
+//       ContactLookup.serverContacts[norm] = ServerContactsResponseModel(
+//         id: syncDetails?.id ?? '', // Keep existing ID
+//         smeId: userDetailsModel.smeId,
+//         customerName: updatedContactDetails.customerName,
+//         customerNumberPrimary: updatedContactDetails.customerNumber,
+//         mode: syncDetails?.mode ?? 0,
+//         customerNumberSecondary: syncDetails?.customerNumberSecondary ?? '',
+//         companyName: updatedContactDetails.companyName,
+//         emailId: updatedContactDetails.emailId,
+//         address: syncDetails?.address ?? '',
+//         createdBy: userDetailsModel.agentId,
+//         visibilityFlag: syncDetails?.visibilityFlag ?? '',
+//         insertDateTime: syncDetails?.insertDateTime ?? DateTime.now(),
+//         updatedDateTime: DateTime.now(),
+//         isUpdated: 1,
+//       );
+
+//       // 2. Trigger sync in background
+//       ContactSync().refresh(
+//         context: context,
+//         smeId: userDetailsModel.smeId.toString(),
+//         agentId: userDetailsModel.agentId,
+//       );
+
+//       // 3. Refresh list
+//       _recentCallsCubit(context).getRecentCalls(
+//         smeId: userDetailsModel.smeId,
+//         initialRecordValue: 1,
+//         isLoading: false,
+//         agentId: userDetailsModel.agentId
+//       );
+//     }
+//   },
+//   backgroundColor: AppColors.appColor,
+//   text: AppLocalizations.of(context)!.update,
+//   iconName: Assets.iconsSettings,
+// ),
+
+// AppSlidableAction(
+//   onPressed: (__) async {
+//     final userDetailsModel = context.read<UserDetailsCubit>().userDetailsModel;
+//     final syncDetails = ContactLookup.getContact(recentCallsData.customerNumber);
+    
+//     final updatedContactDetails = await Navigator.of(context).pushNamed(
+//       AppRouteNames.addUpdateContact, 
+//       arguments: {
+//         "updateContactDetails": AddUpdateContactsRequestModel(
+//           customerName: resolvedDisplayName, 
+//           customerNumber: recentCallsData.customerNumber,
+//           agentNumber: userDetailsModel.agentMobile,
+//           companyName: syncDetails?.companyName ?? '',
+//           emailId: syncDetails?.emailId ?? '',
+//           createdBy: userDetailsModel.agentId,
+//           insertDateTime: recentCallsData.insertDateTime,
+//           updatedDateTime: DateTime.now(),
+//           smeId: "${userDetailsModel.smeId}",
+//         )
+//       }
+//     );
+
+//     if (context.mounted && updatedContactDetails is AddUpdateContactsRequestModel) {
+//       // ✅ 1. MANUAL LOCAL UPDATE (Crucial for instant reflection)
+//       final String norm = ContactLookup.normalize(updatedContactDetails.customerNumber);
+      
+//       // Update the name map used by resolvedDisplayName
+//       ContactLookup.serverNames[norm] = updatedContactDetails.customerName;
+      
+//       // Update the full model map used by pre-filling
+//       ContactLookup.serverContacts[norm] = ServerContactsResponseModel(
+//         id: syncDetails?.id ?? '', 
+//         smeId: userDetailsModel.smeId,
+//         customerName: updatedContactDetails.customerName,
+//         customerNumberPrimary: updatedContactDetails.customerNumber,
+//         mode: syncDetails?.mode ?? 0,
+//         customerNumberSecondary: syncDetails?.customerNumberSecondary ?? '',
+//         companyName: updatedContactDetails.companyName,
+//         emailId: updatedContactDetails.emailId,
+//         address: syncDetails?.address ?? '',
+//         createdBy: userDetailsModel.agentId,
+//         visibilityFlag: syncDetails?.visibilityFlag ?? '',
+//         insertDateTime: syncDetails?.insertDateTime ?? DateTime.now(),
+//         updatedDateTime: DateTime.now(),
+//         isUpdated: 1,
+//       );
+
+//       // 2. Trigger background sync to keep everything consistent
+//       ContactSync().refresh(
+//         context: context,
+//         smeId: userDetailsModel.smeId.toString(),
+//         agentId: userDetailsModel.agentId,
+//       );
+
+//       // 3. Refresh the List UI
+//       // We pass initialRecordValue: 1 to reset the list
+//       _recentCallsCubit(context).getRecentCalls(
+//         smeId: userDetailsModel.smeId,
+//         initialRecordValue: 1,
+//         isLoading: false,
+//         agentId: userDetailsModel.agentId
+//       );
+//     }
+//   },
+//   backgroundColor: AppColors.appColor,
+//   text: AppLocalizations.of(context)!.update,
+//   iconName: Assets.iconsSettings,
+// ),
+
+AppSlidableAction(
+  onPressed: (__) async {
+    final userDetailsModel = context.read<UserDetailsCubit>().userDetailsModel;
+    final syncDetails = ContactLookup.getContact(recentCallsData.customerNumber);
+    
+    debugPrint("🚀 [DEBUG] Opening Update Screen for: ${recentCallsData.customerNumber}");
+
+    final updatedContactDetails = await Navigator.of(context).pushNamed(
+      AppRouteNames.addUpdateContact, 
+      arguments: {
+        "updateContactDetails": AddUpdateContactsRequestModel(
+          customerName: resolvedDisplayName, 
+          customerNumber: recentCallsData.customerNumber,
+          agentNumber: userDetailsModel.agentMobile,
+          companyName: syncDetails?.companyName ?? '',
+          emailId: syncDetails?.emailId ?? '',
+          createdBy: userDetailsModel.agentId,
+          insertDateTime: recentCallsData.insertDateTime,
+          updatedDateTime: DateTime.now(),
+          smeId: "${userDetailsModel.smeId}",
+        )
+      }
+    );
+
+   if (context.mounted && updatedContactDetails is AddUpdateContactsRequestModel) {
+  final norm = ContactLookup.normalize(updatedContactDetails.customerNumber);
+
+  // Update BOTH maps immediately
+  ContactLookup.serverNames[norm] = updatedContactDetails.customerName;
+  
+  final existing = ContactLookup.serverContacts[norm];
+  ContactLookup.serverContacts[norm] = ServerContactsResponseModel(
+    id: existing?.id ?? '',
+    smeId: userDetailsModel.smeId,
+    customerName: updatedContactDetails.customerName,
+    customerNumberPrimary: updatedContactDetails.customerNumber,
+    mode: existing?.mode ?? 0,
+    customerNumberSecondary: existing?.customerNumberSecondary ?? '',
+    companyName: updatedContactDetails.companyName,
+    emailId: updatedContactDetails.emailId,
+    address: existing?.address ?? '',
+    createdBy: userDetailsModel.agentId,
+    visibilityFlag: existing?.visibilityFlag ?? '',
+    insertDateTime: existing?.insertDateTime ?? DateTime.now(),
+    updatedDateTime: DateTime.now(),
+    isUpdated: 1,
+  );
+
+  // Update cubit state
+  final cubit = context.read<RecentCallsCubit>();
+  cubit.refreshSingleContact(
+    customerNumber: updatedContactDetails.customerNumber,
+    newName: updatedContactDetails.customerName,
+  );
+
+  // DO NOT call ContactSync().refresh() — it overwrites with stale API data
+}
+  },
+  backgroundColor: AppColors.appColor,
+  text: AppLocalizations.of(context)!.update,
+  iconName: Assets.iconsSettings,
+),
         ],
       ),
       child: ColoredBox(
@@ -157,36 +381,61 @@ class RecentCallsListTile extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
+
+                          
+                          // FittedBox(
+                          //   child: Text(
+                          //     (recentCallsData.customerName ?? '')
+                          //             .trim()
+                          //             .isEmpty
+                          //         ? addByIndiaCountryCodeWithoutPlus(
+                          //             number: recentCallsData.customerNumber)
+                          //         : recentCallsData.customerName ??
+                          //             addByIndiaCountryCodeWithoutPlus(
+                          //                 number:
+                          //                     recentCallsData.customerNumber),
+                          //     style: AppTextStyle.black16,
+                          //     maxLines: 1,
+                          //   ),
+                          // ),
+                          // if ((recentCallsData.customerName ?? '')
+                          //     .trim()
+                          //     .isNotEmpty)
+                          //   FittedBox(
+                          //     child: Text(
+                          //       addByIndiaCountryCodeWithoutPlus(
+                          //           number: recentCallsData.customerNumber),
+                          //       style: AppTextStyle.blackNormal,
+                          //       maxLines: 1,
+                          //     ),
+                          //   ),
+                          // FittedBox(
+                          //   child: Text(
+                          //     DateUtility.getDisplayDateTimeWithMonthName(
+                          //         date: recentCallsData.insertDateTime),
+                          //     style: AppTextStyle.grey13,
+                          //   ),
+                          // ),
+
                           FittedBox(
                             child: Text(
-                              (recentCallsData.customerName ?? '')
-                                      .trim()
-                                      .isEmpty
-                                  ? addByIndiaCountryCodeWithoutPlus(
-                                      number: recentCallsData.customerNumber)
-                                  : recentCallsData.customerName ??
-                                      addByIndiaCountryCodeWithoutPlus(
-                                          number:
-                                              recentCallsData.customerNumber),
+                              resolvedDisplayName, // ✅ Use the resolved name here
                               style: AppTextStyle.black16,
                               maxLines: 1,
                             ),
                           ),
-                          if ((recentCallsData.customerName ?? '')
-                              .trim()
-                              .isNotEmpty)
+                          // Only show the number row if we actually found a name above
+                          if (hasName)
                             FittedBox(
                               child: Text(
-                                addByIndiaCountryCodeWithoutPlus(
-                                    number: recentCallsData.customerNumber),
+                                addByIndiaCountryCodeWithoutPlus(number: recentCallsData.customerNumber),
                                 style: AppTextStyle.blackNormal,
                                 maxLines: 1,
                               ),
                             ),
                           FittedBox(
                             child: Text(
-                              DateUtility.getDisplayDateTimeWithMonthName(
-                                  date: recentCallsData.insertDateTime),
+                              DateUtility.getDisplayDateTimeWithMonthName(date: recentCallsData.insertDateTime),
                               style: AppTextStyle.grey13,
                             ),
                           ),

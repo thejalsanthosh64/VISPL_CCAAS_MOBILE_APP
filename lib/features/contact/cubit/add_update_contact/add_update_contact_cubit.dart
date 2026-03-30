@@ -28,7 +28,8 @@ class AddUpdateContactCubit extends Cubit<AddUpdateContactState> {
           splitByIndiaCountryCode(number: updateContactDetails!.customerNumber);
       companyNameController.text = updateContactDetails!.companyName;
       emailIdController.text = updateContactDetails!.emailId;
-      changeAvatarState(text: updateContactDetails!.customerName);
+      // changeAvatarState(text: updateContactDetails!.customerName);
+    emit(state.copyWith(customerName: updateContactDetails!.customerName));
     }
   }
 

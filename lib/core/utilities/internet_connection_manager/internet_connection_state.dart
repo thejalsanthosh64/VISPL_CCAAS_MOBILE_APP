@@ -25,3 +25,8 @@ final class InternetDisConnectedState extends InternetConnectionState {
   @override
   List<Object?> get props => [];
 }
+final class InternetSlowConnectionState extends InternetConnectionState {
+  const InternetSlowConnectionState();
+  @override
+  List<Object?> get props => [];
+}
