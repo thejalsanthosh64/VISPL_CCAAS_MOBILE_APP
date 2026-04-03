@@ -7,6 +7,7 @@ class AppDioException implements Exception {
   late int statusCode;
 
   AppDioException.fromDioException(DioException dioException) {
+    
     statusCode = dioException.response?.statusCode ?? 0;
     switch (dioException.type) {
       case DioExceptionType.cancel:
@@ -37,6 +38,10 @@ class AppDioException implements Exception {
   }
 
   String _handleError(int? statusCode, dynamic error) {
+    if (error != null && error is Map<String, dynamic>) {
+      if (error.containsKey('message') && error['message'] != null) {
+        return error['message'].toString(); 
+      }}
     switch (statusCode) {
       case 400:
         return AppLocalizations.of(AppKeys.navigatorKey.currentContext!)!

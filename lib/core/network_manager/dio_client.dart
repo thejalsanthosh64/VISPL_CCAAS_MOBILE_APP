@@ -88,6 +88,7 @@ debugPrint("FULL URL: ${_dio.options.baseUrl}$uri");
 
       return CommonResponseModel.fromJson(response.data);
     } on DioException catch (e) {
+      debugPrint("🚨 EXACT SERVER ERROR: ${e.response?.data}");
       throw AppDioException.fromDioException(e);
     } catch (e) {
       rethrow;

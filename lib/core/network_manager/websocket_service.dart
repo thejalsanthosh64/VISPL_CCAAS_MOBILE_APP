@@ -23,6 +23,7 @@ import 'package:kommuno/features/calls/presenter/page/call_screen.dart';
 import 'package:kommuno/features/calls/presenter/page/call_wrapup_.dart';
 import 'package:kommuno/features/campaigns/data/model/response/campaign_data.dart';
 import 'package:kommuno/features/contact/presenter/widget/contact_helper.dart';
+import 'package:kommuno/features/recent_calls/cubit/recent_calls_cubit/recent_calls_cubit.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:flutter/material.dart';
 import 'package:vibration/vibration.dart';
@@ -2040,8 +2041,15 @@ static void safeStartWaiting() {
     return;
   }
 
+
+  
+
   
   cubit.startWaitingTimer();
+   debugPrint("🔔 safeStartWaiting called — scheduling onRefreshNeeded");
+
+    debugPrint("⏰ Delay done — onRefreshNeeded is ${RecentCallsCubit.onRefreshNeeded == null ? 'NULL ❌' : 'SET ✅'}");
+    RecentCallsCubit.onRefreshNeeded?.call();
 }
   // AGENT ANSWER DETECTION 
   static Timer? answerDetectionTimer;

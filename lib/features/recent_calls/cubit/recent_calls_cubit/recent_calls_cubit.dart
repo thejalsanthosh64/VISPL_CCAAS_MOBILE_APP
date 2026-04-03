@@ -17,6 +17,7 @@ import 'package:kommuno/core/l10n/app_localizations.dart';
 part 'recent_calls_state.dart';
 
 class RecentCallsCubit extends Cubit<RecentCallsState> {
+  static VoidCallback? onRefreshNeeded;
   RecentCallsCubit() : super(const RecentCallsInitialState());
 
   final paginationScrollController = PaginationScrollController();
@@ -26,6 +27,7 @@ class RecentCallsCubit extends Cubit<RecentCallsState> {
   final _recentCallsRepo = RecentCallsRepo();
 
   final dateController = TextEditingController();
+
 
   @override
   Future<void> close() async {
@@ -306,16 +308,44 @@ Future<List<dynamic>> loadWhatsappTemplates(int smeId) async {
 
 // ---------------- SEND ----------------
 
+// Future<void> sendSms({
+//   required int smeId,
+//   required Map<String, dynamic> body,
+// }) async {
+//   final res = await _recentCallsRepo.sendSms(
+//     smeId: smeId,
+//     body: body,
+//   );
+
+//   FToastManager().showToast(message: res.message);
+// }
+
 Future<void> sendSms({
   required int smeId,
   required Map<String, dynamic> body,
 }) async {
-  final res = await _recentCallsRepo.sendSms(
-    smeId: smeId,
-    body: body,
-  );
+  try {
+    
+    final res = await _recentCallsRepo.sendSms(
+      smeId: smeId,
+      body: body,
+    );
 
-  FToastManager().showToast(message: res.message);
+    FToastManager().showToast(message: res.message);
+    
+  } on AppDioException catch (e) {
+
+String displayMessage = e.message;
+
+    // Check if the backend threw the specific DNS/Network error
+    if (displayMessage.contains("Failed to send message") || displayMessage.contains("getaddrinfo ENOTFOUND")) {
+      displayMessage = "Failed to send message.Please try again";
+    }
+
+    FToastManager().showToast(message: displayMessage);    
+  } catch (e) {
+    FToastManager().showToast(message: AppLocalizations.of(AppKeys.navigatorKey.currentContext!)!.somethingWentWrong);
+  }
 }
 
 Future<void> sendWhatsapp({
@@ -330,8 +360,13 @@ Future<void> sendWhatsapp({
 
  
 
-  FToastManager().showToast(message: res.message);  // directly use res.message
-}
+if (res.message.contains('Success') ||res.message.contains('Successfully Sent object')) {
+    FToastManager().showToast(message: "Message sent successfully");
+  } else {
+
+    
+    FToastManager().showToast(message: res.message);
+  }}
 
 DateTime _startOfDay(DateTime date) {
   return DateTime(date.year, date.month, date.day);

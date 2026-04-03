@@ -3,13 +3,13 @@ part of 'dio_client.dart';
 abstract class ApiEndpoints {
 
 static const String _baseUrl = "https://ccs.sparc.smartping.io/v1/";
-//   static const String _baseUrl = "https://test.smartping.ai/v1/";
+  // static const String _baseUrl = "https://test.smartping.ai/v1/";
 
   // static const String _baseUrl = "https://newdev.kommuno.com/v1/";
 
   // static const String _baseUrl = "https://dev.kommuno.com/v1/";
 
-//   static const String baseUrlWebSo = "https://testsio.smartping.ai/";
+  // static const String baseUrlWebSo = "https://testsio.smartping.ai/";
   static const String baseUrlWebSo = "https://ccssio.smartping.io/";
 
 

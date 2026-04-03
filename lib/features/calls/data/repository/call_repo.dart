@@ -256,7 +256,7 @@ Future<CommonResponseModel> sendSurveyIVR({
     final res = await _dioClient.post(
       ApiEndpoints.surveyEndCall(smeId),   // create endpoint
       data: {
-        "sessionId": sessionId,
+        "session_id": sessionId,
       },
     );
     return res;

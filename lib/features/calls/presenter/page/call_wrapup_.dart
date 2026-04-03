@@ -841,7 +841,7 @@ if (mounted) {
               //     backgroundColor: Colors.green,
               //   ),
               // );
-                  FToastManager().showToast(message: "Form submitted successfully");
+                  FToastManager().showToast(message: "Rating successfully added");
 
             }
 

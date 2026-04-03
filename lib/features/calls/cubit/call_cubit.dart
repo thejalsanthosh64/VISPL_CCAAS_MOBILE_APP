@@ -7,6 +7,8 @@ import 'package:kommuno/core/common/app_keys.dart';
 import 'package:kommuno/core/common/repo/activity_log_repo.dart';
 import 'package:kommuno/core/common/widget/toast_manager.dart';
 import 'package:kommuno/core/common/widget/user_details/cubit/user_details_cubit.dart';
+import 'package:kommuno/core/exception/app_dio_exception.dart';
+import 'package:kommuno/core/l10n/app_localizations.dart';
 import 'package:kommuno/core/network_manager/websocket_service.dart';
 import 'package:kommuno/core/utilities/call_manager/call_session.dart';
 import 'package:kommuno/core/utilities/campaign_manager.dart';
@@ -15,6 +17,8 @@ import 'package:kommuno/features/calls/data/model/agent_queue_model.dart';
 import 'package:kommuno/features/calls/data/model/attendeed_transfer_request_model.dart';
 import 'package:kommuno/features/calls/data/model/tranfer_request_model.dart';
 import 'package:kommuno/features/calls/data/repository/call_repo.dart';
+import 'package:kommuno/features/recent_calls/cubit/recent_calls_cubit/recent_calls_cubit.dart';
+import 'package:kommuno/features/recent_calls/presenter/page/recent_calls.dart';
 
 class CallStateCubit extends Cubit<CallState> {
  final CallsRepo callsRepo;
@@ -362,10 +366,16 @@ Future<void> saveWrapUpInCall({
     "disposition_id": dispositionId,
     "disposition_name": dispositionName,
     "agent_id": agentId,
+    "name":userDetailsCubit.userDetailsModel.agentName, 
+    "role":userDetailsCubit.userDetailsModel.roles,
   };
  final wrapupEnabled = CampaignManager.campaign?.wrapupEnabled == true;
-await callsRepo.saveRating(smeId: smeId, body: body);
+final res = await callsRepo.saveRating(smeId: smeId, body: body);
 // await callsRepo.saveRatingCrm(smeId: smeId, body: body);
+
+  if (res.isSuccess) {
+    FToastManager().showToast(message: "Rating successfully added"); 
+  }
 emit(state.copyWith(
     isDispositionFilled: true,
     lastSavedWrapUpPayload: body,
@@ -387,6 +397,7 @@ Future<void> saveWrapUpInRingingState({
   final smeId = CallSession.smeId ?? 0;
   final agentId = CallSession.agentId ?? 0;
   final sessionId = CallSession.sessionId ?? "";
+      final userDetailsCubit = context.read<UserDetailsCubit>();
 
   final body = {
     "session_id": sessionId,
@@ -395,6 +406,9 @@ Future<void> saveWrapUpInRingingState({
     "disposition_id": dispositionId,
     "disposition_name": dispositionName,
     "agent_id": agentId,
+
+    "name":userDetailsCubit.userDetailsModel.agentName, 
+    "role":userDetailsCubit.userDetailsModel.roles,
   };
 
   await callsRepo.saveRating(smeId: smeId, body: body);
@@ -449,9 +463,17 @@ Future<void> saveWrapUp({
     "disposition_id": dispositionId,
     "disposition_name": dispositionName,
     "agent_id": agentId,
+
+    "name":userDetailsCubit.userDetailsModel.agentName, 
+    "role":userDetailsCubit.userDetailsModel.roles,
   };
  final wrapupEnabled = CampaignManager.campaign?.wrapupEnabled == true;
-await callsRepo.saveRating(smeId: smeId, body: body);
+final res =await callsRepo.saveRating(smeId: smeId, body: body);
+
+
+  if (res.isSuccess) {
+    FToastManager().showToast(message: "Rating successfully added"); 
+  }
 if (!state.isCrmRatingSavedToBackend) {
     await callsRepo.saveRatingCrm(smeId: smeId, body: body);
     emit(state.copyWith(isCrmRatingSavedToBackend: true));
@@ -492,6 +514,8 @@ await ActivityHelperRepo().updateAgentActivityTime(
 
 userDetailsCubit.startWaitingTimer();
   }
+debugPrint("🏁 WrapUp done — calling onRefreshNeeded");
+RecentCallsCubit.onRefreshNeeded?.call();
 
 }
 
@@ -911,6 +935,7 @@ Future<void> sendSmsTemplate(Map<String, dynamic> t) async {
   final smeId = CallSession.smeId!;
 final userCubit = UserDetailsCubit.instance;
 final agentMobile = userCubit?.userDetailsModel.agentMobile;
+ try {
 
   final body = {
     "message": t["message"],
@@ -930,8 +955,25 @@ final agentMobile = userCubit?.userDetailsModel.agentMobile;
 
   final res = await callsRepo.sendSms(smeId: smeId, body: body);
 
- 
-  FToastManager().showToast(message: res.message); 
+    
+
+
+    FToastManager().showToast(message: res.message);
+    
+  } on AppDioException catch (e) {
+
+
+String displayMessage = e.message;
+
+    // Check if the backend threw the specific DNS/Network error
+    if (displayMessage.contains("Failed to send message") || displayMessage.contains("getaddrinfo ENOTFOUND")) {
+      displayMessage = "Failed to send message.Please try again";
+    }
+
+    FToastManager().showToast(message: displayMessage);      
+  } catch (e) {
+    FToastManager().showToast(message: AppLocalizations.of(AppKeys.navigatorKey.currentContext!)!.somethingWentWrong);
+  }
 }
 
 Future<void> sendWhatsappTemplate(Map<String, dynamic> t) async {
@@ -957,7 +999,16 @@ final agentMobile = userCubit?.userDetailsModel.agentMobile;
   final res = await callsRepo.sendWhatsapp(smeId: smeId, body: body);
 
  
-  FToastManager().showToast(message: res.message);  
+  // FToastManager().showToast(message: res.message);  
+
+
+if (res.message.contains('Success') ||res.message.contains('Successfully Sent object')) {
+    FToastManager().showToast(message: "Message sent successfully");
+  } else {
+
+    
+    FToastManager().showToast(message: res.message);
+  }
 }
 
 

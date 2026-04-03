@@ -28,14 +28,53 @@ class RecentCalls extends StatelessWidget {
   }
 }
 
-class _RecentCallsState extends StatelessWidget {
+class _RecentCallsState extends StatefulWidget {
   const _RecentCallsState();
 
+  @override
+  State<_RecentCallsState> createState() => _RecentCallsStateState();
+}
+
+class _RecentCallsStateState extends State<_RecentCallsState> {
   SizedBox get _kSized10 =>
       const SizedBox(height: AppConstant.kSized10, width: AppConstant.kSized10);
 
   RecentCallsCubit _recentCallsCubit(BuildContext context) =>
       context.read<RecentCallsCubit>();
+
+
+@override
+  void initState() {
+
+    super.initState();
+    RecentCallsCubit.onRefreshNeeded = () {
+      if (mounted) {
+        _fetchCalls();
+      }
+    };
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchCalls();
+    });
+  }
+
+  @override
+  void dispose() {
+    RecentCallsCubit.onRefreshNeeded = null;
+    super.dispose();
+  }
+
+  void _fetchCalls() {
+    if (!mounted) return;
+    final smeId = context.read<UserDetailsCubit>().userDetailsModel.smeId;
+    final agentId = context.read<UserDetailsCubit>().userDetailsModel.agentId;
+    context.read<RecentCallsCubit>().getRecentCalls(
+      smeId: smeId,
+      agentId: agentId,
+      isLoading: false,
+      initialRecordValue: 1,
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -61,16 +100,17 @@ class _RecentCallsState extends StatelessWidget {
     
     return BlocBuilder<RecentCallsCubit, RecentCallsState>(
       builder: (context, state) {
-        if (state is RecentCallsInitialState) {
-          Future.delayed(
-            Duration.zero,
-            () {
-              if (context.mounted) {
-                _recentCallsCubit(context).getRecentCalls(smeId: smeId,agentId:agentId);
-              }
-            },
-          );
-        } else if (state is RecentCallsLoadingState) {
+        // if (state is RecentCallsInitialState) {
+        //   Future.delayed(
+        //     Duration.zero,
+        //     () {
+        //       if (context.mounted) {
+        //         _recentCallsCubit(context).getRecentCalls(smeId: smeId,agentId:agentId);
+        //       }
+        //     },
+        //   );
+        // } else 
+        if (state is RecentCallsLoadingState) {
           return const AppLoadingIndicator();
         } else if (state is RecentCallsErrorState) {
           return EmptyErrorWidget(
@@ -160,3 +200,4 @@ class _RecentCallsState extends StatelessWidget {
     );
   }
 }
+
